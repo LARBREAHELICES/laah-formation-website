@@ -31,8 +31,11 @@ alembic downgrade abcd1234efgh
 alembic upgrade head
 ```
 
+# Usecase (Antoine)
 
-# Usecase
+Usecase : "Création du endpoint pour récupérer les formations au format JSON"
+
+# Usecase (Emilien)
 
 Usecase : « Création de la page d’accueil React – affichage des formations »
 
