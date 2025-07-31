@@ -6,6 +6,7 @@ from app.models.TagFormation import TagFormation
 from app.models.Attachment import Attachment
 from app.models.Module import Module
 from app.models.Session import Session
+from app.models.UserFormation import UserFormation
 
 class Formation(SQLModel, table=True):  # type: ignore[misc] :
     id: str | None = Field(default=None, primary_key=True)
@@ -42,7 +43,10 @@ class Formation(SQLModel, table=True):  # type: ignore[misc] :
     
     sessions: List[Session] = Relationship(back_populates="formation")
     modules: List[Module] = Relationship(back_populates="formation")
-    trainers: List["User"] = Relationship(back_populates="formation")
+    users: List["User"] = Relationship(
+        back_populates="formations",
+        link_model=UserFormation 
+        )
     attachments: List[Attachment] = Relationship(back_populates="formation")
     
     # --- Audit ------------------------------------------------------------

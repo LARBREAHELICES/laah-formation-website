@@ -1,9 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import List, Optional
 from datetime import datetime
-from app.models.Tag import Tag
-from app.models.TagFormation import TagFormation
-from app.models.Formation import Formation
 
 class Session(SQLModel, table=True): # type: ignore[misc] :
     __tablename__ = "session"
@@ -17,4 +14,4 @@ class Session(SQLModel, table=True): # type: ignore[misc] :
     max_seats: int
     price: Optional[float] = Field(decimal_places=2)
 
-    formation: Formation  = Relationship(back_populates="sessions")
+    formation: Optional["Formation"]  = Relationship(back_populates="sessions")

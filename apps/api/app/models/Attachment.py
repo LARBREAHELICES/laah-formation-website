@@ -1,9 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
-if TYPE_CHECKING:
-    from app.models.Formation import Formation
 
 class Attachment(SQLModel, table=True): # type: ignore[misc] :
 
@@ -14,4 +12,4 @@ class Attachment(SQLModel, table=True): # type: ignore[misc] :
     file_url: str
     file_type: str = Field(default="application/pdf")
 
-    formation: Formation = Relationship(back_populates="attachments")
+    formation: Optional["Formation"] = Relationship(back_populates="attachments")

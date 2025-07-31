@@ -1,35 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
+import { useEffect } from "react"
+import { useFormationStore } from "@/stores/useFormation"
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const { formations, formation, loading, error, fetchFormations, fetchFormation } =
+    useFormationStore();
+
+  // Récupère toutes les formations au montage
+  useEffect(() => {
+    fetchFormations();
+  }, [fetchFormations]);
+
+  // Exemple : récupère la première formation en détail (si elle existe)
+  useEffect(() => {
+    if (formations.length) {
+      fetchFormation(formations[0].id);
+    }
+  }, [formations, fetchFormation]);
+
+  if (loading) return <p>Chargement…</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <main className="p-4">
+      {/* Liste des formations */}
+      <h1 className="text-2xl font-bold mb-4">Liste des formations</h1>
+      <ul className="mb-8">
+        {formations.map((f) => (
+          <li key={f.id} className="mb-2">
+            <button
+              className="text-blue-600 underline"
+              onClick={() => fetchFormation(f.id)}
+            >
+              {f.title}
+            </button>
+          </li>
+        ))}
+      </ul>
 
-export default App
+      {/* Détail d'une formation */}
+      {formation && (
+        <>
+          <h2 className="text-xl font-semibold mb-2">Détail</h2>
+          <p><strong>Titre :</strong> {formation.title}</p>
+          <p><strong>Slug :</strong> {formation.slug}</p>
+          <p><strong>Durée :</strong> {formation.duration_hours} h</p>
+          <p><strong>Objectifs :</strong> {formation.objectives}</p>
+        </>
+      )}
+    </main>
+  );
+}
