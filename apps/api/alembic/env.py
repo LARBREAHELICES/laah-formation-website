@@ -16,6 +16,10 @@ from app.models.Formation import Formation
 from app.models.Message import Message
 from app.models.Tag import Tag
 from app.models.UserFormation import UserFormation
+from app.models.Module import Module
+from app.models.Attachment import Attachment
+from app.models.Session import Session
+
 
 # ⚙️ Config Alembic
 config = context.config

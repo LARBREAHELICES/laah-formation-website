@@ -3,26 +3,22 @@
 Revision ID: 14b726631fac
 Revises: 
 Create Date: 2025-07-30 12:34:53.583681
-
 """
-from typing import Sequence, Union
 from datetime import datetime
-
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
 
-
-# revision identifiers, used by Alembic.
-revision: str = '14b726631fac'
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision   = "14b726631fac"
+down_revision = None
+branch_labels = None
+depends_on = None
 
 
 def upgrade() -> None:
-    # 1) Création des tables
-    op.create_table(
+    # -----------------------------
+    # 1) Create tables
+    # -----------------------------
+    formation_t = op.create_table(
         "formation",
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("title", sa.String, nullable=False),
@@ -30,21 +26,21 @@ def upgrade() -> None:
         sa.Column("status", sa.String, nullable=False),
         sa.Column("order_number", sa.String, nullable=False),
         sa.Column("order_date", sa.DateTime, nullable=False),
-        sa.Column("total_amount", sa.Float, nullable=True),
+        sa.Column("total_amount", sa.Float),
         sa.Column("classroom_student_counts", sa.Integer, default=0),
-        sa.Column("rate", sa.String, nullable=True),
+        sa.Column("rate", sa.String),
         sa.Column("created_at", sa.DateTime, default=datetime.utcnow),
         sa.Column("updated_at", sa.DateTime, default=datetime.utcnow,
                   onupdate=datetime.utcnow),
     )
 
-    op.create_table(
+    tag_t = op.create_table(
         "tag",
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("name", sa.String, nullable=False),
     )
 
-    op.create_table(
+    user_t = op.create_table(
         "user",
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("email", sa.String, nullable=False, unique=True),
@@ -60,11 +56,11 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("subject", sa.String, nullable=False),
         sa.Column("content", sa.Text, nullable=False),
+        sa.Column("user_id", sa.Integer,
+                  sa.ForeignKey("user.id"), nullable=True),
         sa.Column("created_at", sa.DateTime, default=datetime.utcnow),
         sa.Column("updated_at", sa.DateTime, default=datetime.utcnow,
                   onupdate=datetime.utcnow),
-        sa.Column("user_id", sa.Integer,
-                  sa.ForeignKey("user.id"), nullable=True),
     )
 
     op.create_table(
@@ -83,7 +79,11 @@ def upgrade() -> None:
                   sa.ForeignKey("formation.id"), primary_key=True),
     )
 
-    # 2) Seed data : 3 formations d’exemple
+    # -----------------------------
+    # 2) Seed with bulk_insert
+    # -----------------------------
+    # Formations
+    now = datetime.now()
     formations = [
         {
             "title": "React 19 & TypeScript",
@@ -94,6 +94,8 @@ def upgrade() -> None:
             "total_amount": 1290.00,
             "classroom_student_counts": 12,
             "rate": "★★★★☆",
+            "created_at": now,
+            "updated_at": now,
         },
         {
             "title": "FastAPI & SQLModel",
@@ -104,6 +106,8 @@ def upgrade() -> None:
             "total_amount": 990.00,
             "classroom_student_counts": 8,
             "rate": "★★★★★",
+            "created_at": now,
+            "updated_at": now,
         },
         {
             "title": "Docker & DevOps Basics",
@@ -114,23 +118,43 @@ def upgrade() -> None:
             "total_amount": 690.00,
             "classroom_student_counts": 0,
             "rate": None,
+            "created_at": now,
+            "updated_at": now,
         },
     ]
+    op.bulk_insert(formation_t, formations)
 
-    for f in formations:
-        op.execute(
-            sa.text(
-                """
-                INSERT INTO formation
-                (title, description, status, order_number, order_date,
-                 total_amount, classroom_student_counts, rate, created_at, updated_at)
-                VALUES
-                (:title, :description, :status, :order_number, :order_date,
-                 :total_amount, :classroom_student_counts, :rate, NOW(), NOW())
-                """
-            ).bindparams(**f)
-        )
+    # Users
+    users = [
+        {"email": "alice@example.com", "fullname": "Alice Martin",
+         "status": "active", "created_at": now, "updated_at": now},
+        {"email": "bob@example.com", "fullname": "Bob Dupont",
+         "status": "active", "created_at": now, "updated_at": now},
+    ]
+    op.bulk_insert(user_t, users)
 
+    # Tags
+    tags = [
+        {"name": "frontend"},
+        {"name": "backend"},
+        {"name": "devops"},
+    ]
+    op.bulk_insert(tag_t, tags)
+
+    # -----------------------------
+    # 3) Liaisons (FK already created)
+    # -----------------------------
+    # IDs sont auto-incrémentés à partir de 1
+   
+    op.execute(sa.text(
+        "INSERT INTO user_formation_link (user_id, formation_id) VALUES "
+        "(1, 1), (2, 1), (1, 2), (2, 3)"
+    ))
+
+    op.execute(sa.text(
+        "INSERT INTO tag_formation_link (tag_id, formation_id) VALUES "
+        "(1, 1), (2, 1), (2, 2), (3, 3)"
+    ))
 
 def downgrade() -> None:
     op.drop_table("user_formation_link")
