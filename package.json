@@ -6,6 +6,7 @@
         "dev:api": "pnpm --filter api dev"
     },
     "dependencies": {
+        "@heroicons/react": "^2.2.0",
         "@tailwindcss/vite": "^4.1.11",
         "tailwindcss": "^4.1.11"
     }
