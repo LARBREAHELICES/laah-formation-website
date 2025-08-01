@@ -1,7 +1,7 @@
 // src/stores/formationStore.ts
-import { create } from "zustand";
+import { create } from "zustand"
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL
 
 export interface Formation {
   id: string;
