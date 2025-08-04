@@ -15,6 +15,7 @@ export interface Formation {
   evaluation_methods: string;
   qualiopi_certificate_number: string;
   qualiopi_certificate_date: string;
+  rate: string;
   sessions: any[];
   modules: any[];
   trainers: any[];

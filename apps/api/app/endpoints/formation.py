@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from dependency_injector.wiring import inject, Provide
+
 
 from typing import  List
 from app.database import get_db
