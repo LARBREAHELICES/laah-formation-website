@@ -1,5 +1,11 @@
-type AboutPageProps = Record<string, never>;
+import AboutSection from '@/components/AboutUs'
 
-export default function AboutPage(props: AboutPageProps) {
-  return <p>About</p>;
+
+
+export default function App() {
+  return (
+    <>
+      <AboutSection/>
+    </>
+  )
 }

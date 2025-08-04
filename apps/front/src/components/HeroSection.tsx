@@ -1,10 +1,10 @@
-// src/components/HeroSection.tsx
+
 'use client'
 
 export default function HeroSection() {
   return (
     <section className="relative isolate bg-white">
-      {/* Gradient blobs */}
+
       <div
         aria-hidden="true"
         className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -35,7 +35,7 @@ export default function HeroSection() {
             Explore Courses
           </a>
           <a
-            href="#contact"
+            href="/contact"
             className="text-base font-semibold text-gray-900 hover:text-indigo-600"
           >
             Contact <span aria-hidden="true">→</span>
@@ -43,7 +43,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Bottom gradient blob */}
+
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
