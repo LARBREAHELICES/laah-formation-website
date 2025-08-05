@@ -49,10 +49,10 @@ export const useFormationStore = create<FormationState>((set) => ({
     }
   },
 
-  fetchFormation: async (id: string) => {
+  fetchFormation: async (slug: string) => {
     set({ loading: true, error: null });
     try {
-      const res = await fetch(`${apiUrl}/formation/${id}`, { credentials: "include" });
+      const res = await fetch(`${apiUrl}/formation/${slug}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       set({ formation: data, loading: false });
