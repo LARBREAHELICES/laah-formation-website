@@ -27,7 +27,6 @@ const testimonials = [
 export default function TestimonialSection() {
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-      {/* Déco top */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
@@ -69,7 +68,6 @@ export default function TestimonialSection() {
         </div>
       </div>
 
-      {/* Déco bottom */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"

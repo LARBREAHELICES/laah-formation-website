@@ -13,7 +13,6 @@ export default function Login() {
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 py-32 sm:py-40">
-      {/* Déco top */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -78,7 +77,6 @@ export default function Login() {
         </form>
       </div>
 
-      {/* Déco bottom */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"

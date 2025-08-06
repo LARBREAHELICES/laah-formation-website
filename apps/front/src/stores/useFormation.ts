@@ -1,7 +1,7 @@
-// src/stores/formationStore.ts
 import { create } from "zustand"
 
 const apiUrl = import.meta.env.VITE_API_URL
+
 
 export interface Formation {
   id: string;
@@ -49,14 +49,16 @@ export const useFormationStore = create<FormationState>((set) => ({
     }
   },
 
-  fetchFormation: async (slug: string) => {
+  fetchFormation: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      const res = await fetch(`${apiUrl}/formation/${slug}`, { credentials: "include" });
+      const res = await fetch(`${apiUrl}/formation/${id}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       set({ formation: data, loading: false });
     } catch (err: any) {
+      console.log("Fetching:", `${apiUrl}/formations/${id}`);
+
       set({ error: err.message || "Erreur", loading: false });
     }
   },
