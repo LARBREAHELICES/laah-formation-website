@@ -62,4 +62,5 @@ export const useFormationStore = create<FormationState>((set) => ({
       set({ error: err.message || "Erreur", loading: false });
     }
   },
+  
 }))

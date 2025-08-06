@@ -26,7 +26,7 @@ export default function HeroSection() {
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
-            href="#courses"
+            href="/formations"
             className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-6 py-3 text-base font-semibold text-white shadow-md hover:bg-indigo-500 dark:hover:bg-indigo-400"
           >
             Explore Courses
