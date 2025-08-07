@@ -15,7 +15,8 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FormationsIndexRouteImport } from './routes/formations/index'
-import { Route as FormationsIdRouteImport } from './routes/formations/$id'
+import { Route as FormationsIdIndexRouteImport } from './routes/formations/$id/index'
+import { Route as FormationsIdSessionsRouteImport } from './routes/formations/$id/sessions'
 
 const TestimonialsRoute = TestimonialsRouteImport.update({
   id: '/testimonials',
@@ -47,9 +48,14 @@ const FormationsIndexRoute = FormationsIndexRouteImport.update({
   path: '/formations/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FormationsIdRoute = FormationsIdRouteImport.update({
-  id: '/formations/$id',
-  path: '/formations/$id',
+const FormationsIdIndexRoute = FormationsIdIndexRouteImport.update({
+  id: '/formations/$id/',
+  path: '/formations/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormationsIdSessionsRoute = FormationsIdSessionsRouteImport.update({
+  id: '/formations/$id/sessions',
+  path: '/formations/$id/sessions',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -59,8 +65,9 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
-  '/formations/$id': typeof FormationsIdRoute
   '/formations': typeof FormationsIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
+  '/formations/$id': typeof FormationsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,8 +75,9 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
-  '/formations/$id': typeof FormationsIdRoute
   '/formations': typeof FormationsIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
+  '/formations/$id': typeof FormationsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,8 +86,9 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
-  '/formations/$id': typeof FormationsIdRoute
   '/formations/': typeof FormationsIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
+  '/formations/$id/': typeof FormationsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,8 +98,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/login'
     | '/testimonials'
-    | '/formations/$id'
     | '/formations'
+    | '/formations/$id/sessions'
+    | '/formations/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,8 +108,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/login'
     | '/testimonials'
-    | '/formations/$id'
     | '/formations'
+    | '/formations/$id/sessions'
+    | '/formations/$id'
   id:
     | '__root__'
     | '/'
@@ -107,8 +118,9 @@ export interface FileRouteTypes {
     | '/contact'
     | '/login'
     | '/testimonials'
-    | '/formations/$id'
     | '/formations/'
+    | '/formations/$id/sessions'
+    | '/formations/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,8 +129,9 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   LoginRoute: typeof LoginRoute
   TestimonialsRoute: typeof TestimonialsRoute
-  FormationsIdRoute: typeof FormationsIdRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
+  FormationsIdSessionsRoute: typeof FormationsIdSessionsRoute
+  FormationsIdIndexRoute: typeof FormationsIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,11 +178,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/formations/$id': {
-      id: '/formations/$id'
+    '/formations/$id/': {
+      id: '/formations/$id/'
       path: '/formations/$id'
       fullPath: '/formations/$id'
-      preLoaderRoute: typeof FormationsIdRouteImport
+      preLoaderRoute: typeof FormationsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/formations/$id/sessions': {
+      id: '/formations/$id/sessions'
+      path: '/formations/$id/sessions'
+      fullPath: '/formations/$id/sessions'
+      preLoaderRoute: typeof FormationsIdSessionsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -181,8 +201,9 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   LoginRoute: LoginRoute,
   TestimonialsRoute: TestimonialsRoute,
-  FormationsIdRoute: FormationsIdRoute,
   FormationsIndexRoute: FormationsIndexRoute,
+  FormationsIdSessionsRoute: FormationsIdSessionsRoute,
+  FormationsIdIndexRoute: FormationsIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

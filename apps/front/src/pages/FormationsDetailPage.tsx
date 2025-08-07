@@ -1,10 +1,12 @@
 'use client'
+
 import { useEffect } from 'react'
 import { useParams } from '@tanstack/react-router'
 import { useFormationStore } from '@/stores/useFormation'
+import { Link } from '@tanstack/react-router'
 
 export default function FormationDetailPage() {
-  const { id } = useParams({ from: '/formations/$id' })
+  const { id } = useParams({ from: '/formations/$id/' })
   const { formation, loading, error, fetchFormation } = useFormationStore()
 
   useEffect(() => {
@@ -17,7 +19,7 @@ export default function FormationDetailPage() {
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-      {/* Top gradient blurred shape */}
+      {/* Background top */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
@@ -31,32 +33,39 @@ export default function FormationDetailPage() {
         />
       </div>
 
-      <div className="mx-auto max-w-5xl px-6 lg:px-8 space-y-10">
-        <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white">
-            {formation.title}
-          </h1>
-          <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">
-            {formation.description}
-          </p>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            Durée : {formation.duration_hours} h
-          </p>
-        </div>
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 grid gap-12 lg:grid-cols-[2fr_1fr]">
+        {/* Colonne gauche */}
+        <div className="space-y-10">
+          <div className="text-center lg:text-left">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white">
+              {formation.title}
+            </h1>
+            
+            {/* Avis déplacé ici */}
+            <div className="mt-4 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2 justify-center lg:justify-start">
+               {formation.rate}
+              <span className="text-gray-500 dark:text-gray-400"> Avis</span>
+            </div>
 
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-center">
-          {/* <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-            {formation.total_amount} €
-          </div> */}
-          <div className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
-            {formation.rate}
-            <span className="text-gray-500 dark:text-gray-400">(avis)</span>
+            <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">
+              {formation.description}
+            </p>
           </div>
-        </div>
 
-        <div className="space-y-6">
+          {/* Objectifs pédagogiques */}
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              🎯 Objectifs pédagogiques
+            </h2>
+            <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
+              {formation.objectives?.split('\n').map((obj, idx) => (
+                <li key={idx}>{obj}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Méthodes, prérequis, évaluation */}
           {[
-            ['Objectifs', formation.objectives],
             ['Pré-requis', formation.prerequisites],
             ['Méthodes pédagogiques', formation.pedagogy_methods],
             ['Méthodes d’évaluation', formation.evaluation_methods],
@@ -67,6 +76,7 @@ export default function FormationDetailPage() {
             </div>
           ))}
 
+          {/* Certification */}
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Certification Qualiopi
@@ -77,59 +87,7 @@ export default function FormationDetailPage() {
             </p>
           </div>
 
-          {formation.modules?.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Modules</h2>
-              <ul className="grid gap-4 mt-2">
-                {formation.modules.map((mod) => (
-                  <li key={mod.id} className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
-                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
-                      {mod.order_index}. {mod.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Durée : {mod.duration_hours} h</p>
-                    <p className="mt-1 text-gray-700 dark:text-gray-300">{mod.description}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {formation.sessions?.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Sessions</h2>
-              <ul className="grid gap-6 mt-4">
-                {formation.sessions.map((session) => (
-                  <li
-                    key={session.id}
-                    className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm"
-                  >
-                    <div className="grid sm:grid-cols-2 gap-4 text-sm sm:text-base text-gray-700 dark:text-gray-300">
-                      <div className="space-y-1">
-                        <p className="font-medium text-gray-900 dark:text-white">📍 Lieu</p>
-                        <p>{session.location}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="font-medium text-gray-900 dark:text-white">🗓️ Dates</p>
-                        <p>
-                          {new Date(session.start_date).toLocaleDateString()} →{' '}
-                          {new Date(session.end_date).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="font-medium text-gray-900 dark:text-white">👥 Places</p>
-                        <p>{session.max_seats}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="font-medium text-gray-900 dark:text-white">💰 Prix</p>
-                        <p>{session.price} €</p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
+          {/* Formateurs */}
           {formation.trainers?.length > 0 && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Formateurs</h2>
@@ -140,11 +98,42 @@ export default function FormationDetailPage() {
               </ul>
             </div>
           )}
+        </div>
 
-          {formation.attachments?.length > 0 && (
+        {/* Colonne droite (encart récapitulatif) */}
+        <aside className="space-y-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 h-fit lg:sticky top-24">
+        
+        {/* Modules */}
+          {formation.modules?.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Documents</h2>
-              <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">📚 Modules</h3>
+              <ul className="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                {formation.modules.map((mod) => (
+                  <li key={mod.id} className="flex justify-between">
+                    <span>{mod.order_index}. {mod.title}</span>
+                    <span>{mod.duration_hours} h</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+            <p><strong>Durée :</strong> {formation.duration_hours} h</p>
+            <p><strong>Prix :</strong> {formation.total_amount} €</p>
+          </div>
+
+<Link to={`/formations/$id/sessions`} params={{ id }}
+className="block w-full text-center bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-lg">
+  Dates, lieux et inscription
+</Link>
+
+
+          {/* Documents déplacés ici */}
+          {formation.attachments?.length > 0 && (
+            <div className="text-sm">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">📄 Documents</h2>
+              <ul className="list-disc pl-4 text-gray-700 dark:text-gray-300">
                 {formation.attachments.map((att) => (
                   <li key={att.id}>
                     <a
@@ -160,19 +149,12 @@ export default function FormationDetailPage() {
               </ul>
             </div>
           )}
-        </div>
 
-        <div className="text-center">
-          <a
-            href="#"
-            className="inline-block rounded-lg bg-indigo-600 dark:bg-indigo-500 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-500 dark:hover:bg-indigo-400"
-          >
-            S'inscrire
-          </a>
-        </div>
+
+        </aside>
       </div>
 
-      {/* Bottom gradient blurred shape */}
+      {/* Background bottom */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
