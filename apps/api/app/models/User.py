@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from app.models.Message import Message 
 from app.models.UserFormation import UserFormation 
@@ -9,7 +9,9 @@ from app.models.UserRole import UserRole
 class User(SQLModel, table=True):  # type: ignore[misc]
     id: str | None = Field(default=None, primary_key=True)
     email: str
+    username: str
     fullname: str
+    password: Optional[str] = None
     status : str
     created_at: datetime
     updated_at: datetime
@@ -26,3 +28,4 @@ class User(SQLModel, table=True):  # type: ignore[misc]
         link_model=UserFormation 
         
     )
+

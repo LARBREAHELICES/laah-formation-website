@@ -71,3 +71,22 @@ class FormationRead(BaseModel):
     # Audit
     created_at: datetime
     updated_at: datetime
+    
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+    access_token: str | None = None
+    role : List[str] | None = None
+    
+class UserInDB(BaseModel):
+    id : str
+    username: str
+    roles : List[str] | None = None
+    
+class UserRequest(BaseModel):
+    username: str
+    password: str
