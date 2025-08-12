@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
+from datetime import date, datetime
 
 class TagRead(BaseModel):
     id: str
@@ -71,3 +72,77 @@ class FormationRead(BaseModel):
     # Audit
     created_at: datetime
     updated_at: datetime
+    
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+    access_token: str | None = None
+    role : List[str] | None = None
+    
+class UserInDB(BaseModel):
+    id : str
+    username: str
+    roles : List[str] | None = None
+    
+class UserRequest(BaseModel):
+    username: str
+    password: str
+    
+class FormationUpdate(BaseModel):
+    title: Optional[str] = None
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    objectives: Optional[str] = None
+    prerequisites: Optional[str] = None
+    duration_hours: Optional[int] = None
+    pedagogy_methods: Optional[str] = None
+    evaluation_methods: Optional[str] = None
+    qualiopi_certificate_number: Optional[str] = None
+    qualiopi_certificate_date: Optional[date] = None
+    prefecture_registration_number: Optional[str] = None
+    qualiopi_scope: Optional[str] = None
+    status: Optional[str] = None
+    order_number: Optional[str] = None
+    order_date: Optional[date] = None
+    total_amount: Optional[Decimal] = None
+    classroom_student_counts: Optional[int] = None
+    rate: Optional[Decimal] = None
+    tag_ids: Optional[List[str]] = None
+    module_ids: Optional[List[str]] = None
+    trainer_ids: Optional[List[str]] = None
+    session_ids: Optional[List[str]] = None
+    attachment_ids: Optional[List[str]] = None
+   
+class FormationBase(BaseModel):
+    title: str
+    slug: str
+    description: Optional[str] = None
+    objectives: Optional[str] = None
+    prerequisites: Optional[str] = None
+    duration_hours: Optional[int] = None
+    pedagogy_methods: Optional[str] = None
+    evaluation_methods: Optional[str] = None
+    qualiopi_certificate_number: Optional[str] = None
+    qualiopi_certificate_date: Optional[date] = None
+    prefecture_registration_number: Optional[str] = None
+    qualiopi_scope: Optional[str] = None
+    status: Optional[str] = None
+    order_number: Optional[str] = None
+    order_date: Optional[date] = None
+    total_amount: Optional[Decimal] = None
+    classroom_student_counts: Optional[int] = None
+    rate: Optional[Decimal] = None
+    tag_ids: Optional[List[str]] = None
+    module_ids: Optional[List[str]] = None
+    trainer_ids: Optional[List[str]] = None
+    session_ids: Optional[List[str]] = None
+    attachment_ids: Optional[List[str]] = None
+
+    
+class FormationCreate(FormationBase):
+    title: str
+    slug: str

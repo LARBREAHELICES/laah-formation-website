@@ -9,11 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+<<<<<<< HEAD
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContactRouteImport } from './routes/contact'
+=======
+import { Route as LogouttestRouteImport } from './routes/logouttest'
+import { Route as DashboardtestRouteImport } from './routes/dashboardtest'
+import { Route as AuthtestRouteImport } from './routes/authtest'
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+<<<<<<< HEAD
 import { Route as FormationsIndexRouteImport } from './routes/formations/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as FormationsIdIndexRouteImport } from './routes/formations/$id/index'
@@ -35,6 +43,24 @@ const LoginRoute = LoginRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+=======
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+
+const LogouttestRoute = LogouttestRouteImport.update({
+  id: '/logouttest',
+  path: '/logouttest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardtestRoute = DashboardtestRouteImport.update({
+  id: '/dashboardtest',
+  path: '/dashboardtest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthtestRoute = AuthtestRouteImport.update({
+  id: '/authtest',
+  path: '/authtest',
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -42,11 +68,16 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+<<<<<<< HEAD
 const FormationsIndexRoute = FormationsIndexRouteImport.update({
   id: '/formations/',
   path: '/formations/',
@@ -85,10 +116,23 @@ const AdminDashboardFormationsIdEditRoute =
     path: '/admin/dashboard/formations/$id/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
+=======
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+<<<<<<< HEAD
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
@@ -99,10 +143,18 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard/formations/new': typeof AdminDashboardFormationsNewRoute
   '/admin/dashboard/formations': typeof AdminDashboardFormationsIndexRoute
   '/admin/dashboard/formations/$id/edit': typeof AdminDashboardFormationsIdEditRoute
+=======
+  '/authtest': typeof AuthtestRoute
+  '/dashboardtest': typeof DashboardtestRoute
+  '/logouttest': typeof LogouttestRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profil': typeof AuthenticatedProfilRoute
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+<<<<<<< HEAD
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
@@ -113,11 +165,20 @@ export interface FileRoutesByTo {
   '/admin/dashboard/formations/new': typeof AdminDashboardFormationsNewRoute
   '/admin/dashboard/formations': typeof AdminDashboardFormationsIndexRoute
   '/admin/dashboard/formations/$id/edit': typeof AdminDashboardFormationsIdEditRoute
+=======
+  '/authtest': typeof AuthtestRoute
+  '/dashboardtest': typeof DashboardtestRoute
+  '/logouttest': typeof LogouttestRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profil': typeof AuthenticatedProfilRoute
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+<<<<<<< HEAD
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
@@ -128,12 +189,20 @@ export interface FileRoutesById {
   '/admin/dashboard/formations/new': typeof AdminDashboardFormationsNewRoute
   '/admin/dashboard/formations/': typeof AdminDashboardFormationsIndexRoute
   '/admin/dashboard/formations/$id/edit': typeof AdminDashboardFormationsIdEditRoute
+=======
+  '/authtest': typeof AuthtestRoute
+  '/dashboardtest': typeof DashboardtestRoute
+  '/logouttest': typeof LogouttestRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+<<<<<<< HEAD
     | '/contact'
     | '/login'
     | '/testimonials'
@@ -144,10 +213,18 @@ export interface FileRouteTypes {
     | '/admin/dashboard/formations/new'
     | '/admin/dashboard/formations'
     | '/admin/dashboard/formations/$id/edit'
+=======
+    | '/authtest'
+    | '/dashboardtest'
+    | '/logouttest'
+    | '/dashboard'
+    | '/profil'
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+<<<<<<< HEAD
     | '/contact'
     | '/login'
     | '/testimonials'
@@ -172,11 +249,30 @@ export interface FileRouteTypes {
     | '/admin/dashboard/formations/new'
     | '/admin/dashboard/formations/'
     | '/admin/dashboard/formations/$id/edit'
+=======
+    | '/authtest'
+    | '/dashboardtest'
+    | '/logouttest'
+    | '/dashboard'
+    | '/profil'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/about'
+    | '/authtest'
+    | '/dashboardtest'
+    | '/logouttest'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/profil'
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+<<<<<<< HEAD
   ContactRoute: typeof ContactRoute
   LoginRoute: typeof LoginRoute
   TestimonialsRoute: typeof TestimonialsRoute
@@ -187,10 +283,16 @@ export interface RootRouteChildren {
   AdminDashboardFormationsNewRoute: typeof AdminDashboardFormationsNewRoute
   AdminDashboardFormationsIndexRoute: typeof AdminDashboardFormationsIndexRoute
   AdminDashboardFormationsIdEditRoute: typeof AdminDashboardFormationsIdEditRoute
+=======
+  AuthtestRoute: typeof AuthtestRoute
+  DashboardtestRoute: typeof DashboardtestRoute
+  LogouttestRoute: typeof LogouttestRoute
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+<<<<<<< HEAD
     '/testimonials': {
       id: '/testimonials'
       path: '/testimonials'
@@ -210,6 +312,27 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+=======
+    '/logouttest': {
+      id: '/logouttest'
+      path: '/logouttest'
+      fullPath: '/logouttest'
+      preLoaderRoute: typeof LogouttestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboardtest': {
+      id: '/dashboardtest'
+      path: '/dashboardtest'
+      fullPath: '/dashboardtest'
+      preLoaderRoute: typeof DashboardtestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authtest': {
+      id: '/authtest'
+      path: '/authtest'
+      fullPath: '/authtest'
+      preLoaderRoute: typeof AuthtestRouteImport
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -219,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -226,6 +356,7 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+<<<<<<< HEAD
     '/formations/': {
       id: '/formations/'
       path: '/formations'
@@ -274,13 +405,44 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/dashboard/formations/$id/edit'
       preLoaderRoute: typeof AdminDashboardFormationsIdEditRouteImport
       parentRoute: typeof rootRouteImport
+=======
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
     }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+<<<<<<< HEAD
   ContactRoute: ContactRoute,
   LoginRoute: LoginRoute,
   TestimonialsRoute: TestimonialsRoute,
@@ -291,6 +453,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDashboardFormationsNewRoute: AdminDashboardFormationsNewRoute,
   AdminDashboardFormationsIndexRoute: AdminDashboardFormationsIndexRoute,
   AdminDashboardFormationsIdEditRoute: AdminDashboardFormationsIdEditRoute,
+=======
+  AuthtestRoute: AuthtestRoute,
+  DashboardtestRoute: DashboardtestRoute,
+  LogouttestRoute: LogouttestRoute,
+>>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

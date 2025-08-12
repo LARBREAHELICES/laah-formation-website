@@ -161,7 +161,22 @@ Temps estimé
 - 30 min si l'API fonctionne et que le projet React Router est déjà configuré.
 
 
-## Endpoint
+## Organisation 
 
-Fonction d'ajout, de suppresion et de modification pour la gestion des formations 
-et des users dans le dashboard
+```bash
+git checkout feature/ma-feature
+git pull origin main 
+
+# merge la branch distante main dans feature
+git fetch origin
+git merge origin/main
+
+git checkout main
+# au cas où y a autre chose qui est arrivée entre temps 
+git pull origin main
+
+git merge feature/ma-feature
+
+git branch -d feature/ma-feature
+git push origin main
+```

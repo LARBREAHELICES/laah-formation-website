@@ -52,3 +52,4 @@ class Formation(SQLModel, table=True):  # type: ignore[misc] :
     # --- Audit ------------------------------------------------------------
     created_at: datetime = Field(default_factory=datetime.now())
     updated_at: datetime = Field(default_factory=datetime.now())
+    

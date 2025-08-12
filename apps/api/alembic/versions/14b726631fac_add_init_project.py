@@ -9,11 +9,14 @@ from alembic import op
 import sqlalchemy as sa
 import uuid
 from decimal import Decimal
+import bcrypt
 
 revision = "14b726631fac"
 down_revision = None
 branch_labels = None
 depends_on = None
+password = "password"
+hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def upgrade() -> None:
@@ -58,7 +61,9 @@ def upgrade() -> None:
         "user",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("email", sa.String, nullable=False, unique=True),
+        sa.Column("username", sa.String, nullable=True),
         sa.Column("fullname", sa.String, nullable=False),
+        sa.Column("password", sa.String, nullable=True),
         sa.Column("status", sa.String, nullable=False),
         sa.Column("created_at", sa.DateTime, server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime, server_default=sa.func.now(), onupdate=sa.func.now()),
@@ -136,8 +141,8 @@ def upgrade() -> None:
     # users
     user_ids = [base_id(), base_id()]
     conn.execute(sa.insert(user_tbl), [
-        {"id": user_ids[0], "email": "alice@example.com", "fullname": "Alice Martin", "status": "active"},
-        {"id": user_ids[1], "email": "bob@example.com", "fullname": "Bob Dupont", "status": "active"},
+        {"id": user_ids[0], "username": "alice", "email": "alice@example.com", "fullname": "Alice Martin", "status": "active", "password" : hashed},
+        {"id": user_ids[1], "username": "bod", "email": "bob@example.com", "fullname": "Bob Dupont", "status": "active", "password" : hashed},
     ])
 
     # formation
@@ -312,8 +317,9 @@ def upgrade() -> None:
     # formateurs (utilisateurs)
     teacher_ids = [base_id(), base_id()]
     conn.execute(sa.insert(user_tbl), [
-        {"id": teacher_ids[0], "email": "claire@example.com", "fullname": "Claire Docker", "status": "active", "role": "teacher"},
-        {"id": teacher_ids[1], "email": "pierre@example.com", "fullname": "Pierre Python", "status": "active", "role": "teacher"},
+        {"id": teacher_ids[0], "username" : "claire", "password" : hashed, 
+         "email": "claire@example.com", "fullname": "Claire Docker", "status": "active", "role": "teacher"},
+        {"id": teacher_ids[1],  "password" : hashed, "username" : "pierre", "email": "pierre@example.com", "fullname": "Pierre Python", "status": "active", "role": "teacher"},
     ])
 
     # liens formateur ↔ formation

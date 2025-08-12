@@ -3,6 +3,7 @@ from typing import List, Optional
 from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload
 from decimal import Decimal
+from datetime import date, datetime
 
 from app.schemas.schema_app import (
     FormationRead,
@@ -11,6 +12,8 @@ from app.schemas.schema_app import (
     ModuleRead,
     UserRead,
     AttachmentRead,
+    FormationCreate,
+    FormationUpdate
 )
 from app.models.Formation import Formation
 
@@ -161,6 +164,118 @@ class FormationService:
                     "file_url": a.file_url,
                     "file_type": a.file_type,
                 }
+                for a in formation.attachments
+            ],
+            created_at=formation.created_at,
+            updated_at=formation.updated_at,
+        )
+        
+      # ---- CREATE ----
+    def create(self, formation_data: FormationCreate) -> FormationRead:
+        formation = Formation(**formation_data.dict())
+        formation.created_at = datetime.now()
+        formation.updated_at = datetime.now()
+
+        self.session.add(formation)
+        self.session.commit()
+        self.session.refresh(formation)
+        return self._to_read_model(formation)
+    
+    # ---- CREATE ----
+    def create(self, formation_data: FormationCreate) -> FormationRead:
+        formation = Formation(**formation_data.dict())
+        formation.created_at = datetime.utcnow()
+        formation.updated_at = datetime.utcnow()
+
+        self.session.add(formation)
+        self.session.commit()
+        self.session.refresh(formation)
+        return self._to_read_model(formation)
+
+    # ---- UPDATE ----
+    def update(self, formation_id: str, formation_data: FormationUpdate) -> Optional[FormationRead]:
+        formation = self.session.get(Formation, formation_id)
+        if not formation:
+            return None
+
+        update_data = formation_data.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(formation, key, value)
+
+        formation.updated_at = datetime.utcnow()
+        self.session.add(formation)
+        self.session.commit()
+        self.session.refresh(formation)
+        
+        return self._to_read_model(formation)
+
+    # ---- DELETE ----
+    def delete(self, formation_id: str) -> bool:
+        formation = self.session.get(Formation, formation_id)
+        if not formation:
+            return False
+
+        self.session.delete(formation)
+        self.session.commit()
+        
+        return True
+    
+    # ---- PRIVATE MAPPER ----
+    def _to_read_model(self, formation: Formation) -> FormationRead:
+        
+        return FormationRead(
+            id=formation.id,
+            title=formation.title,
+            slug=formation.slug,
+            description=formation.description,
+            objectives=formation.objectives,
+            prerequisites=formation.prerequisites,
+            duration_hours=formation.duration_hours,
+            pedagogy_methods=formation.pedagogy_methods,
+            evaluation_methods=formation.evaluation_methods,
+            qualiopi_certificate_number=formation.qualiopi_certificate_number,
+            qualiopi_certificate_date=formation.qualiopi_certificate_date,
+            prefecture_registration_number=formation.prefecture_registration_number,
+            qualiopi_scope=formation.qualiopi_scope,
+            status=formation.status,
+            order_number=formation.order_number,
+            order_date=formation.order_date,
+            total_amount=formation.total_amount,
+            classroom_student_counts=formation.classroom_student_counts,
+            rate=formation.rate,
+            tags=[TagRead(id=t.id, name=t.name) for t in formation.tags],
+            sessions=[
+                SessionRead(
+                    id=s.id,
+                    start_date=s.start_date,
+                    end_date=s.end_date,
+                    location=s.location,
+                    max_seats=s.max_seats,
+                    price=s.price,
+                )
+                for s in formation.sessions
+            ],
+            modules=[
+                ModuleRead(
+                    id=m.id,
+                    title=m.title,
+                    duration_hours=m.duration_hours,
+                    description=m.description,
+                    order_index=m.order_index,
+                )
+                for m in formation.modules
+            ],
+            trainers=[
+                UserRead(fullname=u.fullname, status=u.status)
+                for u in formation.users
+            ],
+            attachments=[
+                AttachmentRead(
+                    id=a.id,
+                    label=a.label,
+                    file_url=a.file_url,
+                    file_type=a.file_type,
+                )
                 for a in formation.attachments
             ],
             created_at=formation.created_at,

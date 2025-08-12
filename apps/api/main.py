@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from app.endpoints.formation import router as routerFormation
+from app.endpoints.auth import router as routerAuth
 
 app = FastAPI()
 
@@ -20,4 +21,7 @@ app.add_middleware(
 routers = APIRouter()
 
 # Inclure les routers
-app.include_router(routerFormation)
+routes = [routerAuth, routerFormation]
+
+for route in routes:
+    app.include_router(route)
