@@ -180,3 +180,9 @@ git merge feature/ma-feature
 git branch -d feature/ma-feature
 git push origin main
 ```
+## Usecase
+
+Stores: 
+  useFormation : fonction d'ajout, suppression et modification des formations
+
+  useUsers: fonction d'ajout, suppression, modification et lecture des utilisateurs
