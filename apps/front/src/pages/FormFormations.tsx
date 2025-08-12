@@ -119,7 +119,7 @@ export default function NewFormationPage() {
     }
 
     addFormation(payload)
-    navigate({ to: 'admin/dashboard/formations' })
+    navigate({ to: 'crud/formations' })
   }
 
   return (
