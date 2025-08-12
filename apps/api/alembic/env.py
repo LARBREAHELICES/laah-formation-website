@@ -19,6 +19,7 @@ from app.models.UserFormation import UserFormation
 from app.models.Module import Module
 from app.models.Attachment import Attachment
 from app.models.Session import Session
+from app.models.RefreshToken import RefreshToken
 
 
 # ⚙️ Config Alembic

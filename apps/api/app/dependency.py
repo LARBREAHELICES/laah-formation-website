@@ -1,11 +1,11 @@
 from fastapi import Depends, HTTPException, status, Cookie
 from typing import Optional
 
-from app.schemas.schema_app import TokenData
-from app.models.User import User
 from app.services.AuthService import AuthService
 from app.database import get_db
 from app.schemas.schema_app import UserInDB
+from sqlmodel import select
+from datetime import datetime, timezone
 
 def get_auth_service(session=Depends(get_db)) -> AuthService:
     return AuthService(session=session)
@@ -47,8 +47,23 @@ async def get_current_user(
 
 
 async def get_current_active_user(
-    current_user: User = Depends(get_current_user),
+    current_user: UserInDB = Depends(get_current_user),
 ):
     if getattr(current_user, "disabled", False):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+async def get_refresh_token_from_cookie(
+    refresh_token: Optional[str] = Cookie(None),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="No refresh token cookie found")
+
+    db_token = auth_service.get_refresh_token(refresh_token=refresh_token)
+
+    if not db_token or db_token.revoked or db_token.expires_at < datetime.now():
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
+    return db_token

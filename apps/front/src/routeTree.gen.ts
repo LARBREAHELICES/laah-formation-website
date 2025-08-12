@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LogouttestRouteImport } from './routes/logouttest'
 import { Route as DashboardtestRouteImport } from './routes/dashboardtest'
 import { Route as AuthtestRouteImport } from './routes/authtest'
 import { Route as AboutRouteImport } from './routes/about'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
+const LogouttestRoute = LogouttestRouteImport.update({
+  id: '/logouttest',
+  path: '/logouttest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardtestRoute = DashboardtestRouteImport.update({
   id: '/dashboardtest',
   path: '/dashboardtest',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/authtest': typeof AuthtestRoute
   '/dashboardtest': typeof DashboardtestRoute
+  '/logouttest': typeof LogouttestRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
 }
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/authtest': typeof AuthtestRoute
   '/dashboardtest': typeof DashboardtestRoute
+  '/logouttest': typeof LogouttestRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
 }
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/authtest': typeof AuthtestRoute
   '/dashboardtest': typeof DashboardtestRoute
+  '/logouttest': typeof LogouttestRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
 }
@@ -85,10 +94,18 @@ export interface FileRouteTypes {
     | '/about'
     | '/authtest'
     | '/dashboardtest'
+    | '/logouttest'
     | '/dashboard'
     | '/profil'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/authtest' | '/dashboardtest' | '/dashboard' | '/profil'
+  to:
+    | '/'
+    | '/about'
+    | '/authtest'
+    | '/dashboardtest'
+    | '/logouttest'
+    | '/dashboard'
+    | '/profil'
   id:
     | '__root__'
     | '/'
@@ -96,6 +113,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/authtest'
     | '/dashboardtest'
+    | '/logouttest'
     | '/_authenticated/dashboard'
     | '/_authenticated/profil'
   fileRoutesById: FileRoutesById
@@ -106,10 +124,18 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthtestRoute: typeof AuthtestRoute
   DashboardtestRoute: typeof DashboardtestRoute
+  LogouttestRoute: typeof LogouttestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/logouttest': {
+      id: '/logouttest'
+      path: '/logouttest'
+      fullPath: '/logouttest'
+      preLoaderRoute: typeof LogouttestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboardtest': {
       id: '/dashboardtest'
       path: '/dashboardtest'
@@ -182,6 +208,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthtestRoute: AuthtestRoute,
   DashboardtestRoute: DashboardtestRoute,
+  LogouttestRoute: LogouttestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
