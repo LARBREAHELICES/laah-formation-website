@@ -14,7 +14,6 @@ export default function Login() {
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 py-32 sm:py-40">
-      {/* Arrière-plan */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -40,7 +39,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Carte différente */}
         <div className="rounded-2xl shadow-2xl bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -100,7 +98,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Bas de page effet */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"

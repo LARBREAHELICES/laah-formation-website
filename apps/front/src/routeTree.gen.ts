@@ -15,8 +15,12 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FormationsIndexRouteImport } from './routes/formations/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as FormationsIdIndexRouteImport } from './routes/formations/$id/index'
 import { Route as FormationsIdSessionsRouteImport } from './routes/formations/$id/sessions'
+import { Route as AdminDashboardFormationsIndexRouteImport } from './routes/admin/dashboard/formations/index'
+import { Route as AdminDashboardFormationsNewRouteImport } from './routes/admin/dashboard/formations/new'
+import { Route as AdminDashboardFormationsIdEditRouteImport } from './routes/admin/dashboard/formations/$id/edit'
 
 const TestimonialsRoute = TestimonialsRouteImport.update({
   id: '/testimonials',
@@ -48,6 +52,11 @@ const FormationsIndexRoute = FormationsIndexRouteImport.update({
   path: '/formations/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FormationsIdIndexRoute = FormationsIdIndexRouteImport.update({
   id: '/formations/$id/',
   path: '/formations/$id/',
@@ -58,6 +67,24 @@ const FormationsIdSessionsRoute = FormationsIdSessionsRouteImport.update({
   path: '/formations/$id/sessions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDashboardFormationsIndexRoute =
+  AdminDashboardFormationsIndexRouteImport.update({
+    id: '/admin/dashboard/formations/',
+    path: '/admin/dashboard/formations/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminDashboardFormationsNewRoute =
+  AdminDashboardFormationsNewRouteImport.update({
+    id: '/admin/dashboard/formations/new',
+    path: '/admin/dashboard/formations/new',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminDashboardFormationsIdEditRoute =
+  AdminDashboardFormationsIdEditRouteImport.update({
+    id: '/admin/dashboard/formations/$id/edit',
+    path: '/admin/dashboard/formations/$id/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,9 +92,13 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
+  '/admin': typeof AdminIndexRoute
   '/formations': typeof FormationsIndexRoute
   '/formations/$id/sessions': typeof FormationsIdSessionsRoute
   '/formations/$id': typeof FormationsIdIndexRoute
+  '/admin/dashboard/formations/new': typeof AdminDashboardFormationsNewRoute
+  '/admin/dashboard/formations': typeof AdminDashboardFormationsIndexRoute
+  '/admin/dashboard/formations/$id/edit': typeof AdminDashboardFormationsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,9 +106,13 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
+  '/admin': typeof AdminIndexRoute
   '/formations': typeof FormationsIndexRoute
   '/formations/$id/sessions': typeof FormationsIdSessionsRoute
   '/formations/$id': typeof FormationsIdIndexRoute
+  '/admin/dashboard/formations/new': typeof AdminDashboardFormationsNewRoute
+  '/admin/dashboard/formations': typeof AdminDashboardFormationsIndexRoute
+  '/admin/dashboard/formations/$id/edit': typeof AdminDashboardFormationsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,9 +121,13 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/testimonials': typeof TestimonialsRoute
+  '/admin/': typeof AdminIndexRoute
   '/formations/': typeof FormationsIndexRoute
   '/formations/$id/sessions': typeof FormationsIdSessionsRoute
   '/formations/$id/': typeof FormationsIdIndexRoute
+  '/admin/dashboard/formations/new': typeof AdminDashboardFormationsNewRoute
+  '/admin/dashboard/formations/': typeof AdminDashboardFormationsIndexRoute
+  '/admin/dashboard/formations/$id/edit': typeof AdminDashboardFormationsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -98,9 +137,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/login'
     | '/testimonials'
+    | '/admin'
     | '/formations'
     | '/formations/$id/sessions'
     | '/formations/$id'
+    | '/admin/dashboard/formations/new'
+    | '/admin/dashboard/formations'
+    | '/admin/dashboard/formations/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -108,9 +151,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/login'
     | '/testimonials'
+    | '/admin'
     | '/formations'
     | '/formations/$id/sessions'
     | '/formations/$id'
+    | '/admin/dashboard/formations/new'
+    | '/admin/dashboard/formations'
+    | '/admin/dashboard/formations/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -118,9 +165,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/login'
     | '/testimonials'
+    | '/admin/'
     | '/formations/'
     | '/formations/$id/sessions'
     | '/formations/$id/'
+    | '/admin/dashboard/formations/new'
+    | '/admin/dashboard/formations/'
+    | '/admin/dashboard/formations/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -129,9 +180,13 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   LoginRoute: typeof LoginRoute
   TestimonialsRoute: typeof TestimonialsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
   FormationsIdSessionsRoute: typeof FormationsIdSessionsRoute
   FormationsIdIndexRoute: typeof FormationsIdIndexRoute
+  AdminDashboardFormationsNewRoute: typeof AdminDashboardFormationsNewRoute
+  AdminDashboardFormationsIndexRoute: typeof AdminDashboardFormationsIndexRoute
+  AdminDashboardFormationsIdEditRoute: typeof AdminDashboardFormationsIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/formations/$id/': {
       id: '/formations/$id/'
       path: '/formations/$id'
@@ -192,6 +254,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormationsIdSessionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/dashboard/formations/': {
+      id: '/admin/dashboard/formations/'
+      path: '/admin/dashboard/formations'
+      fullPath: '/admin/dashboard/formations'
+      preLoaderRoute: typeof AdminDashboardFormationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/dashboard/formations/new': {
+      id: '/admin/dashboard/formations/new'
+      path: '/admin/dashboard/formations/new'
+      fullPath: '/admin/dashboard/formations/new'
+      preLoaderRoute: typeof AdminDashboardFormationsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/dashboard/formations/$id/edit': {
+      id: '/admin/dashboard/formations/$id/edit'
+      path: '/admin/dashboard/formations/$id/edit'
+      fullPath: '/admin/dashboard/formations/$id/edit'
+      preLoaderRoute: typeof AdminDashboardFormationsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -201,9 +284,13 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   LoginRoute: LoginRoute,
   TestimonialsRoute: TestimonialsRoute,
+  AdminIndexRoute: AdminIndexRoute,
   FormationsIndexRoute: FormationsIndexRoute,
   FormationsIdSessionsRoute: FormationsIdSessionsRoute,
   FormationsIdIndexRoute: FormationsIdIndexRoute,
+  AdminDashboardFormationsNewRoute: AdminDashboardFormationsNewRoute,
+  AdminDashboardFormationsIndexRoute: AdminDashboardFormationsIndexRoute,
+  AdminDashboardFormationsIdEditRoute: AdminDashboardFormationsIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

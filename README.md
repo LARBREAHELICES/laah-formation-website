@@ -159,3 +159,9 @@ Critères d’acceptation (Definition of Done)
 
 Temps estimé  
 - 30 min si l'API fonctionne et que le projet React Router est déjà configuré.
+
+
+## Endpoint
+
+Fonction d'ajout, de suppresion et de modification pour la gestion des formations 
+et des users dans le dashboard
