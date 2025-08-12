@@ -18,3 +18,5 @@ coverage/
 .vite/
 
 apps/front/.pnpm-store
+
+apps/front/src/routeTree.gen.ts
