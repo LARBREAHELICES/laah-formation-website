@@ -1,10 +1,11 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from fastapi.responses import JSONResponse
 
 from app.models.User import User
+from app.schemas.schema_app import UserInDB
 from app.schemas.schema_app import UserRequest
 from app.services.AuthService import AuthService
 from app.dependency import get_auth_service, get_current_active_user
@@ -31,6 +32,7 @@ async def login_for_access_token(
     access_token = auth_service.create_access_token(
         user, expires_delta=access_token_expires
     )
+    
 
     # Réponse JSON + Cookie HTTPOnly
     response = JSONResponse(content={
@@ -45,21 +47,22 @@ async def login_for_access_token(
         httponly=True,
         secure=settings.env == "production",  # HTTP en dev, HTTPS en prod
         samesite="strict",
-        max_age=settings.access_token_expire_minutes * 60
+        max_age=settings.access_token_expire_minutes * 60,
+        path="/api",
     )
+    
+    
     return response
 
-
-@router.get("/users/me", response_model=User)
+@router.get("/auth/me", response_model=UserInDB)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):
     return current_user
 
-
-@router.get("/users/me/items")
+@router.get("/auth/me/items")
 async def read_own_items(
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
 ):
     return [{
         "owner": current_user.username,

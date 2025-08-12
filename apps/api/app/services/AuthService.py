@@ -11,7 +11,6 @@ from app.schemas.schema_app import TokenData, UserInDB
 from app.models.User import User
 from app.Settings import settings
 
-
 class AuthService:
     def __init__(self, session: Session) -> None:
         self.session = session

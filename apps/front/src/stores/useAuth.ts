@@ -1,118 +1,72 @@
 import { create } from "zustand"
-import {  type AuthState } from "@/types/UserType"
 
 const apiUrl = import.meta.env.VITE_API_URL
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  user: null,
-  accessToken: null,
-  error: null,
-  hasCheckedAuth: false,
-  isLoadingAuth: true, // ← nouvelle clé
+type User = {
+  id: string;
+  email: string;
+  username: string;
+  fullname: string;
+  roles: string[];
+};
 
-  login: async (username: string, password: string) => {
+type AuthState = {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  login: (username: string, password: string) => Promise<void>;
+  fetchMe: () => Promise<void>;
+  logout: () => Promise<void>;
+};
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isLoading: false,
+  error: null,
+
+  login: async (username :string, password : string) => {
+    set({ isLoading: true, error: null });
+    console.log(JSON.stringify({ username, password }))
     try {
-      const res = await fetch(`${apiUrl}/auth/token`, {
+      const res = await fetch(`${apiUrl}/token`, {
         method: "POST",
+        credentials: "include", // indispensable pour HttpOnly cookie
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
-        credentials: "include", // pour récupérer cookie refresh_token
-      })
+      });
 
-      if (!res.ok) throw new Error("Identifiants incorrects")
+      if (!res.ok) throw new Error("Invalid credentials");
 
-      const data = await res.json()
-
-      set({
-        user: {
-          username: data.user,
-          role: data.roles ? [ ...data.roles ] : null, // si vous gérez les rôles
-        },
-        accessToken: data.access_token,
-        error: null,
-        isLoadingAuth: false, // Authentification terminée
-      })
-
-      return true
-
+      // Après login, on recharge le profil
+      await useAuthStore.getState().fetchMe();
     } catch (err: any) {
-      set({ error: err.message || "Erreur lors de la connexion" })
-      return false
+      set({ error: err.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchMe: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await fetch(`${apiUrl}/auth/me`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Unable to fetch user");
+      const data: User = await res.json();
+      set({ user: data });
+    } catch (err: any) {
+      set({ user: null, error: err.message });
+    } finally {
+      set({ isLoading: false });
     }
   },
 
   logout: async () => {
-    try {
-      await fetch(`${apiUrl}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      })
-      set({ user: null, accessToken: null, error: null, hasCheckedAuth: false })
-    } catch {
-      set({ user: null, accessToken: null, error: "Erreur lors de la déconnexion", hasCheckedAuth: false })
-    }
-  },
-
-  checkAuth: async () => {
-    try {
-      const res = await fetch(`${apiUrl}/auth/me`, {
-        method: "GET",
-        credentials: "include", // important pour envoyer le cookie
-      })
-  
-      if (!res.ok) {
-        // Pas connecté ou refresh token invalide
-        set({ user: null, accessToken: null, error: "Non authentifié", isLoadingAuth: false })
-        return null
-      }
-
-      const data = await res.json()
-
-      const user = {
-        username: data.username,
-        role: data.roles || null,
-      }
-  
-      set({
-        user,
-        accessToken: data.access_token,
-        error: null,
-        isLoadingAuth: false,
-      })
-  
-      return user // Retourne l'utilisateur authentifié
-  
-    } catch (err) {
-      set({ user: null, accessToken: null, error: "Erreur lors de la vérification", isLoadingAuth: false })
-      return null
-    }
-  },
-
-  refresh: async () => {
-    try {
-      const res = await fetch(`${apiUrl}/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      })
-
-      if (!res.ok) return false
-
-      const data = await res.json() // data.access_token, data.user
-
-      set({
-        accessToken: data.access_token,
-        user: {
-          username: data.user.username,
-          role: data.role.name || null, // si vous gérez les rôles
-        },
-        error: null,
-      })
-
-      return true
-
-    } catch (err) {
-      set({ user: null, accessToken: null, error: "Échec du refresh", hasCheckedAuth: false })
-      return false
-    }
+    await fetch(`${apiUrl}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    set({ user: null });
   },
 }))
