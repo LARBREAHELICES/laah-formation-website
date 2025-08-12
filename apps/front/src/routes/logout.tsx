@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useAuthStore } from '@/stores/useAuth' // adapte le chemin
 
-export const Route = createFileRoute('/logouttest')({
+export const Route = createFileRoute('/logout')({
   component: RouteComponent,
 })
 

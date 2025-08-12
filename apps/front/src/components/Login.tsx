@@ -1,17 +1,28 @@
 'use client'
 
 import { useState } from 'react'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useAuthStore } from "@/stores/useAuth";
+
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(false)
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const login = useAuthStore((s) => s.login);
+  const error = useAuthStore((s) => s.error);
+  const isLoading = useAuthStore((s) => s.isLoading);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Login avec', { email, password, rememberMe })
-  }
 
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await login(username, password);
+    if (useAuthStore.getState().user) {
+      navigate({ to: "/dashboard" });
+    }
+  };
+
+  
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 py-32 sm:py-40">
       <div
@@ -42,14 +53,14 @@ export default function Login() {
         <div className="rounded-2xl shadow-2xl bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Adresse e-mail
+              <label htmlFor="text" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Username
               </label>
               <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 placeholder="vous@example.com"
                 className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:text-white dark:placeholder-gray-400"
@@ -70,22 +81,10 @@ export default function Login() {
                 className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:text-white dark:placeholder-gray-400"
               />
              
-           <div className="mt-6 flex items-center justify-between">
-            <label className="flex items-center space-x-2">
-              <input
-                  id="remember"
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                              />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Rester connecté</span>
-            </label>
-
                 <a href="#" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
                   Mot de passe oublié ?
                 </a>
-            </div>
+            
             </div>
             <button
               type="submit"
@@ -112,7 +111,6 @@ export default function Login() {
           }}
         />
       </div>
-      
     </section>
   )
 }

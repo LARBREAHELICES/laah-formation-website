@@ -2,7 +2,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import DashboardFormations from '@/pages/DashBoardFormations'
 
-export const Route = createFileRoute('/admin/dashboard/formations/')({
+export const Route = createFileRoute('/_authenticated/crud/formations/')({
   component: RouteComponent,
 })
 

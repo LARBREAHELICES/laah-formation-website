@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-from fastapi import APIRouter, Depends, Request
-=======
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
->>>>>>> 01e7d4089682a32ed15219ef6048fee3fa02d7a4
 
 
 from typing import  List
