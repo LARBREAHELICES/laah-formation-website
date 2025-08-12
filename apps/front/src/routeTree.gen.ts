@@ -9,28 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LogouttestRouteImport } from './routes/logouttest'
-import { Route as DashboardtestRouteImport } from './routes/dashboardtest'
-import { Route as AuthtestRouteImport } from './routes/authtest'
+import { Route as TestimonialsRouteImport } from './routes/testimonials'
+import { Route as LogoutRouteImport } from './routes/logout'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FormationsIndexRouteImport } from './routes/formations/index'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as FormationsIdIndexRouteImport } from './routes/formations/$id/index'
+import { Route as FormationsIdSessionsRouteImport } from './routes/formations/$id/sessions'
+import { Route as AuthenticatedCrudFormationsIndexRouteImport } from './routes/_authenticated/crud/formations/index'
+import { Route as AuthenticatedCrudFormationsNewRouteImport } from './routes/_authenticated/crud/formations/new'
+import { Route as AuthenticatedCrudFormationsIdEditRouteImport } from './routes/_authenticated/crud/formations/$id/edit'
 
-const LogouttestRoute = LogouttestRouteImport.update({
-  id: '/logouttest',
-  path: '/logouttest',
+const TestimonialsRoute = TestimonialsRouteImport.update({
+  id: '/testimonials',
+  path: '/testimonials',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardtestRoute = DashboardtestRouteImport.update({
-  id: '/dashboardtest',
-  path: '/dashboardtest',
+const LogoutRoute = LogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthtestRoute = AuthtestRouteImport.update({
-  id: '/authtest',
-  path: '/authtest',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -47,6 +59,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormationsIndexRoute = FormationsIndexRouteImport.update({
+  id: '/formations/',
+  path: '/formations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -57,97 +74,178 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const FormationsIdIndexRoute = FormationsIdIndexRouteImport.update({
+  id: '/formations/$id/',
+  path: '/formations/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormationsIdSessionsRoute = FormationsIdSessionsRouteImport.update({
+  id: '/formations/$id/sessions',
+  path: '/formations/$id/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCrudFormationsIndexRoute =
+  AuthenticatedCrudFormationsIndexRouteImport.update({
+    id: '/crud/formations/',
+    path: '/crud/formations/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCrudFormationsNewRoute =
+  AuthenticatedCrudFormationsNewRouteImport.update({
+    id: '/crud/formations/new',
+    path: '/crud/formations/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCrudFormationsIdEditRoute =
+  AuthenticatedCrudFormationsIdEditRouteImport.update({
+    id: '/crud/formations/$id/edit',
+    path: '/crud/formations/$id/edit',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/authtest': typeof AuthtestRoute
-  '/dashboardtest': typeof DashboardtestRoute
-  '/logouttest': typeof LogouttestRoute
+  '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
+  '/testimonials': typeof TestimonialsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/formations': typeof FormationsIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
+  '/formations/$id': typeof FormationsIdIndexRoute
+  '/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
+  '/crud/formations': typeof AuthenticatedCrudFormationsIndexRoute
+  '/crud/formations/$id/edit': typeof AuthenticatedCrudFormationsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/authtest': typeof AuthtestRoute
-  '/dashboardtest': typeof DashboardtestRoute
-  '/logouttest': typeof LogouttestRoute
+  '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
+  '/testimonials': typeof TestimonialsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/formations': typeof FormationsIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
+  '/formations/$id': typeof FormationsIdIndexRoute
+  '/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
+  '/crud/formations': typeof AuthenticatedCrudFormationsIndexRoute
+  '/crud/formations/$id/edit': typeof AuthenticatedCrudFormationsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
-  '/authtest': typeof AuthtestRoute
-  '/dashboardtest': typeof DashboardtestRoute
-  '/logouttest': typeof LogouttestRoute
+  '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
+  '/testimonials': typeof TestimonialsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/formations/': typeof FormationsIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
+  '/formations/$id/': typeof FormationsIdIndexRoute
+  '/_authenticated/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
+  '/_authenticated/crud/formations/': typeof AuthenticatedCrudFormationsIndexRoute
+  '/_authenticated/crud/formations/$id/edit': typeof AuthenticatedCrudFormationsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
-    | '/authtest'
-    | '/dashboardtest'
-    | '/logouttest'
+    | '/contact'
+    | '/login'
+    | '/logout'
+    | '/testimonials'
     | '/dashboard'
     | '/profil'
+    | '/formations'
+    | '/formations/$id/sessions'
+    | '/formations/$id'
+    | '/crud/formations/new'
+    | '/crud/formations'
+    | '/crud/formations/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/authtest'
-    | '/dashboardtest'
-    | '/logouttest'
+    | '/contact'
+    | '/login'
+    | '/logout'
+    | '/testimonials'
     | '/dashboard'
     | '/profil'
+    | '/formations'
+    | '/formations/$id/sessions'
+    | '/formations/$id'
+    | '/crud/formations/new'
+    | '/crud/formations'
+    | '/crud/formations/$id/edit'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/about'
-    | '/authtest'
-    | '/dashboardtest'
-    | '/logouttest'
+    | '/contact'
+    | '/login'
+    | '/logout'
+    | '/testimonials'
     | '/_authenticated/dashboard'
     | '/_authenticated/profil'
+    | '/formations/'
+    | '/formations/$id/sessions'
+    | '/formations/$id/'
+    | '/_authenticated/crud/formations/new'
+    | '/_authenticated/crud/formations/'
+    | '/_authenticated/crud/formations/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AuthtestRoute: typeof AuthtestRoute
-  DashboardtestRoute: typeof DashboardtestRoute
-  LogouttestRoute: typeof LogouttestRoute
+  ContactRoute: typeof ContactRoute
+  LoginRoute: typeof LoginRoute
+  LogoutRoute: typeof LogoutRoute
+  TestimonialsRoute: typeof TestimonialsRoute
+  FormationsIndexRoute: typeof FormationsIndexRoute
+  FormationsIdSessionsRoute: typeof FormationsIdSessionsRoute
+  FormationsIdIndexRoute: typeof FormationsIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/logouttest': {
-      id: '/logouttest'
-      path: '/logouttest'
-      fullPath: '/logouttest'
-      preLoaderRoute: typeof LogouttestRouteImport
+    '/testimonials': {
+      id: '/testimonials'
+      path: '/testimonials'
+      fullPath: '/testimonials'
+      preLoaderRoute: typeof TestimonialsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboardtest': {
-      id: '/dashboardtest'
-      path: '/dashboardtest'
-      fullPath: '/dashboardtest'
-      preLoaderRoute: typeof DashboardtestRouteImport
+    '/logout': {
+      id: '/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof LogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/authtest': {
-      id: '/authtest'
-      path: '/authtest'
-      fullPath: '/authtest'
-      preLoaderRoute: typeof AuthtestRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -171,6 +269,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/formations/': {
+      id: '/formations/'
+      path: '/formations'
+      fullPath: '/formations'
+      preLoaderRoute: typeof FormationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/profil': {
       id: '/_authenticated/profil'
       path: '/profil'
@@ -185,17 +290,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/formations/$id/': {
+      id: '/formations/$id/'
+      path: '/formations/$id'
+      fullPath: '/formations/$id'
+      preLoaderRoute: typeof FormationsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/formations/$id/sessions': {
+      id: '/formations/$id/sessions'
+      path: '/formations/$id/sessions'
+      fullPath: '/formations/$id/sessions'
+      preLoaderRoute: typeof FormationsIdSessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/crud/formations/': {
+      id: '/_authenticated/crud/formations/'
+      path: '/crud/formations'
+      fullPath: '/crud/formations'
+      preLoaderRoute: typeof AuthenticatedCrudFormationsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crud/formations/new': {
+      id: '/_authenticated/crud/formations/new'
+      path: '/crud/formations/new'
+      fullPath: '/crud/formations/new'
+      preLoaderRoute: typeof AuthenticatedCrudFormationsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crud/formations/$id/edit': {
+      id: '/_authenticated/crud/formations/$id/edit'
+      path: '/crud/formations/$id/edit'
+      fullPath: '/crud/formations/$id/edit'
+      preLoaderRoute: typeof AuthenticatedCrudFormationsIdEditRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedCrudFormationsNewRoute: typeof AuthenticatedCrudFormationsNewRoute
+  AuthenticatedCrudFormationsIndexRoute: typeof AuthenticatedCrudFormationsIndexRoute
+  AuthenticatedCrudFormationsIdEditRoute: typeof AuthenticatedCrudFormationsIdEditRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedCrudFormationsNewRoute: AuthenticatedCrudFormationsNewRoute,
+  AuthenticatedCrudFormationsIndexRoute: AuthenticatedCrudFormationsIndexRoute,
+  AuthenticatedCrudFormationsIdEditRoute:
+    AuthenticatedCrudFormationsIdEditRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -206,9 +353,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
-  AuthtestRoute: AuthtestRoute,
-  DashboardtestRoute: DashboardtestRoute,
-  LogouttestRoute: LogouttestRoute,
+  ContactRoute: ContactRoute,
+  LoginRoute: LoginRoute,
+  LogoutRoute: LogoutRoute,
+  TestimonialsRoute: TestimonialsRoute,
+  FormationsIndexRoute: FormationsIndexRoute,
+  FormationsIdSessionsRoute: FormationsIdSessionsRoute,
+  FormationsIdIndexRoute: FormationsIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

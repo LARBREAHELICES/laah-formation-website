@@ -1,7 +1,7 @@
-// src/stores/formationStore.ts
 import { create } from "zustand"
 
 const apiUrl = import.meta.env.VITE_API_URL
+
 
 export interface Formation {
   id: string;
@@ -15,6 +15,7 @@ export interface Formation {
   evaluation_methods: string;
   qualiopi_certificate_number: string;
   qualiopi_certificate_date: string;
+  rate: string;
   sessions: any[];
   modules: any[];
   trainers: any[];
@@ -56,7 +57,10 @@ export const useFormationStore = create<FormationState>((set) => ({
       const data = await res.json();
       set({ formation: data, loading: false });
     } catch (err: any) {
+      console.log("Fetching:", `${apiUrl}/formations/${id}`);
+
       set({ error: err.message || "Erreur", loading: false });
     }
   },
+  
 }))
