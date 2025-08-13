@@ -6,7 +6,7 @@ import { useFormationStore } from '@/stores/useFormation';
 import { Link } from '@tanstack/react-router';
 
 export default function FormationSessionsPage() {
-  const { id } = useParams({ from: '/formations/$id/sessions' });
+  const { id } = useParams({ from: '/formations/$id/sessions/' });
   const { formation, fetchFormation, loading, error } = useFormationStore();
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function FormationSessionsPage() {
                 {/* Bouton inscription */}
                 <div className="flex justify-end items-start lg:items-center">
                   <Link
-                    to={`/formations/${id}/sessions/`}
+                    to ={`/formations/${id}/sessions/${session.id}/register`}
                     className="inline-block whitespace-nowrap px-5 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-500 text-black font-semibold transition"
                   >
                     S'inscrire

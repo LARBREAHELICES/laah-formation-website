@@ -1,11 +1,14 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useUserStore } from '@/stores/useUser'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
 
-export default function NewUserPage() {
+export default function EditUserPage() {
   const navigate = useNavigate()
-  const { addUser } = useUserStore()
+  const { id } = useParams({ from: '/_authenticated/crud/users/$id/edit' }) 
+  const { users, updateUser } = useUserStore()
+
+  const existingUser = users.find(u => u.id === id)
 
   const [formData, setFormData] = useState({
     id: '',
@@ -19,6 +22,20 @@ export default function NewUserPage() {
     roles: [] as string[],
     formations: [] as string[],
   })
+
+  useEffect(() => {
+    if (existingUser) {
+      setFormData({
+        ...existingUser,
+        created_at: existingUser.created_at
+          ? new Date(existingUser.created_at).toISOString().slice(0, 16)
+          : '',
+        updated_at: existingUser.updated_at
+          ? new Date(existingUser.updated_at).toISOString().slice(0, 16)
+          : '',
+      })
+    }
+  }, [existingUser])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -50,15 +67,19 @@ export default function NewUserPage() {
     const payload = {
       ...formData,
       created_at: formData.created_at ? new Date(formData.created_at) : new Date(),
-      updated_at: formData.updated_at ? new Date(formData.updated_at) : new Date(),
+      updated_at: new Date(),
     }
-    addUser(payload)
+    updateUser(payload)
     navigate({ to: '/crud/users' })
+  }
+
+  if (!existingUser) {
+    return <p className="text-center text-red-500 py-10">Utilisateur introuvable.</p>
   }
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-      {/* Background shapes */}
+      {/* Dégradé haut */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
@@ -74,16 +95,16 @@ export default function NewUserPage() {
 
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <h1 className="text-3xl font-bold mb-10 text-gray-900 dark:text-white text-center">
-          Nouvel Utilisateur
+          Modifier Utilisateur
         </h1>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl rounded-2xl p-8 space-y-10 border border-gray-100 dark:border-gray-700"
+          className="bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-8 space-y-10 border border-gray-200 dark:border-gray-800"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
-              { name: 'id', placeholder: 'ID' },
+              { name: 'id', placeholder: 'ID', readOnly: true },
               { name: 'email', placeholder: 'Email', type: 'email' },
               { name: 'username', placeholder: 'Nom d’utilisateur' },
               { name: 'fullname', placeholder: 'Nom complet' },
@@ -114,6 +135,7 @@ export default function NewUserPage() {
                   placeholder={field.placeholder}
                   value={(formData as any)[field.name]}
                   onChange={handleChange}
+                  readOnly={field.readOnly}
                   className="border rounded-lg p-2 w-full text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 />
               )
@@ -134,7 +156,7 @@ export default function NewUserPage() {
                 <button
                   type="button"
                   onClick={() => removeArrayItem('roles', idx)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 rounded-lg text-sm"
+                  className="bg-red-600 hover:bg-red-500 text-white px-3 rounded-md text-sm"
                 >
                   X
                 </button>
@@ -143,7 +165,7 @@ export default function NewUserPage() {
             <button
               type="button"
               onClick={() => addArrayItem('roles')}
-              className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-1 rounded-lg text-sm"
+              className="mt-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-sm"
             >
               + Ajouter rôle
             </button>
@@ -163,7 +185,7 @@ export default function NewUserPage() {
                 <button
                   type="button"
                   onClick={() => removeArrayItem('formations', idx)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 rounded-lg text-sm"
+                  className="bg-red-600 hover:bg-red-500 text-white px-3 rounded-md text-sm"
                 >
                   X
                 </button>
@@ -172,7 +194,7 @@ export default function NewUserPage() {
             <button
               type="button"
               onClick={() => addArrayItem('formations')}
-              className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-1 rounded-lg text-sm"
+              className="mt-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-sm"
             >
               + Ajouter formation
             </button>
@@ -181,15 +203,15 @@ export default function NewUserPage() {
           <div className="text-center">
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-medium"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium"
             >
-              Enregistrer l’utilisateur
+              Mettre à jour l’utilisateur
             </button>
           </div>
         </form>
       </div>
 
-      {/* Bottom background shape */}
+      {/* Dégradé bas */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"

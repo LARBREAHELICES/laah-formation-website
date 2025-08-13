@@ -20,11 +20,13 @@ import { Route as FormationsIndexRouteImport } from './routes/formations/index'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as FormationsIdIndexRouteImport } from './routes/formations/$id/index'
-import { Route as FormationsIdSessionsRouteImport } from './routes/formations/$id/sessions'
+import { Route as FormationsIdSessionsIndexRouteImport } from './routes/formations/$id/sessions/index'
 import { Route as AuthenticatedCrudUsersIndexRouteImport } from './routes/_authenticated/crud/users/index'
 import { Route as AuthenticatedCrudFormationsIndexRouteImport } from './routes/_authenticated/crud/formations/index'
 import { Route as AuthenticatedCrudUsersNewRouteImport } from './routes/_authenticated/crud/users/new'
 import { Route as AuthenticatedCrudFormationsNewRouteImport } from './routes/_authenticated/crud/formations/new'
+import { Route as FormationsIdSessionsSessionIdRegisterRouteImport } from './routes/formations/$id/sessions/$sessionId/register'
+import { Route as AuthenticatedCrudUsersIdEditRouteImport } from './routes/_authenticated/crud/users/$id/edit'
 import { Route as AuthenticatedCrudFormationsIdEditRouteImport } from './routes/_authenticated/crud/formations/$id/edit'
 
 const TestimonialsRoute = TestimonialsRouteImport.update({
@@ -81,11 +83,12 @@ const FormationsIdIndexRoute = FormationsIdIndexRouteImport.update({
   path: '/formations/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FormationsIdSessionsRoute = FormationsIdSessionsRouteImport.update({
-  id: '/formations/$id/sessions',
-  path: '/formations/$id/sessions',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const FormationsIdSessionsIndexRoute =
+  FormationsIdSessionsIndexRouteImport.update({
+    id: '/formations/$id/sessions/',
+    path: '/formations/$id/sessions/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedCrudUsersIndexRoute =
   AuthenticatedCrudUsersIndexRouteImport.update({
     id: '/crud/users/',
@@ -110,6 +113,18 @@ const AuthenticatedCrudFormationsNewRoute =
     path: '/crud/formations/new',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const FormationsIdSessionsSessionIdRegisterRoute =
+  FormationsIdSessionsSessionIdRegisterRouteImport.update({
+    id: '/formations/$id/sessions/$sessionId/register',
+    path: '/formations/$id/sessions/$sessionId/register',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedCrudUsersIdEditRoute =
+  AuthenticatedCrudUsersIdEditRouteImport.update({
+    id: '/crud/users/$id/edit',
+    path: '/crud/users/$id/edit',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedCrudFormationsIdEditRoute =
   AuthenticatedCrudFormationsIdEditRouteImport.update({
     id: '/crud/formations/$id/edit',
@@ -127,13 +142,15 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/formations': typeof FormationsIndexRoute
-  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
   '/formations/$id': typeof FormationsIdIndexRoute
   '/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
   '/crud/users/new': typeof AuthenticatedCrudUsersNewRoute
   '/crud/formations': typeof AuthenticatedCrudFormationsIndexRoute
   '/crud/users': typeof AuthenticatedCrudUsersIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsIndexRoute
   '/crud/formations/$id/edit': typeof AuthenticatedCrudFormationsIdEditRoute
+  '/crud/users/$id/edit': typeof AuthenticatedCrudUsersIdEditRoute
+  '/formations/$id/sessions/$sessionId/register': typeof FormationsIdSessionsSessionIdRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -145,13 +162,15 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/formations': typeof FormationsIndexRoute
-  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
   '/formations/$id': typeof FormationsIdIndexRoute
   '/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
   '/crud/users/new': typeof AuthenticatedCrudUsersNewRoute
   '/crud/formations': typeof AuthenticatedCrudFormationsIndexRoute
   '/crud/users': typeof AuthenticatedCrudUsersIndexRoute
+  '/formations/$id/sessions': typeof FormationsIdSessionsIndexRoute
   '/crud/formations/$id/edit': typeof AuthenticatedCrudFormationsIdEditRoute
+  '/crud/users/$id/edit': typeof AuthenticatedCrudUsersIdEditRoute
+  '/formations/$id/sessions/$sessionId/register': typeof FormationsIdSessionsSessionIdRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -165,13 +184,15 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/formations/': typeof FormationsIndexRoute
-  '/formations/$id/sessions': typeof FormationsIdSessionsRoute
   '/formations/$id/': typeof FormationsIdIndexRoute
   '/_authenticated/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
   '/_authenticated/crud/users/new': typeof AuthenticatedCrudUsersNewRoute
   '/_authenticated/crud/formations/': typeof AuthenticatedCrudFormationsIndexRoute
   '/_authenticated/crud/users/': typeof AuthenticatedCrudUsersIndexRoute
+  '/formations/$id/sessions/': typeof FormationsIdSessionsIndexRoute
   '/_authenticated/crud/formations/$id/edit': typeof AuthenticatedCrudFormationsIdEditRoute
+  '/_authenticated/crud/users/$id/edit': typeof AuthenticatedCrudUsersIdEditRoute
+  '/formations/$id/sessions/$sessionId/register': typeof FormationsIdSessionsSessionIdRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -185,13 +206,15 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profil'
     | '/formations'
-    | '/formations/$id/sessions'
     | '/formations/$id'
     | '/crud/formations/new'
     | '/crud/users/new'
     | '/crud/formations'
     | '/crud/users'
+    | '/formations/$id/sessions'
     | '/crud/formations/$id/edit'
+    | '/crud/users/$id/edit'
+    | '/formations/$id/sessions/$sessionId/register'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -203,13 +226,15 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profil'
     | '/formations'
-    | '/formations/$id/sessions'
     | '/formations/$id'
     | '/crud/formations/new'
     | '/crud/users/new'
     | '/crud/formations'
     | '/crud/users'
+    | '/formations/$id/sessions'
     | '/crud/formations/$id/edit'
+    | '/crud/users/$id/edit'
+    | '/formations/$id/sessions/$sessionId/register'
   id:
     | '__root__'
     | '/'
@@ -222,13 +247,15 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/profil'
     | '/formations/'
-    | '/formations/$id/sessions'
     | '/formations/$id/'
     | '/_authenticated/crud/formations/new'
     | '/_authenticated/crud/users/new'
     | '/_authenticated/crud/formations/'
     | '/_authenticated/crud/users/'
+    | '/formations/$id/sessions/'
     | '/_authenticated/crud/formations/$id/edit'
+    | '/_authenticated/crud/users/$id/edit'
+    | '/formations/$id/sessions/$sessionId/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -240,8 +267,9 @@ export interface RootRouteChildren {
   LogoutRoute: typeof LogoutRoute
   TestimonialsRoute: typeof TestimonialsRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
-  FormationsIdSessionsRoute: typeof FormationsIdSessionsRoute
   FormationsIdIndexRoute: typeof FormationsIdIndexRoute
+  FormationsIdSessionsIndexRoute: typeof FormationsIdSessionsIndexRoute
+  FormationsIdSessionsSessionIdRegisterRoute: typeof FormationsIdSessionsSessionIdRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -323,11 +351,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormationsIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/formations/$id/sessions': {
-      id: '/formations/$id/sessions'
+    '/formations/$id/sessions/': {
+      id: '/formations/$id/sessions/'
       path: '/formations/$id/sessions'
       fullPath: '/formations/$id/sessions'
-      preLoaderRoute: typeof FormationsIdSessionsRouteImport
+      preLoaderRoute: typeof FormationsIdSessionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/crud/users/': {
@@ -358,6 +386,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrudFormationsNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/formations/$id/sessions/$sessionId/register': {
+      id: '/formations/$id/sessions/$sessionId/register'
+      path: '/formations/$id/sessions/$sessionId/register'
+      fullPath: '/formations/$id/sessions/$sessionId/register'
+      preLoaderRoute: typeof FormationsIdSessionsSessionIdRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/crud/users/$id/edit': {
+      id: '/_authenticated/crud/users/$id/edit'
+      path: '/crud/users/$id/edit'
+      fullPath: '/crud/users/$id/edit'
+      preLoaderRoute: typeof AuthenticatedCrudUsersIdEditRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/crud/formations/$id/edit': {
       id: '/_authenticated/crud/formations/$id/edit'
       path: '/crud/formations/$id/edit'
@@ -376,6 +418,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrudFormationsIndexRoute: typeof AuthenticatedCrudFormationsIndexRoute
   AuthenticatedCrudUsersIndexRoute: typeof AuthenticatedCrudUsersIndexRoute
   AuthenticatedCrudFormationsIdEditRoute: typeof AuthenticatedCrudFormationsIdEditRoute
+  AuthenticatedCrudUsersIdEditRoute: typeof AuthenticatedCrudUsersIdEditRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -387,6 +430,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCrudUsersIndexRoute: AuthenticatedCrudUsersIndexRoute,
   AuthenticatedCrudFormationsIdEditRoute:
     AuthenticatedCrudFormationsIdEditRoute,
+  AuthenticatedCrudUsersIdEditRoute: AuthenticatedCrudUsersIdEditRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -402,8 +446,10 @@ const rootRouteChildren: RootRouteChildren = {
   LogoutRoute: LogoutRoute,
   TestimonialsRoute: TestimonialsRoute,
   FormationsIndexRoute: FormationsIndexRoute,
-  FormationsIdSessionsRoute: FormationsIdSessionsRoute,
   FormationsIdIndexRoute: FormationsIdIndexRoute,
+  FormationsIdSessionsIndexRoute: FormationsIdSessionsIndexRoute,
+  FormationsIdSessionsSessionIdRegisterRoute:
+    FormationsIdSessionsSessionIdRegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
