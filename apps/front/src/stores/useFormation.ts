@@ -31,7 +31,7 @@ interface FormationState {
   fetchFormation: (id: string) => Promise<void>;
 }
 
-export const useFormationStore = create<FormationState>((set) => ({
+export const useFormationStore = create<FormationState>((set, get) => ({
   formations: [],
   formation: null,
   loading: false,
@@ -62,5 +62,75 @@ export const useFormationStore = create<FormationState>((set) => ({
       set({ error: err.message || "Erreur", loading: false });
     }
   },
-  
+  createFormation: async (formation: Formation) => {  
+    set({ loading: true });
+    try {
+      const res = await fetch(`${apiUrl}/formation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formation),
+      })
+      if (!res.ok) throw new Error("Failed to create planning");
+
+      const newFormation = await res.json()
+
+      set((state) => ({
+        formations: [...state.formations, newFormation],
+        loading: false,
+      }))
+    } catch (error) {
+      console.error("Error creating formation:", error)
+
+      set({ loading: false })
+    }
+  },
+  deleteFormation: async (id: string) => {
+    set({ loading: true });
+    try {
+      const res = await fetch(`${apiUrl}/formation/${id}`, {
+        method: "DELETE",
+        credentials: "include", // important pour envoyer le cookie
+      })
+      if (!res.ok) throw new Error("Failed to delete formation");
+
+      set((state) => ({
+        formations: state.foramtions.filter((p) => p.id !== id),
+        loading: false,
+      }))
+    } catch (error) {
+      console.error("Error deleting formation:", error)
+
+      set({ loading: false })
+    }
+  },
+  updateFormation: async (formation: Formation) => {
+    set({ loading: true });
+    try {
+      const res = await fetch(`${apiUrl}/formation/${formation.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formation),
+      })
+      if (!res.ok) throw new Error("Failed to update formation");
+
+      const updatedFormation = await res.json()
+
+      set((state) => ({
+        formations: state.formations.map((p) =>
+          p.id === updatedFormation.id ? updatedFormation : p
+        ),
+        loading: false,
+      }))
+    } catch (error) {
+      console.error("Error updating formation:", error)
+
+      set({ loading: false })
+    }
+  },
 }))

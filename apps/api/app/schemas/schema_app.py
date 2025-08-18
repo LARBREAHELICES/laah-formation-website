@@ -26,6 +26,7 @@ class ModuleRead(BaseModel):
     order_index: int
 
 class UserRead(BaseModel):
+    id: str
     fullname: str
     status : str
     
@@ -87,6 +88,7 @@ class UserInDB(BaseModel):
     id : str
     username: str
     roles : List[str] | None = None
+    scopes : List[str] | None = None
     
 class UserRequest(BaseModel):
     username: str
@@ -111,38 +113,37 @@ class FormationUpdate(BaseModel):
     total_amount: Optional[Decimal] = None
     classroom_student_counts: Optional[int] = None
     rate: Optional[Decimal] = None
-    tag_ids: Optional[List[str]] = None
-    module_ids: Optional[List[str]] = None
-    trainer_ids: Optional[List[str]] = None
-    session_ids: Optional[List[str]] = None
-    attachment_ids: Optional[List[str]] = None
-   
-class FormationBase(BaseModel):
-    title: str
-    slug: str
-    description: Optional[str] = None
-    objectives: Optional[str] = None
-    prerequisites: Optional[str] = None
-    duration_hours: Optional[int] = None
-    pedagogy_methods: Optional[str] = None
-    evaluation_methods: Optional[str] = None
-    qualiopi_certificate_number: Optional[str] = None
-    qualiopi_certificate_date: Optional[date] = None
-    prefecture_registration_number: Optional[str] = None
-    qualiopi_scope: Optional[str] = None
-    status: Optional[str] = None
-    order_number: Optional[str] = None
-    order_date: Optional[date] = None
-    total_amount: Optional[Decimal] = None
-    classroom_student_counts: Optional[int] = None
-    rate: Optional[Decimal] = None
-    tag_ids: Optional[List[str]] = None
-    module_ids: Optional[List[str]] = None
-    trainer_ids: Optional[List[str]] = None
-    session_ids: Optional[List[str]] = None
-    attachment_ids: Optional[List[str]] = None
-
+    tags: List[TagRead] = []
+    sessions: List[SessionRead] = []
+    modules: List[ModuleRead] = []
+    trainers: List[UserRead] = []
+    attachments: List[AttachmentRead] = []
     
-class FormationCreate(FormationBase):
+class FormationCreate(FormationUpdate):
     title: str
     slug: str
+
+class TagBase(BaseModel):
+    name: str
+
+class TagCreate(TagBase):
+    id: Optional[str] = None  # utile si on envoie déjà un ID
+
+class TagUpdate(BaseModel):
+    name: Optional[str] = None
+
+class ModuleBase(BaseModel):
+    title: str
+    duration_hours: int
+    description: str
+    order_index: Optional[int] = 0
+
+class ModuleCreate(ModuleBase):
+    id: Optional[str] = None  # utile si tu veux forcer un ID
+
+class ModuleUpdate(BaseModel):
+    title: Optional[str] = None
+    duration_hours: Optional[int] = None
+    description: Optional[str] = None
+    order_index: Optional[int] = None
+

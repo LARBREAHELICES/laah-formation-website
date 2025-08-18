@@ -44,7 +44,10 @@ class AuthService:
         return UserInDB(
             id=user.id,
             username=user.username,
-            roles=[role.name for role in user.roles] if user.roles else []
+            roles=[ role.name for role in user.roles ] if user.roles else [],
+            scopes=[
+               role.scopes for role in user.roles
+            ]
         )
     # -------- JWT --------
     def create_access_token(
@@ -56,6 +59,7 @@ class AuthService:
             "sub": user.username,
             "user_id": user.id,
             "roles": user.roles,
+            "scopes" : user.scopes,
             "exp": datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
         }
         return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
@@ -66,7 +70,8 @@ class AuthService:
             return TokenData(
                 username=payload.get("sub"),
                 user_id=payload.get("user_id"),
-                roles=payload.get("roles")
+                roles=payload.get("roles"),
+                scopes = payload.get("scopes")
             )
         except ExpiredSignatureError:
             return None
@@ -88,7 +93,8 @@ class AuthService:
         return UserInDB(
             id=user.id,
             username=user.username,
-            roles=[role.name for role in user.roles]
+            roles=[role.name for role in user.roles],
+            scopes = [role.scopes for role in user.roles]
         )
         
     def get_user_by_id(self, id: str) -> Optional[UserInDB]:

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TeststoreRouteImport } from './routes/teststore'
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
@@ -25,6 +26,11 @@ import { Route as AuthenticatedCrudFormationsIndexRouteImport } from './routes/_
 import { Route as AuthenticatedCrudFormationsNewRouteImport } from './routes/_authenticated/crud/formations/new'
 import { Route as AuthenticatedCrudFormationsIdEditRouteImport } from './routes/_authenticated/crud/formations/$id/edit'
 
+const TeststoreRoute = TeststoreRouteImport.update({
+  id: '/teststore',
+  path: '/teststore',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TestimonialsRoute = TestimonialsRouteImport.update({
   id: '/testimonials',
   path: '/testimonials',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/testimonials': typeof TestimonialsRoute
+  '/teststore': typeof TeststoreRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/formations': typeof FormationsIndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/testimonials': typeof TestimonialsRoute
+  '/teststore': typeof TeststoreRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/formations': typeof FormationsIndexRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/testimonials': typeof TestimonialsRoute
+  '/teststore': typeof TeststoreRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/formations/': typeof FormationsIndexRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/testimonials'
+    | '/teststore'
     | '/dashboard'
     | '/profil'
     | '/formations'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/testimonials'
+    | '/teststore'
     | '/dashboard'
     | '/profil'
     | '/formations'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/testimonials'
+    | '/teststore'
     | '/_authenticated/dashboard'
     | '/_authenticated/profil'
     | '/formations/'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   TestimonialsRoute: typeof TestimonialsRoute
+  TeststoreRoute: typeof TeststoreRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
   FormationsIdSessionsRoute: typeof FormationsIdSessionsRoute
   FormationsIdIndexRoute: typeof FormationsIdIndexRoute
@@ -220,6 +233,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/teststore': {
+      id: '/teststore'
+      path: '/teststore'
+      fullPath: '/teststore'
+      preLoaderRoute: typeof TeststoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/testimonials': {
       id: '/testimonials'
       path: '/testimonials'
@@ -357,6 +377,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   TestimonialsRoute: TestimonialsRoute,
+  TeststoreRoute: TeststoreRoute,
   FormationsIndexRoute: FormationsIndexRoute,
   FormationsIdSessionsRoute: FormationsIdSessionsRoute,
   FormationsIdIndexRoute: FormationsIdIndexRoute,

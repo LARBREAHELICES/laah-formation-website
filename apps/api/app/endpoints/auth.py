@@ -40,7 +40,8 @@ async def login_for_access_token(
         "message": "Login successful",
         "username": user.username,
         "id": user.id,
-        "roles": [role for role in user.roles ] if user.roles else []
+        "roles": [role for role in user.roles ] if user.roles else [],
+        "scopes": [scope for scope in user.scopes ] if user.scopes else [],
     })
     
     response.set_cookie(

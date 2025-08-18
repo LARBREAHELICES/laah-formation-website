@@ -4,8 +4,9 @@ from typing import Optional
 from app.services.AuthService import AuthService
 from app.database import get_db
 from app.schemas.schema_app import UserInDB
-from sqlmodel import select
-from datetime import datetime, timezone
+from datetime import datetime
+from fastapi.security import SecurityScopes
+from app.models.User import User
 
 def get_auth_service(session=Depends(get_db)) -> AuthService:
     return AuthService(session=session)
@@ -42,7 +43,8 @@ async def get_current_user(
     return UserInDB(
             id=user.id,
             username=user.username,
-            roles=[role for role in user.roles ]
+            roles=[role for role in user.roles ] if user.roles else [],
+            scopes = [ scope for scope in user.scopes ] if user.scopes else [] # TODO recupérer les roles.scopes à voir si on change le modèle 
         )
 
 
@@ -67,3 +69,27 @@ async def get_refresh_token_from_cookie(
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
 
     return db_token
+
+def check_scopes(
+    security_scopes: SecurityScopes,
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Vérifie que l'utilisateur a au moins un des scopes requis.
+    Règle spéciale : admin a toujours tous les droits.
+    """
+    # Si l'utilisateur est admin, il a tous les droits
+    if current_user.role == "admin":
+        return current_user
+
+    user_scopes = set(current_user.scopes.split())  # Ex: "formation:create formation:update"
+    required_scopes = set(security_scopes.scopes)
+
+    # Vérification stricte : tous les scopes requis doivent être présents
+    if not required_scopes.issubset(user_scopes):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Not enough permissions. Required: {', '.join(required_scopes)}"
+        )
+
+    return current_user

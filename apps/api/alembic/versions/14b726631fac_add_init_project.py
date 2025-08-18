@@ -83,13 +83,13 @@ def upgrade() -> None:
 
     # module
     module_tbl = op.create_table(
-        "module",
+    "module",
         sa.Column("id", sa.String(36), primary_key=True),
-        sa.Column("formation_id", sa.String(36), sa.ForeignKey("formation.id"), nullable=False),
+        sa.Column("formation_id", sa.String(36), sa.ForeignKey("formation.id", ondelete="SET NULL"), nullable=True),
         sa.Column("title", sa.String, nullable=False),
         sa.Column("duration_hours", sa.Integer, nullable=False),
         sa.Column("description", sa.String, nullable=False),
-        sa.Column("order_index", sa.Integer, default=0),
+    sa.Column("order_index", sa.Integer, default=0),
     )
 
     # ---------- table message ----------
@@ -107,7 +107,7 @@ def upgrade() -> None:
     attachment_tbl = op.create_table(
         "attachment",
         sa.Column("id", sa.String(36), primary_key=True),
-        sa.Column("formation_id", sa.String(36), sa.ForeignKey("formation.id"), nullable=False),
+        sa.Column("formation_id", sa.String(36), sa.ForeignKey("formation.id", ondelete="CASCADE"), nullable=False),
         sa.Column("label", sa.String, nullable=False),
         sa.Column("file_url", sa.String, nullable=False),
         sa.Column("file_type", sa.String, default="application/pdf"),
@@ -115,11 +115,13 @@ def upgrade() -> None:
     
 
     # link tables
+    # tables de liaison (pas de cascade pour garder les users et tags)
     op.create_table(
         "tag_formation_link",
         sa.Column("tag_id", sa.String(36), sa.ForeignKey("tag.id"), primary_key=True),
         sa.Column("formation_id", sa.String(36), sa.ForeignKey("formation.id"), primary_key=True),
     )
+    
     op.create_table(
         "user_formation_link",
         sa.Column("user_id", sa.String(36), sa.ForeignKey("user.id"), primary_key=True),
@@ -321,6 +323,14 @@ def upgrade() -> None:
          "email": "claire@example.com", "fullname": "Claire Docker", "status": "active", "role": "teacher"},
         {"id": teacher_ids[1],  "password" : hashed, "username" : "pierre", "email": "pierre@example.com", "fullname": "Pierre Python", "status": "active", "role": "teacher"},
     ])
+    
+    # formateurs (utilisateurs)
+    admin_ids = [base_id(), base_id()]
+    conn.execute(sa.insert(user_tbl), [
+        {"id": admin_ids[0], "username" : "antoine", "password" : hashed, 
+         "email": "antoine@example.com", "fullname": "Claire Docker", "status": "active", "role": "admin"},
+        {"id": admin_ids[1],  "password" : hashed, "username" : "emilien", "email": "emilien@example.com", "fullname": "Pierre Python", "status": "active", "role": "admin"},
+    ])
 
     # liens formateur ↔ formation
     conn.execute(sa.text("""
@@ -329,6 +339,7 @@ def upgrade() -> None:
     """), [
         {"user_id": teacher_ids[0], "formation_id": formations_sup[0]["id"]},
         {"user_id": teacher_ids[1], "formation_id": formations_sup[1]["id"]},
+       
     ])
     
         # ---------- 5. Attachments pour Docker et Python ----------
@@ -347,12 +358,32 @@ def upgrade() -> None:
         "role",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("name", sa.String(36), nullable=False, unique=True),
+        sa.Column("scopes", sa.Text(), nullable=False,  server_default="")  # ex: "items:read"
     )
-    role_ids = [base_id(), base_id()]
+    role_ids = [base_id(), base_id(),base_id() ]
     conn.execute(sa.insert(role_tbl), [
-        {"id": role_ids[0], "name": "teacher"},
-        {"id": role_ids[1], "name": "student"},
-    ])
+    {
+        "id": role_ids[0],
+        "name": "teacher",
+        "scopes": "formation:create formation:update formation:view "
+                  "module:create module:update module:view "
+                  "session:create session:update session:view"
+    },
+    {
+        "id": role_ids[1],
+        "name": "student",
+        "scopes": "formation:view module:view session:view attachment:view tag:view"
+    },
+    {
+        "id": role_ids[2],
+        "name": "admin",
+        "scopes": "formation:create formation:update formation:delete formation:view "
+                  "tag:create tag:update tag:delete tag:view "
+                  "module:create module:update module:delete module:view "
+                  "session:create session:update session:delete session:view "
+                  "attachment:create attachment:update attachment:delete attachment:view"
+    }
+])
     
     op.create_table(
         "user_role_link",
@@ -370,6 +401,8 @@ def upgrade() -> None:
         {"user_id": teacher_ids[1], "role_id": role_ids[0]},
         {"user_id": user_ids[0], "role_id": role_ids[1]},
         {"user_id": user_ids[1], "role_id": role_ids[1]},
+        {"user_id": admin_ids[0], "role_id": role_ids[2]},
+        {"user_id": admin_ids[1], "role_id": role_ids[2]},
     ])
 
 

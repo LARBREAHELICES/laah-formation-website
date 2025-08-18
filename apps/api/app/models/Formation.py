@@ -50,6 +50,6 @@ class Formation(SQLModel, table=True):  # type: ignore[misc] :
     attachments: List[Attachment] = Relationship(back_populates="formation")
     
     # --- Audit ------------------------------------------------------------
-    created_at: datetime = Field(default_factory=datetime.now())
-    updated_at: datetime = Field(default_factory=datetime.now())
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
     

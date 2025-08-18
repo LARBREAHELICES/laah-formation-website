@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Security
 from fastapi.responses import JSONResponse
 
-from typing import  List
+from typing import  List, Annotated
 from app.database import get_db
 from app.services.FormationService import FormationService
 from app.schemas.schema_app import FormationRead, FormationCreate, FormationUpdate
+
+from app.dependency import get_current_active_user, check_scopes
 
 from sqlmodel import Session
 
@@ -14,7 +16,9 @@ router = APIRouter(
 )
 
 @router.get("/formations", response_model=List[FormationRead])
-def all(session: Session = Depends(get_db)):
+def all(
+    session: Session = Depends(get_db),
+    ):
     
     formations = FormationService(session).all()
     
@@ -26,7 +30,8 @@ def all(session: Session = Depends(get_db)):
 @router.get("/formation/{id}", response_model=FormationRead)
 def get(
     id: str,
-    session: Session = Depends(get_db)):
+    session: Session = Depends(get_db),
+    ):
     
     formation = FormationService(session).get(id)
     
@@ -37,23 +42,40 @@ def get(
 
 
 # --- CREATE ---
-@router.post("/formation", response_model=FormationRead, status_code=201)
-def create(data: FormationCreate, session: Session = Depends(get_db)):
+@router.post(
+    "/formation", 
+    response_model=FormationRead, 
+    status_code=201
+    )
+def create(
+    data: FormationCreate, 
+    session: Session = Depends(get_db),
+    current_user = Security(check_scopes, scopes=["formation:create"])
+    ):
     formation = FormationService(session).create(data)
     
     return formation
 
 # --- UPDATE ---
 @router.put("/formation/{id}", response_model=FormationRead)
-def update(id: str, data: FormationUpdate, session: Session = Depends(get_db)):
+def update(
+    id: str, 
+    data: FormationUpdate, 
+    session: Session = Depends(get_db),
+    current_user = Security(check_scopes, scopes=["formation:update"])
+    ):
     formation = FormationService(session).update(id, data)
     if not formation:
-        return JSONResponse(status_code=404, content={"message": "Formation not found"})
+        raise HTTPException(status_code=404, detail="Formation not found")
     return formation
 
 # --- DELETE ---
 @router.delete("/formation/{id}", status_code=204)
-def delete(id: str, session: Session = Depends(get_db)):
+def delete(
+    id: str, 
+    session: Session = Depends(get_db),
+    current_user = Security(check_scopes, scopes=["formation:delete"])
+    ):
     deleted = FormationService(session).delete(id)
     if not deleted:
         return JSONResponse(status_code=404, content={"message": "Formation not found"})
