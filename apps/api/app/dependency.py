@@ -79,10 +79,12 @@ def check_scopes(
     Règle spéciale : admin a toujours tous les droits.
     """
     # Si l'utilisateur est admin, il a tous les droits
-    if current_user.role == "admin":
+    
+    
+    if  "admin" in current_user.roles:
         return current_user
-
-    user_scopes = set(current_user.scopes.split())  # Ex: "formation:create formation:update"
+    
+    user_scopes = set(current_user.roles[0].scopes.split())  # Ex: "formation:create formation:update"
     required_scopes = set(security_scopes.scopes)
 
     # Vérification stricte : tous les scopes requis doivent être présents
