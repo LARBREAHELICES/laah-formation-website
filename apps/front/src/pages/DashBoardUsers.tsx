@@ -1,18 +1,18 @@
 'use client'
 import { useEffect } from 'react'
-import { useFormationStore } from '@/stores/useFormation'
+import { useUserStore } from '@/stores/useUser'
 import { Link } from '@tanstack/react-router'
 
-export default function DashboardFormations() {
-  const { formations, loading, error, fetchFormations, deleteFormation } = useFormationStore()
+export default function DashboardUsers() {
+  const { users, loading, error, fetchUsers, deleteUser } = useUserStore()
 
-  useEffect(() => { fetchFormations() }, [fetchFormations])
+  useEffect(() => { fetchUsers() }, [fetchUsers])
   if (loading) return <p className="text-center py-10">Chargement…</p>
   if (error) return <p className="text-center text-red-500 py-10">{error}</p>
 
   const handleDelete = (id: string) => {
-    if (confirm('Voulez-vous vraiment supprimer cette formation ?')) {
-      deleteFormation(id)
+    if (confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) {
+      deleteUser(id)
     }
   }
 
@@ -36,10 +36,10 @@ export default function DashboardFormations() {
         {/* Titre + bouton ajouter */}
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Dashboard des Formations
+            Dashboard des Utilisateurs
           </h2>
           <Link
-            to="/crud/formations/new"
+            to="/crud/users/new"
             className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 dark:hover:bg-indigo-400"
           >
             + Ajouter
@@ -51,33 +51,47 @@ export default function DashboardFormations() {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titre</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durée</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tarif (€)</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sessions</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modules</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Formateurs</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom d’utilisateur</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom complet</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rôles</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Créé le</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {formations.map((f) => (
-                <tr key={f.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{f.title}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{f.duration_hours}h</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{f.total_amount}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{f.sessions.length}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{f.modules.length}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{f.trainers.length}</td>
+              {users.map((u) => (
+                <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.username}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{u.email}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{u.fullname}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                    {u.roles && u.roles.length > 0
+                      ? u.roles.map(r => r.name).join(', ')
+                      : '—'}
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      u.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {u.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                    {new Date(u.created_at).toLocaleDateString()}
+                  </td>
                   <td className="px-4 py-3 text-right flex justify-end gap-2">
                     <Link 
-                      to={`/crud/formations/${f.id}/edit`}
+                      to={`/crud/users/${u.id}/edit`}
                       className="rounded-md bg-yellow-500 px-3 py-1 text-xs font-semibold text-white hover:bg-yellow-400"
                     >
                       Modifier
                     </Link>
                     <button
-                      onClick={() => handleDelete(f.id)}
+                      onClick={() => handleDelete(u.id)}
                       className="rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-500"
                     >
                       Supprimer
@@ -86,10 +100,10 @@ export default function DashboardFormations() {
                 </tr>
               ))}
 
-              {formations.length === 0 && (
+              {users.length === 0 && (
                 <tr>
                   <td colSpan={7} className="text-center py-6 text-gray-500 dark:text-gray-400">
-                    Aucune formation trouvée.
+                    Aucun utilisateur trouvé.
                   </td>
                 </tr>
               )}

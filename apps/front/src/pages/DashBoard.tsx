@@ -7,14 +7,14 @@ export default function AdminDashboardHome() {
       id: 'formations',
       title: 'Formations',
       description: 'Gérez les formations disponibles, ajoutez de nouvelles ou modifiez les existantes.',
-      link: '/admin/dashboard/formations/',
+      link: '/crud/formations/',
       color: 'from-indigo-500 to-blue-500'
     },
     {
       id: 'users',
       title: 'Utilisateurs',
       description: 'Gérez les comptes utilisateurs, leurs inscriptions et leurs permissions.',
-      link: '/admin/users',
+      link: '/crud/users',
       color: 'from-pink-500 to-rose-500'
     }
   ]

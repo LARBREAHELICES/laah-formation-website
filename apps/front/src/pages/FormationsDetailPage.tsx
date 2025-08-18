@@ -101,7 +101,8 @@ export default function FormationDetailPage() {
         </div>
 
         {/* Colonne droite (encart récapitulatif) */}
-        <aside className="space-y-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 h-fit lg:sticky top-24">
+        <aside className="space-y-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-6 h-fit fixed top-24 right-8 w-[300px]">
+
         
         {/* Modules */}
           {formation.modules?.length > 0 && (
@@ -123,7 +124,7 @@ export default function FormationDetailPage() {
             <p><strong>Prix :</strong> {formation.total_amount} €</p>
           </div>
 
-<Link to={`/formations/$id/sessions`} params={{ id }}
+<Link to={`/formations/$id/sessions/`} params={{ id }}
 className="block w-full text-center bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-lg">
   Dates, lieux et inscription
 </Link>

@@ -1,54 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useFormationStore } from '@/stores/useFormation'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
 
-export default function NewFormationPage() {
+export default function EditFormationPage() {
   const navigate = useNavigate()
-  const { addFormation } = useFormationStore()
+  const { id } = useParams({ from: '/_authenticated/crud/formations/$id/edit' })
+  const { formations, updateFormation } = useFormationStore()
 
-  const [formData, setFormData] = useState({
-    title: '',
-    slug: '',
-    description: '',
-    objectives: '',
-    prerequisites: '',
-    duration_hours: 0,
-    pedagogy_methods: '',
-    evaluation_methods: '',
-    qualiopi_certificate_number: '',
-    qualiopi_certificate_date: '',
-    prefecture_registration_number: '',
-    qualiopi_scope: 'actions de formation',
-    status: 'draft',
-    order_number: '',
-    order_date: '',
-    total_amount: '',
-    classroom_student_counts: 0,
-    rate: '',
-    tags: [] as string[],
-    sessions: [] as {
-      start_date: string
-      end_date: string
-      location: string
-      max_seats: number
-      price: string
-    }[],
-    modules: [] as {
-      title: string
-      duration_hours: number
-      description: string
-      order_index: number
-    }[],
-    attachments: [] as string[],
-    users: [] as string[],
-  })
+  const existingFormation = formations.find(f => f.id === id)
+  const [formData, setFormData] = useState(existingFormation || null)
 
-  /* --- handlers identiques à ton code --- */
+  useEffect(() => {
+    if (!existingFormation) {
+      navigate({ to: '/crud/formations' })
+    }
+  }, [existingFormation, navigate])
+
+  if (!formData) return null
+
+  // -----------------------
+  // Handlers
+  // -----------------------
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormData(prev => prev ? { ...prev, [name]: value } : null)
   }
 
   const handleNestedChange = <T extends keyof typeof formData>(
@@ -58,6 +35,7 @@ export default function NewFormationPage() {
     value: string | number
   ) => {
     setFormData(prev => {
+      if (!prev) return null
       const updatedArray = [...(prev[field] as any[])]
       updatedArray[index] = { ...updatedArray[index], [key]: value }
       return { ...prev, [field]: updatedArray }
@@ -65,11 +43,12 @@ export default function NewFormationPage() {
   }
 
   const addNestedItem = <T extends keyof typeof formData>(field: T, template: any) => {
-    setFormData(prev => ({ ...prev, [field]: [...(prev[field] as any[]), template] }))
+    setFormData(prev => prev ? { ...prev, [field]: [...(prev[field] as any[]), template] } : null)
   }
 
   const removeNestedItem = <T extends keyof typeof formData>(field: T, index: number) => {
     setFormData(prev => {
+      if (!prev) return null
       const updatedArray = [...(prev[field] as any[])]
       updatedArray.splice(index, 1)
       return { ...prev, [field]: updatedArray }
@@ -78,27 +57,14 @@ export default function NewFormationPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const payload = {
-      ...formData,
-      duration_hours: Number(formData.duration_hours),
-      classroom_student_counts: Number(formData.classroom_student_counts),
-      total_amount: formData.total_amount ? parseFloat(formData.total_amount) : null,
-      qualiopi_certificate_date: formData.qualiopi_certificate_date ? new Date(formData.qualiopi_certificate_date) : null,
-      order_date: formData.order_date ? new Date(formData.order_date) : null,
-      sessions: formData.sessions.map(s => ({
-        ...s,
-        max_seats: Number(s.max_seats)
-      })),
-      modules: formData.modules.map(m => ({
-        ...m,
-        duration_hours: Number(m.duration_hours),
-        order_index: Number(m.order_index)
-      }))
-    }
-    addFormation(payload)
+    if (!formData) return
+    updateFormation(formData)
     navigate({ to: '/crud/formations' })
   }
 
+  // -----------------------
+  // Styles identiques à NewFormationPage
+  // -----------------------
   const inputClass = "border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
   const cardClass = "p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4"
 
@@ -120,7 +86,7 @@ export default function NewFormationPage() {
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white text-center">
-          Nouvelle Formation
+          Modifier la Formation
         </h1>
 
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
@@ -145,7 +111,16 @@ export default function NewFormationPage() {
                   {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               ) : (
-                <input key={field.name} name={field.name} type={field.type} placeholder={field.placeholder} value={(formData as any)[field.name]} onChange={field.type === 'number' ? (e) => handleChange({ ...e, target: { ...e.target, value: e.target.value } }) : handleChange} step={field.step} className={inputClass} />
+                <input
+                  key={field.name}
+                  name={field.name}
+                  type={field.type}
+                  placeholder={field.placeholder}
+                  value={(formData as any)[field.name] || ''}
+                  onChange={handleChange}
+                  step={field.step}
+                  className={inputClass}
+                />
               )
             )}
           </div>
@@ -155,23 +130,39 @@ export default function NewFormationPage() {
             { name: 'objectives', placeholder: 'Objectifs' },
             { name: 'prerequisites', placeholder: 'Prérequis' },
             { name: 'pedagogy_methods', placeholder: 'Méthodes pédagogiques' },
-            { name: 'evaluation_methods', placeholder: 'Méthodes d\'évaluation' },
+            { name: 'evaluation_methods', placeholder: "Méthodes d'évaluation" },
           ].map(field => (
-            <textarea key={field.name} name={field.name} placeholder={field.placeholder} value={(formData as any)[field.name]} onChange={handleChange} rows={4} className={inputClass} />
+            <textarea key={field.name} name={field.name} placeholder={field.placeholder} value={(formData as any)[field.name] || ''} onChange={handleChange} rows={4} className={inputClass} />
           ))}
 
           {/* Tags */}
           <div className={cardClass}>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tags</h3>
             <div className="flex gap-2">
-              <input type="text" placeholder="Ajouter un tag" value={formData.tags.join(', ')} onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })} className={inputClass} />
+              <input
+                type="text"
+                placeholder="Ajouter un tag"
+                value={(formData as any).tags?.join(', ') || ''}
+                onChange={(e) =>
+                  setFormData(prev =>
+                    prev ? {
+                      ...prev,
+                      tags: e.target.value
+                        .split(',')
+                        .map(t => t.trim())
+                        .filter(Boolean)
+                    } : null
+                  )
+                }
+                className={inputClass}
+              />
             </div>
           </div>
 
           {/* Modules */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Modules</h3>
-            {formData.modules.map((module, idx) => (
+            {formData.modules?.map((module, idx) => (
               <div key={idx} className={cardClass}>
                 <input name="title" placeholder="Titre" value={module.title} onChange={(e) => handleNestedChange('modules', idx, 'title', e.target.value)} className={inputClass} />
                 <input name="duration_hours" type="number" placeholder="Durée (h)" value={module.duration_hours} onChange={(e) => handleNestedChange('modules', idx, 'duration_hours', Number(e.target.value))} className={inputClass} />
@@ -186,7 +177,7 @@ export default function NewFormationPage() {
           {/* Sessions */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Sessions</h3>
-            {formData.sessions.map((session, idx) => (
+            {formData.sessions?.map((session, idx) => (
               <div key={idx} className={cardClass}>
                 <input name="start_date" type="datetime-local" placeholder="Date début" value={session.start_date} onChange={(e) => handleNestedChange('sessions', idx, 'start_date', e.target.value)} className={inputClass} />
                 <input name="end_date" type="datetime-local" placeholder="Date fin" value={session.end_date} onChange={(e) => handleNestedChange('sessions', idx, 'end_date', e.target.value)} className={inputClass} />
@@ -204,7 +195,7 @@ export default function NewFormationPage() {
               type="submit"
               className="w-full md:w-auto rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 py-3 px-6 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
             >
-              Enregistrer la formation
+              Enregistrer les modifications
             </button>
           </div>
         </form>
