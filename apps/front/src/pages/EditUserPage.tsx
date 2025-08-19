@@ -1,228 +1,225 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useUserStore } from '@/stores/useUser'
+import { useFormationStore } from '@/stores/useFormation'
 import { useNavigate, useParams } from '@tanstack/react-router'
 
 export default function EditUserPage() {
   const navigate = useNavigate()
-  const { id } = useParams({ from: '/_authenticated/crud/users/$id/edit' }) 
-  const { users, updateUser } = useUserStore()
+  const { id } = useParams({ strict: false })
+  const { user, fetchUser, updateUser } = useUserStore()
+  const { formations: allFormations, fetchFormations } = useFormationStore()
 
-  const existingUser = users.find(u => u.id === id)
-
+  /* ------------------ état local ------------------ */
   const [formData, setFormData] = useState({
     id: '',
     email: '',
     username: '',
     fullname: '',
     password: '',
-    status: 'active',
-    created_at: '',
-    updated_at: '',
+    status: 'active' as 'active' | 'inactive' | 'banned',
     roles: [] as string[],
     formations: [] as string[],
   })
 
+  /* ------------------ styles ------------------ */
+  const inputClass =
+    'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
+  const cardClass =
+    'p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4'
+
+  /* ------------------ chargement ------------------ */
   useEffect(() => {
-    if (existingUser) {
+    if (id) {
+      fetchUser(id)
+      fetchFormations()
+    }
+  }, [id, fetchUser, fetchFormations])
+
+  /* ------------------ remplissage des champs ------------------ */
+  useEffect(() => {
+    if (user) {
       setFormData({
-        ...existingUser,
-        created_at: existingUser.created_at
-          ? new Date(existingUser.created_at).toISOString().slice(0, 16)
-          : '',
-        updated_at: existingUser.updated_at
-          ? new Date(existingUser.updated_at).toISOString().slice(0, 16)
-          : '',
+        id: user.id || '',
+        email: user.email || '',
+        username: user.username || '',
+        fullname: user.fullname || '',
+        password: '', // on ne pré-remplit pas
+        status: user.status || 'active',
+        roles: user.roles?.map((r: any) => r.name) || [],
+        formations: user.formations?.map((f: any) => f.id) || [],
       })
     }
-  }, [existingUser])
+  }, [user])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  /* ------------------ handlers ------------------ */
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleArrayChange = (field: keyof typeof formData, index: number, value: string) => {
-    setFormData(prev => {
-      const newArray = [...(prev[field] as string[])]
-      newArray[index] = value
-      return { ...prev, [field]: newArray }
-    })
-  }
+  /* formations : toggle tags */
+  const toggleFormation = (formationId: string) =>
+    setFormData(prev => ({
+      ...prev,
+      formations: prev.formations.includes(formationId)
+        ? prev.formations.filter(f => f !== formationId)
+        : [...prev.formations, formationId],
+    }))
 
-  const addArrayItem = (field: keyof typeof formData) => {
-    setFormData(prev => ({ ...prev, [field]: [...(prev[field] as string[]), ''] }))
+  /* rôles : ajout / suppression */
+  const handleRoleChange = (index: number, value: string) => {
+    const updated = [...formData.roles]
+    updated[index] = value
+    setFormData(prev => ({ ...prev, roles: updated }))
   }
+  const addRole = () =>
+    setFormData(prev => ({ ...prev, roles: [...prev.roles, ''] }))
+  const removeRole = (index: number) =>
+    setFormData(prev => ({
+      ...prev,
+      roles: prev.roles.filter((_, i) => i !== index),
+    }))
 
-  const removeArrayItem = (field: keyof typeof formData, index: number) => {
-    setFormData(prev => {
-      const newArray = [...(prev[field] as string[])]
-      newArray.splice(index, 1)
-      return { ...prev, [field]: newArray }
-    })
-  }
-
+  /* ------------------ submit ------------------ */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const payload = {
       ...formData,
-      created_at: formData.created_at ? new Date(formData.created_at) : new Date(),
-      updated_at: new Date(),
+      roles: formData.roles.filter(r => r.trim() !== ''),
     }
-    updateUser(payload)
+    updateUser(id!, payload)
     navigate({ to: '/crud/users' })
   }
 
-  if (!existingUser) {
-    return <p className="text-center text-red-500 py-10">Utilisateur introuvable.</p>
+  if (!user) {
+    return (
+      <p className="text-center py-10 text-gray-500 dark:text-gray-400">
+        Chargement…
+      </p>
+    )
   }
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-      {/* Dégradé haut */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
-      >
-        <div
-          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 dark:opacity-10 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
-      </div>
-
-      <div className="mx-auto max-w-4xl px-6 lg:px-8">
-        <h1 className="text-3xl font-bold mb-10 text-gray-900 dark:text-white text-center">
-          Modifier Utilisateur
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white text-center">
+          Modifier l’utilisateur
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-8 space-y-10 border border-gray-200 dark:border-gray-800"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="mt-12 space-y-10">
+          {/* --- Informations principales --- */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
-              { name: 'id', placeholder: 'ID', readOnly: true },
+              { name: 'id', placeholder: 'ID', type: 'text' },
               { name: 'email', placeholder: 'Email', type: 'email' },
-              { name: 'username', placeholder: 'Nom d’utilisateur' },
-              { name: 'fullname', placeholder: 'Nom complet' },
-              { name: 'password', placeholder: 'Mot de passe', type: 'password' },
-              { name: 'status', placeholder: 'Statut', type: 'select', options: ['active', 'inactive', 'banned'] },
-              { name: 'created_at', placeholder: 'Date de création', type: 'datetime-local' },
-              { name: 'updated_at', placeholder: 'Date de mise à jour', type: 'datetime-local' },
-            ].map((field, idx) =>
+              { name: 'username', placeholder: "Nom d'utilisateur", type: 'text' },
+              { name: 'fullname', placeholder: 'Nom complet', type: 'text' },
+              { name: 'password', placeholder: 'Nouveau mot de passe (laisser vide pour garder)', type: 'password' },
+              {
+                name: 'status',
+                placeholder: 'Statut',
+                type: 'select',
+                options: ['active', 'inactive', 'banned'],
+              },
+            ].map(field =>
               field.type === 'select' ? (
                 <select
-                  key={idx}
+                  key={field.name}
                   name={field.name}
-                  value={(formData as any)[field.name]}
+                  value={formData[field.name as keyof typeof formData]}
                   onChange={handleChange}
-                  className="border rounded-lg p-2 w-full text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  className={inputClass}
                 >
-                  {field.options!.map(option => (
-                    <option key={option} value={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
+                  {field.options?.map(opt => (
+                    <option key={opt} value={opt}>
+                      {opt.charAt(0).toUpperCase() + opt.slice(1)}
                     </option>
                   ))}
                 </select>
               ) : (
                 <input
-                  key={idx}
+                  key={field.name}
                   name={field.name}
-                  type={field.type || 'text'}
+                  type={field.type}
                   placeholder={field.placeholder}
-                  value={(formData as any)[field.name]}
+                  value={formData[field.name as keyof typeof formData]}
                   onChange={handleChange}
-                  readOnly={field.readOnly}
-                  className="border rounded-lg p-2 w-full text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  className={inputClass}
                 />
               )
             )}
           </div>
 
-          {/* Roles */}
+          {/* --- Rôles dynamiques --- */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-200">Rôles</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+              Rôles
+            </h3>
             {formData.roles.map((role, idx) => (
-              <div key={idx} className="flex gap-2 mt-2">
+              <div key={idx} className={cardClass}>
                 <input
                   value={role}
-                  onChange={(e) => handleArrayChange('roles', idx, e.target.value)}
-                  className="border rounded-lg p-2 w-full text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  onChange={e => handleRoleChange(idx, e.target.value)}
                   placeholder={`Rôle ${idx + 1}`}
+                  className={inputClass}
                 />
                 <button
                   type="button"
-                  onClick={() => removeArrayItem('roles', idx)}
-                  className="bg-red-600 hover:bg-red-500 text-white px-3 rounded-md text-sm"
+                  onClick={() => removeRole(idx)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm"
                 >
-                  X
+                  Supprimer
                 </button>
               </div>
             ))}
             <button
               type="button"
-              onClick={() => addArrayItem('roles')}
-              className="mt-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-sm"
+              onClick={addRole}
+              className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"
             >
               + Ajouter rôle
             </button>
           </div>
 
-          {/* Formations */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-200">Formations</h3>
-            {formData.formations.map((formation, idx) => (
-              <div key={idx} className="flex gap-2 mt-2">
-                <input
-                  value={formation}
-                  onChange={(e) => handleArrayChange('formations', idx, e.target.value)}
-                  className="border rounded-lg p-2 w-full text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                  placeholder={`ID formation ${idx + 1}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeArrayItem('formations', idx)}
-                  className="bg-red-600 hover:bg-red-500 text-white px-3 rounded-md text-sm"
-                >
-                  X
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => addArrayItem('formations')}
-              className="mt-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1 rounded-md text-sm"
-            >
-              + Ajouter formation
-            </button>
+          {/* --- Formations (tags) --- */}
+          <div className={cardClass}>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Formations
+            </h3>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {allFormations.map(f => {
+                const isSelected = formData.formations.includes(f.id)
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => toggleFormation(f.id)}
+                    className={`px-3 py-1 rounded-full text-sm border cursor-pointer
+                      ${isSelected
+                        ? 'bg-sky-600 text-white border-sky-600'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                      }`}
+                  >
+                    {f.title}
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
+          {/* --- Bouton final --- */}
           <div className="text-center">
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium"
+              className="w-full md:w-auto rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 py-3 px-6 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
             >
-              Mettre à jour l’utilisateur
+              Enregistrer les modifications
             </button>
           </div>
         </form>
-      </div>
-
-      {/* Dégradé bas */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
-      >
-        <div
-          className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 dark:opacity-10 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
       </div>
     </section>
   )

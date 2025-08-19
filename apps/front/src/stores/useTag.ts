@@ -18,7 +18,7 @@ interface TagState {
 }
 
 export const useTagStore = create<TagState>((set) => ({
-  Tags: [],
+  tags: [],
   tag: null,
   loading: false,
   error: null,

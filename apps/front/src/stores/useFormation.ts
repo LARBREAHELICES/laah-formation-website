@@ -97,7 +97,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
       if (!res.ok) throw new Error("Failed to delete formation");
 
       set((state) => ({
-        formations: state.foramtions.filter((p) => p.id !== id),
+        formations: state.formations.filter((p) => p.id !== id),
         loading: false,
       }))
     } catch (error) {

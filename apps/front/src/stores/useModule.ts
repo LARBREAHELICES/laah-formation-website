@@ -20,7 +20,7 @@ interface ModuleState {
 }
 
 export const useModuleStore = create<ModuleState>((set) => ({
-  Module: [],
+  modules: [],
   module: null,
   loading: false,
   error: null,

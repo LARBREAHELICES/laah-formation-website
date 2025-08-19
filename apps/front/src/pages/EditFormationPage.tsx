@@ -2,71 +2,117 @@
 
 import { useState, useEffect } from 'react'
 import { useFormationStore } from '@/stores/useFormation'
+import { useTagStore } from '@/stores/useTag'
+import { useModuleStore } from '@/stores/useModule'
 import { useNavigate, useParams } from '@tanstack/react-router'
 
 export default function EditFormationPage() {
   const navigate = useNavigate()
   const { id } = useParams({ from: '/_authenticated/crud/formations/$id/edit' })
+
+  /* ------------------ stores ------------------ */
   const { formations, updateFormation } = useFormationStore()
+  const { tags: allTags, fetchTags } = useTagStore()
+  const { modules: allModules, fetchModules } = useModuleStore()
 
   const existingFormation = formations.find(f => f.id === id)
-  const [formData, setFormData] = useState(existingFormation || null)
+  const [formData, setFormData] = useState(() => existingFormation || null)
 
+  /* ------------------ chargement des listes ------------------ */
   useEffect(() => {
-    if (!existingFormation) {
+    fetchTags()
+    fetchModules()
+  }, [fetchTags, fetchModules])
+
+  /* Synchroniser formData avec existingFormation après chargement des données */
+  useEffect(() => {
+    if (existingFormation && allTags.length > 0 && allModules.length > 0) {
+      setFormData(existingFormation)
+    }
+  }, [existingFormation, allTags, allModules])
+
+  /* Redirection si la formation n'existe pas */
+  useEffect(() => {
+    if (!existingFormation && allTags.length > 0 && allModules.length > 0) {
       navigate({ to: '/crud/formations' })
     }
-  }, [existingFormation, navigate])
+  }, [existingFormation, navigate, allTags, allModules])
 
-  if (!formData) return null
-
-  // -----------------------
-  // Handlers
-  // -----------------------
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => prev ? { ...prev, [name]: value } : null)
+  /* Indicateur de chargement */
+  if (!formData || allTags.length === 0 || allModules.length === 0) {
+    return (
+      <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </section>
+    )
   }
 
-  const handleNestedChange = <T extends keyof typeof formData>(
-    field: T,
+  /* ------------------ handlers ------------------ */
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+    setFormData(prev => (prev ? { ...prev, [name]: value } : null))
+  }
+
+  const handleArrayChange = (field: 'tags' | 'modules', value: string) => {
+    setFormData(prev => {
+      if (!prev) return null
+      const arr = prev[field] as string[]
+      return {
+        ...prev,
+        [field]: arr.includes(value)
+          ? arr.filter(v => v !== value)
+          : [...arr, value],
+      }
+    })
+  }
+
+  const handleNestedChange = (
     index: number,
-    key: keyof (typeof formData)[T][0],
+    key: keyof (typeof formData)['sessions'][0],
     value: string | number
   ) => {
     setFormData(prev => {
       if (!prev) return null
-      const updatedArray = [...(prev[field] as any[])]
-      updatedArray[index] = { ...updatedArray[index], [key]: value }
-      return { ...prev, [field]: updatedArray }
+      const updated = [...prev.sessions]
+      updated[index] = { ...updated[index], [key]: value }
+      return { ...prev, sessions: updated }
     })
   }
 
-  const addNestedItem = <T extends keyof typeof formData>(field: T, template: any) => {
-    setFormData(prev => prev ? { ...prev, [field]: [...(prev[field] as any[]), template] } : null)
-  }
+  const addSession = () =>
+    setFormData(prev =>
+      prev
+        ? {
+            ...prev,
+            sessions: [
+              ...prev.sessions,
+              { start_date: '', end_date: '', location: '', max_seats: 0, price: '' },
+            ],
+          }
+        : null
+    )
 
-  const removeNestedItem = <T extends keyof typeof formData>(field: T, index: number) => {
-    setFormData(prev => {
-      if (!prev) return null
-      const updatedArray = [...(prev[field] as any[])]
-      updatedArray.splice(index, 1)
-      return { ...prev, [field]: updatedArray }
-    })
-  }
+  const removeSession = (index: number) =>
+    setFormData(prev =>
+      prev ? { ...prev, sessions: prev.sessions.filter((_, i) => i !== index) } : null
+    )
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormFormEvent) => {
     e.preventDefault()
     if (!formData) return
     updateFormation(formData)
     navigate({ to: '/crud/formations' })
   }
 
-  // -----------------------
-  // Styles identiques à NewFormationPage
-  // -----------------------
-  const inputClass = "border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
-  const cardClass = "p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4"
+  /* ------------------ styles ------------------ */
+  const inputClass =
+    'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
+  const cardClass =
+    'p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4'
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
@@ -90,16 +136,30 @@ export default function EditFormationPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
-          {/* Grid : informations principales */}
+          {/* ---------- informations principales ---------- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               { name: 'title', placeholder: 'Titre', type: 'text' },
               { name: 'slug', placeholder: 'Slug', type: 'text' },
               { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'number' },
-              { name: 'classroom_student_counts', placeholder: 'Nombre d’étudiants', type: 'number' },
+              { name: 'classroom_student_counts', placeholder: 'Nombre d\'étudiants', type: 'number' },
               { name: 'total_amount', placeholder: 'Tarif (€)', type: 'number', step: 0.01 },
-              { name: 'status', placeholder: 'Statut', type: 'select', options: ['draft', 'published', 'archived'] },
-              { name: 'qualiopi_scope', placeholder: 'Portée Qualiopi', type: 'select', options: ['actions de formation', 'bilans de compétences', 'actions de formation par apprentissage'] },
+              {
+                name: 'status',
+                placeholder: 'Statut',
+                type: 'select',
+                options: ['draft', 'published', 'archived'],
+              },
+              {
+                name: 'qualiopi_scope',
+                placeholder: 'Portée Qualiopi',
+                type: 'select',
+                options: [
+                  'actions de formation',
+                  'bilans de compétences',
+                  'actions de formation par apprentissage',
+                ],
+              },
               { name: 'qualiopi_certificate_number', placeholder: 'N° Certificat Qualiopi', type: 'text' },
               { name: 'qualiopi_certificate_date', placeholder: 'Date Certificat', type: 'date' },
               { name: 'prefecture_registration_number', placeholder: 'N° Enregistrement Préfecture', type: 'text' },
@@ -108,7 +168,11 @@ export default function EditFormationPage() {
             ].map(field =>
               field.type === 'select' ? (
                 <select key={field.name} name={field.name} value={(formData as any)[field.name]} onChange={handleChange} className={inputClass}>
-                  {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  {field.options?.map(opt => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
                 </select>
               ) : (
                 <input
@@ -125,6 +189,7 @@ export default function EditFormationPage() {
             )}
           </div>
 
+          {/* ---------- champs longs ---------- */}
           {[
             { name: 'description', placeholder: 'Description' },
             { name: 'objectives', placeholder: 'Objectifs' },
@@ -135,61 +200,115 @@ export default function EditFormationPage() {
             <textarea key={field.name} name={field.name} placeholder={field.placeholder} value={(formData as any)[field.name] || ''} onChange={handleChange} rows={4} className={inputClass} />
           ))}
 
-          {/* Tags */}
+          {/* ---------- tags (boutons cliquables) ---------- */}
           <div className={cardClass}>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tags</h3>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Ajouter un tag"
-                value={(formData as any).tags?.join(', ') || ''}
-                onChange={(e) =>
-                  setFormData(prev =>
-                    prev ? {
-                      ...prev,
-                      tags: e.target.value
-                        .split(',')
-                        .map(t => t.trim())
-                        .filter(Boolean)
-                    } : null
-                  )
-                }
-                className={inputClass}
-              />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {allTags.map(tag => {
+                const isSelected = formData.tags?.includes(tag.id)
+                return (
+                  <button
+                    type="button"
+                    key={tag.id}
+                    onClick={() => handleArrayChange('tags', tag.id)}
+                    className={`px-3 py-1 rounded-full text-sm border transition-colors
+                      ${isSelected
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                      }`}
+                  >
+                    {tag.name}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
-          {/* Modules */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Modules</h3>
-            {formData.modules?.map((module, idx) => (
-              <div key={idx} className={cardClass}>
-                <input name="title" placeholder="Titre" value={module.title} onChange={(e) => handleNestedChange('modules', idx, 'title', e.target.value)} className={inputClass} />
-                <input name="duration_hours" type="number" placeholder="Durée (h)" value={module.duration_hours} onChange={(e) => handleNestedChange('modules', idx, 'duration_hours', Number(e.target.value))} className={inputClass} />
-                <textarea name="description" placeholder="Description" value={module.description} onChange={(e) => handleNestedChange('modules', idx, 'description', e.target.value)} rows={3} className={inputClass} />
-                <input name="order_index" type="number" placeholder="Index d'ordre" value={module.order_index} onChange={(e) => handleNestedChange('modules', idx, 'order_index', Number(e.target.value))} className={inputClass} />
-                <button type="button" onClick={() => removeNestedItem('modules', idx)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">Supprimer</button>
-              </div>
-            ))}
-            <button type="button" onClick={() => addNestedItem('modules', { title: '', duration_hours: 0, description: '', order_index: 0 })} className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">+ Ajouter un module</button>
+          {/* ---------- modules (boutons cliquables) ---------- */}
+          <div className={cardClass}>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Modules</h3>
+            <div className="flex flex-wrap gap-2">
+              {allModules.map(mod => {
+                const isSelected = formData.modules?.includes(mod.id)
+                return (
+                  <button
+                    type="button"
+                    key={mod.id}
+                    onClick={() => handleArrayChange('modules', mod.id)}
+                    className={`px-3 py-1 rounded-full text-sm border transition-colors
+                      ${isSelected
+                        ? 'bg-emerald-600 text-white border-emerald-600'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                      }`}
+                  >
+                    {mod.title}
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
-          {/* Sessions */}
+          {/* ---------- sessions dynamiques ---------- */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Sessions</h3>
             {formData.sessions?.map((session, idx) => (
               <div key={idx} className={cardClass}>
-                <input name="start_date" type="datetime-local" placeholder="Date début" value={session.start_date} onChange={(e) => handleNestedChange('sessions', idx, 'start_date', e.target.value)} className={inputClass} />
-                <input name="end_date" type="datetime-local" placeholder="Date fin" value={session.end_date} onChange={(e) => handleNestedChange('sessions', idx, 'end_date', e.target.value)} className={inputClass} />
-                <input name="location" placeholder="Lieu" value={session.location} onChange={(e) => handleNestedChange('sessions', idx, 'location', e.target.value)} className={inputClass} />
-                <input name="max_seats" type="number" placeholder="Places max" value={session.max_seats} onChange={(e) => handleNestedChange('sessions', idx, 'max_seats', Number(e.target.value))} className={inputClass} />
-                <input name="price" type="number" placeholder="Prix (€)" value={session.price} onChange={(e) => handleNestedChange('sessions', idx, 'price', e.target.value)} className={inputClass} />
-                <button type="button" onClick={() => removeNestedItem('sessions', idx)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">Supprimer</button>
+                <input
+                  name="start_date"
+                  type="datetime-local"
+                  value={session.start_date}
+                  onChange={e => handleNestedChange(idx, 'start_date', e.target.value)}
+                  className={inputClass}
+                />
+                <input
+                  name="end_date"
+                  type="datetime-local"
+                  value={session.end_date}
+                  onChange={e => handleNestedChange(idx, 'end_date', e.target.value)}
+                  className={inputClass}
+                />
+                <input
+                  name="location"
+                  placeholder="Lieu"
+                  value={session.location}
+                  onChange={e => handleNestedChange(idx, 'location', e.target.value)}
+                  className={inputClass}
+                />
+                <input
+                  name="max_seats"
+                  type="number"
+                  placeholder="Places max"
+                  value={session.max_seats}
+                  onChange={e => handleNestedChange(idx, 'max_seats', Number(e.target.value))}
+                  className={inputClass}
+                />
+                <input
+                  name="price"
+                  type="number"
+                  placeholder="Prix (€)"
+                  value={session.price}
+                  onChange={e => handleNestedChange(idx, 'price', e.target.value)}
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSession(idx)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm"
+                >
+                  Supprimer
+                </button>
               </div>
             ))}
-            <button type="button" onClick={() => addNestedItem('sessions', { start_date: '', end_date: '', location: '', max_seats: 0, price: '' })} className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">+ Ajouter une session</button>
+            <button
+              type="button"
+              onClick={addSession}
+              className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              + Ajouter une session
+            </button>
           </div>
 
+          {/* ---------- bouton final ---------- */}
           <div className="text-center">
             <button
               type="submit"

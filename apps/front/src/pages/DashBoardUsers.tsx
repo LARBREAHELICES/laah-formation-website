@@ -50,64 +50,52 @@ export default function DashboardUsers() {
         <div className="mt-8 overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom d’utilisateur</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom complet</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rôles</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Créé le</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
+  <tr>
+    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom complet</th>
+    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Id</th>
+    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
+    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+  </tr>
+</thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {users.map((u) => (
-                <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.username}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{u.email}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{u.fullname}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
-                    {u.roles && u.roles.length > 0
-                      ? u.roles.map(r => r.name).join(', ')
-                      : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      u.status === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {u.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
-                    {new Date(u.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3 text-right flex justify-end gap-2">
-                    <Link 
-                      to={`/crud/users/${u.id}/edit`}
-                      className="rounded-md bg-yellow-500 px-3 py-1 text-xs font-semibold text-white hover:bg-yellow-400"
-                    >
-                      Modifier
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(u.id)}
-                      className="rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-500"
-                    >
-                      Supprimer
-                    </button>
-                  </td>
-                </tr>
-              ))}
+  {users.map((u) => (
+    <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.fullname}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.id}</td>
+      <td className="px-4 py-3 text-sm">
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+          u.status === 'active'
+            ? 'bg-green-100 text-green-800'
+            : 'bg-red-100 text-red-800'
+        }`}>
+          {u.status}
+        </span>
+      </td>
+      <td className="px-4 py-3 text-right flex justify-end gap-2">
+        <Link 
+          to={`/crud/users/${u.id}/edit`}
+          className="rounded-md bg-yellow-500 px-3 py-1 text-xs font-semibold text-white hover:bg-yellow-400"
+        >
+          Modifier
+        </Link>
+        <button
+          onClick={() => handleDelete(u.id)}
+          className="rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-500"
+        >
+          Supprimer
+        </button>
+      </td>
+    </tr>
+  ))}
 
-              {users.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="text-center py-6 text-gray-500 dark:text-gray-400">
-                    Aucun utilisateur trouvé.
-                  </td>
-                </tr>
-              )}
-            </tbody>
+  {users.length === 0 && (
+    <tr>
+      <td colSpan={4} className="text-center py-6 text-gray-500 dark:text-gray-400">
+        Aucun utilisateur trouvé.
+      </td>
+    </tr>
+  )}
+</tbody>
           </table>
         </div>
       </div>

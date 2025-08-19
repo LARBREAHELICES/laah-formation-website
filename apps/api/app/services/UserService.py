@@ -18,6 +18,7 @@ class UserService:
         user = self.session.get(User, user_id)
         
         return UserRead(
+            id=user.id,
             fullname=user.fullname,
             status = user.status
         )
