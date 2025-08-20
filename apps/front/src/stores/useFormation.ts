@@ -29,6 +29,7 @@ interface FormationState {
   error: string | null;
   fetchFormations: () => Promise<void>;
   fetchFormation: (id: string) => Promise<void>;
+  
 }
 
 export const useFormationStore = create<FormationState>((set, get) => ({

@@ -12,7 +12,8 @@ export interface Module {
 }
 
 interface ModuleState {
-  module: Module[];
+  modules: Module[];
+  module: Module | null;
   loading: boolean;
   error: string | null;
   fetchModules: () => Promise<void>;

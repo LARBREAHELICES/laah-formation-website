@@ -10,6 +10,7 @@ export interface Tag {
 
 interface TagState {
   tags: Tag[];
+  tag: Tag | null;
   loading: boolean;
   error: string | null;
   fetchTags: () => Promise<void>;

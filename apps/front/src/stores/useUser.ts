@@ -5,11 +5,13 @@ const apiUrl = import.meta.env.VITE_API_URL
 export interface User {
   id: string;
   fullname: string;
+  email: string;
   status: boolean;
 }
 
 interface UserState {
   users: User[];
+  user: User | null;
   loading: boolean;
   error: string | null;
   fetchUsers: () => Promise<void>;

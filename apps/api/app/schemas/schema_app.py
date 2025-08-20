@@ -29,6 +29,7 @@ class UserRead(BaseModel):
     id: str
     fullname: str
     status : str
+    email: str
     
 
 class AttachmentRead(BaseModel):

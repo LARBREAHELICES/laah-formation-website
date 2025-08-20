@@ -20,6 +20,7 @@ class UserService:
         return UserRead(
             id=user.id,
             fullname=user.fullname,
+            email=user.email,
             status = user.status
         )
 
@@ -30,6 +31,7 @@ class UserService:
             UserRead(
                 id = user.id,
                 fullname=user.fullname,
+                email=user.email,
                 status = user.status
             ) 
             for user in users 
@@ -42,6 +44,7 @@ class UserService:
         return UserRead(
             id = user.id,
             fullname=user.fullname,
+            email=user.email,
             status = user.status
         )
 

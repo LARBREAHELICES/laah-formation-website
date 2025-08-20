@@ -9,12 +9,12 @@ import { useNavigate } from '@tanstack/react-router'
 export default function NewFormationPage() {
   const navigate = useNavigate()
 
-  /* ------------------ stores ------------------ */
+
   const { createFormation } = useFormationStore()
   const { tags: allTags, fetchTags } = useTagStore()
   const { modules: allModules, fetchModules } = useModuleStore()
 
-  /* ------------------ state du formulaire ------------------ */
+  
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -47,13 +47,11 @@ export default function NewFormationPage() {
     users: [] as string[],
   })
 
-  /* ------------------ chargement des listes ------------------ */
   useEffect(() => {
     fetchTags()
     fetchModules()
   }, [fetchTags, fetchModules])
 
-  /* ------------------ handlers ------------------ */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -123,26 +121,34 @@ export default function NewFormationPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const payload = {
-      ...formData,
-      duration_hours: formData.duration_hours ? Number(formData.duration_hours) : 0,
-      classroom_student_counts: formData.classroom_student_counts ? Number(formData.classroom_student_counts) : 0,
-      total_amount: formData.total_amount ? parseFloat(formData.total_amount) : null,
-      rate: formData.rate ? parseFloat(formData.rate) : null,
-      qualiopi_certificate_date: formData.qualiopi_certificate_date
-        ? new Date(formData.qualiopi_certificate_date)
-        : null,
-      order_date: formData.order_date ? new Date(formData.order_date) : null,
-      sessions: formData.sessions.map(s => ({
-        ...s,
-        max_seats: s.max_seats ? Number(s.max_seats) : 0,
-        price: s.price ? parseFloat(s.price) : 0,
-      })),
-    }
+  ...formData,
+  duration_hours: formData.duration_hours ? Number(formData.duration_hours) : 0,
+  classroom_student_counts: formData.classroom_student_counts ? Number(formData.classroom_student_counts) : 0,
+  total_amount: formData.total_amount ? parseFloat(formData.total_amount) : null,
+  
+ 
+  rate: formData.rate || null,
+
+  
+  qualiopi_certificate_date: formData.qualiopi_certificate_date 
+    ? new Date(formData.qualiopi_certificate_date).toISOString()
+    : null,
+
+  order_date: formData.order_date
+    ? new Date(formData.order_date).toISOString()
+    : null,
+
+  sessions: formData.sessions.map(s => ({
+    ...s,
+    max_seats: s.max_seats ? Number(s.max_seats) : 0,
+    price: s.price ? parseFloat(s.price) : 0,
+  })),
+}
+
     createFormation(payload)
     navigate({ to: '/crud/formations' })
   }
 
-  /* ------------------ styles ------------------ */
   const inputClass =
     'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
   const cardClass =

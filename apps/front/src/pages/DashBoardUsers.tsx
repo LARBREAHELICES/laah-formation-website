@@ -51,8 +51,9 @@ export default function DashboardUsers() {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-800">
   <tr>
-    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom complet</th>
     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Id</th>
+     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom Complet</th>
+    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
     <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
   </tr>
@@ -60,8 +61,9 @@ export default function DashboardUsers() {
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
   {users.map((u) => (
     <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.fullname}</td>
       <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.id}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.fullname}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{u.email}</td>
       <td className="px-4 py-3 text-sm">
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
           u.status === 'active'

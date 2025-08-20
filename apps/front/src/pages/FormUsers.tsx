@@ -101,7 +101,7 @@ export default function NewUserPage() {
                 name: 'status',
                 placeholder: 'Statut',
                 type: 'select',
-                options: ['active', 'inactive', 'banned'],
+                options: ['active', 'inactive'],
               },
             ].map(field =>
               field.type === 'select' ? (
@@ -161,29 +161,7 @@ export default function NewUserPage() {
             </button>
           </div>
 
-          {/* --- Formations (tags-style) --- */}
-          <div className={cardClass}>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Formations</h3>
-            <div className="flex flex-wrap gap-2">
-              {allFormations.map(f => {
-                const isSelected = formData.formations.includes(f.id)
-                return (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => handleArrayChange('formations', f.id)}
-                    className={`px-3 py-1 rounded-full text-sm border cursor-pointer
-                      ${isSelected
-                        ? 'bg-sky-600 text-white border-sky-600'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
-                      }`}
-                  >
-                    {f.title}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+         
 
           {/* --- Bouton final --- */}
           <div className="text-center">
