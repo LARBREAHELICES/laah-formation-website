@@ -7,7 +7,8 @@ export interface User {
   id: string;
   fullname: string;
   email: string;
-  status: boolean;
+  status: string; 
+  roles: { id: string; name: string }[];
 }
 
 interface UserState {

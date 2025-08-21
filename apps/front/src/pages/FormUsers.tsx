@@ -1,83 +1,52 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useUserStore } from '@/stores/useUser'
-import { useFormationStore } from '@/stores/useFormation'
+import { useRoleStore } from '@/stores/useRole'
 import { useNavigate } from '@tanstack/react-router'
 
 export default function NewUserPage() {
   const navigate = useNavigate()
 
-  /* ------------------ stores ------------------ */
   const { addUser } = useUserStore()
-  const { formations: allFormations, fetchFormations } = useFormationStore()
+  const { roles: allRoles, fetchRoles, loading } = useRoleStore()
 
-  /* ------------------ state du formulaire ------------------ */
   const [formData, setFormData] = useState({
     id: '',
     email: '',
     username: '',
     fullname: '',
     password: '',
-    status: 'active' as 'active' | 'inactive' | 'banned',
-    roles: [] as string[],
-    formations: [] as string[],
+    status: 'active' as 'active' | 'inactive',
+    roles: [] as string[], // on stocke les IDs de rôles
   })
 
-  /* ------------------ chargement des listes ------------------ */
   useEffect(() => {
-    fetchFormations()
-  }, [fetchFormations])
+    fetchRoles()
+  }, [fetchRoles])
 
-  /* ------------------ styles ------------------ */
   const inputClass =
     'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
-  const cardClass =
-    'p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4'
 
-  /* ------------------ handlers ------------------ */
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleArrayChange = (field: 'formations', value: string) => {
-    setFormData(prev => {
-      const arr = prev[field] as string[]
-      return {
-        ...prev,
-        [field]: arr.includes(value)
-          ? arr.filter(v => v !== value)
-          : [...arr, value],
-      }
-    })
+  const toggleRole = (roleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      roles: prev.roles.includes(roleId)
+        ? prev.roles.filter(r => r !== roleId)
+        : [...prev.roles, roleId],
+    }))
   }
 
-  /* ------------- Gestion des rôles (similaire aux sessions) ------------- */
-  const handleRoleChange = (index: number, value: string) => {
-    setFormData(prev => {
-      const updated = [...prev.roles]
-      updated[index] = value
-      return { ...prev, roles: updated }
-    })
-  }
-
-  const addRole = () =>
-    setFormData(prev => ({ ...prev, roles: [...prev.roles, ''] }))
-
-  const removeRole = (index: number) =>
-    setFormData(prev => ({ ...prev, roles: prev.roles.filter((_, i) => i !== index) }))
-
-  /* ------------------ submit ------------------ */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // nettoyage : on enlève les rôles vides
-    const payload = {
-      ...formData,
-      roles: formData.roles.filter(r => r.trim() !== ''),
-    }
-    addUser(payload)
+    // on envoie formData avec roles = [liste d'IDs]
+    addUser(formData)
     navigate({ to: '/crud/users' })
   }
 
@@ -89,7 +58,7 @@ export default function NewUserPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
-          {/* --- Informations principales --- */}
+          {/* --- Infos principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               { name: 'id', placeholder: 'ID', type: 'text' },
@@ -114,7 +83,7 @@ export default function NewUserPage() {
                 >
                   {field.options?.map(opt => (
                     <option key={opt} value={opt}>
-                      {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                      {opt}
                     </option>
                   ))}
                 </select>
@@ -131,37 +100,30 @@ export default function NewUserPage() {
               )
             )}
           </div>
-
-          {/* --- Rôles dynamiques --- */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Rôles</h3>
-            {formData.roles.map((role, idx) => (
-              <div key={idx} className={cardClass}>
-                <input
-                  value={role}
-                  onChange={e => handleRoleChange(idx, e.target.value)}
-                  placeholder={`Rôle ${idx + 1}`}
-                  className={inputClass}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeRole(idx)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm"
-                >
-                  Supprimer
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addRole}
-              className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"
-            >
-              + Ajouter rôle
-            </button>
-          </div>
-
-         
+<div className="p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4">
+  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rôles</h3>
+  {loading ? (
+    <p className="text-gray-500">Chargement…</p>
+  ) : (
+    <div className="flex flex-wrap gap-3">
+      {allRoles.map(role => (
+        <button
+          type="button"
+          key={role.id}
+          onClick={() => toggleRole(role.id)}
+          className={`px-3 py-1 rounded-full text-sm border transition-colors
+            ${
+              formData.roles.includes(role.id)
+                ? 'bg-indigo-600 text-white border-indigo-600'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+        >
+          {role.name}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 
           {/* --- Bouton final --- */}
           <div className="text-center">

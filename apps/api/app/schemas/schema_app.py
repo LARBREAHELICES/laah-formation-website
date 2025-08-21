@@ -11,6 +11,10 @@ class TagRead(BaseModel):
     id: str
     name: str
 
+class RoleRead(BaseModel):
+    id: str
+    name: str
+
 class SessionRead(BaseModel):
     id: str
     start_date: datetime
@@ -31,6 +35,7 @@ class UserRead(BaseModel):
     fullname: str
     status : str
     email: str
+    roles:List[RoleRead]=  []
 
     
 

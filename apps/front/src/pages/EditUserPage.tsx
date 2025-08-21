@@ -1,40 +1,41 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useUserStore } from '@/stores/useUser'
+import { useRoleStore } from '@/stores/useRole'
 import { useFormationStore } from '@/stores/useFormation'
 import { useNavigate, useParams } from '@tanstack/react-router'
 
 export default function EditUserPage() {
   const navigate = useNavigate()
   const { id } = useParams({ strict: false })
+
   const { user, fetchUser, updateUser } = useUserStore()
+  const { roles: allRoles, fetchRoles, loading: loadingRoles } = useRoleStore()
   const { formations: allFormations, fetchFormations } = useFormationStore()
 
-  /* ------------------ état local ------------------ */
   const [formData, setFormData] = useState({
     id: '',
     email: '',
     username: '',
     fullname: '',
     password: '',
-    status: 'active' as 'active' | 'inactive' | 'banned',
-    roles: [] as string[],
-    formations: [] as string[],
+    status: 'active' as 'active' | 'inactive',
+    roles: [] as string[],       
   })
 
-  /* ------------------ styles ------------------ */
   const inputClass =
     'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
   const cardClass =
     'p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4'
 
-  /* ------------------ chargement ------------------ */
+  /* ------------------ chargement données ------------------ */
   useEffect(() => {
     if (id) {
       fetchUser(id)
       fetchFormations()
+      fetchRoles()
     }
-  }, [id, fetchUser, fetchFormations])
+  }, [id, fetchUser, fetchFormations, fetchRoles])
 
   /* ------------------ remplissage des champs ------------------ */
   useEffect(() => {
@@ -42,17 +43,14 @@ export default function EditUserPage() {
       setFormData({
         id: user.id || '',
         email: user.email || '',
-        username: user.username || '',
         fullname: user.fullname || '',
-        password: '', // on ne pré-remplit pas
+        password: '', 
         status: user.status || 'active',
-        roles: user.roles?.map((r: any) => r.name) || [],
-        formations: user.formations?.map((f: any) => f.id) || [],
+        roles: user.roles?.map((r: any) => r.id) || [],       
       })
     }
   }, [user])
 
-  /* ------------------ handlers ------------------ */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -60,7 +58,7 @@ export default function EditUserPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  /* formations : toggle tags */
+  /* toggle formation */
   const toggleFormation = (formationId: string) =>
     setFormData(prev => ({
       ...prev,
@@ -69,28 +67,18 @@ export default function EditUserPage() {
         : [...prev.formations, formationId],
     }))
 
-  /* rôles : ajout / suppression */
-  const handleRoleChange = (index: number, value: string) => {
-    const updated = [...formData.roles]
-    updated[index] = value
-    setFormData(prev => ({ ...prev, roles: updated }))
-  }
-  const addRole = () =>
-    setFormData(prev => ({ ...prev, roles: [...prev.roles, ''] }))
-  const removeRole = (index: number) =>
+  /* toggle rôle */
+  const toggleRole = (roleId: string) =>
     setFormData(prev => ({
       ...prev,
-      roles: prev.roles.filter((_, i) => i !== index),
+      roles: prev.roles.includes(roleId)
+        ? prev.roles.filter(r => r !== roleId)
+        : [...prev.roles, roleId],
     }))
 
-  /* ------------------ submit ------------------ */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const payload = {
-      ...formData,
-      roles: formData.roles.filter(r => r.trim() !== ''),
-    }
-    updateUser(id!, payload)
+    updateUser(id!, formData)
     navigate({ to: '/crud/users' })
   }
 
@@ -110,14 +98,13 @@ export default function EditUserPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
-          {/* --- Informations principales --- */}
+          {/* --- Infos principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               { name: 'id', placeholder: 'ID', type: 'text' },
               { name: 'email', placeholder: 'Email', type: 'email' },
-              { name: 'username', placeholder: "Nom d'utilisateur", type: 'text' },
               { name: 'fullname', placeholder: 'Nom complet', type: 'text' },
-              { name: 'password', placeholder: 'Nouveau mot de passe (laisser vide pour garder)', type: 'password' },
+              { name: 'password', placeholder: 'Nouveau mot de passe (laisser vide)', type: 'password' },
               {
                 name: 'status',
                 placeholder: 'Statut',
@@ -153,62 +140,32 @@ export default function EditUserPage() {
             )}
           </div>
 
-          {/* --- Rôles dynamiques --- */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-              Rôles
-            </h3>
-            {formData.roles.map((role, idx) => (
-              <div key={idx} className={cardClass}>
-                <input
-                  value={role}
-                  onChange={e => handleRoleChange(idx, e.target.value)}
-                  placeholder={`Rôle ${idx + 1}`}
-                  className={inputClass}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeRole(idx)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm"
-                >
-                  Supprimer
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addRole}
-              className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"
-            >
-              + Ajouter rôle
-            </button>
-          </div>
-
-          {/* --- Formations (tags) --- */}
+          {/* --- Rôles (boutons comme dans NewUserPage) --- */}
           <div className={cardClass}>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Formations
-            </h3>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {allFormations.map(f => {
-                const isSelected = formData.formations.includes(f.id)
-                return (
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rôles</h3>
+            {loadingRoles ? (
+              <p className="text-gray-500">Chargement…</p>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                {allRoles.map(role => (
                   <button
-                    key={f.id}
                     type="button"
-                    onClick={() => toggleFormation(f.id)}
-                    className={`px-3 py-1 rounded-full text-sm border cursor-pointer
-                      ${isSelected
-                        ? 'bg-sky-600 text-white border-sky-600'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                    key={role.id}
+                    onClick={() => toggleRole(role.id)}
+                    className={`px-3 py-1 rounded-full text-sm border transition-colors
+                      ${
+                        formData.roles.includes(role.id)
+                          ? 'bg-indigo-600 text-white border-indigo-600'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                   >
-                    {f.title}
+                    {role.name}
                   </button>
-                )
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
+
 
           {/* --- Bouton final --- */}
           <div className="text-center">

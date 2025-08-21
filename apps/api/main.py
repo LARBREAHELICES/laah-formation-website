@@ -5,6 +5,7 @@ from app.endpoints.auth import router as routerAuth
 from app.endpoints.module import router as routerModule
 from app.endpoints.tags import router as routeTag
 from app.endpoints.user import router as routeUser
+from app.endpoints.role import router as routeRole
 
 app = FastAPI()
 
@@ -24,7 +25,7 @@ app.add_middleware(
 routers = APIRouter()
 
 # Inclure les routers
-routes = [routerAuth, routerFormation, routerModule, routeTag, routeUser]
+routes = [routerAuth, routerFormation, routerModule, routeTag, routeUser, routeRole]
 
 for route in routes:
     app.include_router(route)

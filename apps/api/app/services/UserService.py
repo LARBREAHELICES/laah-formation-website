@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.User import User
 from app.schemas.schema_app import UserRead
+from app.schemas.schema_app import RoleRead  
 
 class UserService:
     def __init__(self, session: Session):
@@ -21,7 +22,8 @@ class UserService:
             id=user.id,
             fullname=user.fullname,
             email=user.email,
-            status = user.status
+            status = user.status,
+            roles=[RoleRead(id=r.id, name=r.name) for r in user.roles]
         )
 
     def all(self) -> List[UserRead]:
@@ -32,7 +34,8 @@ class UserService:
                 id = user.id,
                 fullname=user.fullname,
                 email=user.email,
-                status = user.status
+                status = user.status,
+                roles=[RoleRead(id=r.id, name=r.name) for r in user.roles]
             ) 
             for user in users 
         ]
