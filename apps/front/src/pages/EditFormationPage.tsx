@@ -10,7 +10,7 @@ export default function EditFormationPage() {
   const navigate = useNavigate()
   const { id } = useParams({ from: '/_authenticated/crud/formations/$id/edit' })
 
-  /* ------------------ stores ------------------ */
+ 
   const { formations, updateFormation } = useFormationStore()
   const { tags: allTags, fetchTags } = useTagStore()
   const { modules: allModules, fetchModules } = useModuleStore()
@@ -18,27 +18,29 @@ export default function EditFormationPage() {
   const existingFormation = formations.find(f => f.id === id)
   const [formData, setFormData] = useState(() => existingFormation || null)
 
-  /* ------------------ chargement des listes ------------------ */
+
   useEffect(() => {
     fetchTags()
     fetchModules()
   }, [fetchTags, fetchModules])
 
-  /* Synchroniser formData avec existingFormation après chargement des données */
-  useEffect(() => {
-    if (existingFormation && allTags.length > 0 && allModules.length > 0) {
-      setFormData(existingFormation)
-    }
-  }, [existingFormation, allTags, allModules])
+useEffect(() => {
+  if (existingFormation && allTags.length > 0 && allModules.length > 0) {
+    setFormData({
+      ...existingFormation,
+      tags: existingFormation.tags?.map((t: any) => t.id) || [],
+      modules: existingFormation.modules?.map((m: any) => m.id) || [],
+    })
+  }
+}, [existingFormation, allTags, allModules])
 
-  /* Redirection si la formation n'existe pas */
+
   useEffect(() => {
     if (!existingFormation && allTags.length > 0 && allModules.length > 0) {
       navigate({ to: '/crud/formations' })
     }
   }, [existingFormation, navigate, allTags, allModules])
 
-  /* Indicateur de chargement */
   if (!formData || allTags.length === 0 || allModules.length === 0) {
     return (
       <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
@@ -49,7 +51,6 @@ export default function EditFormationPage() {
     )
   }
 
-  /* ------------------ handlers ------------------ */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -108,7 +109,7 @@ export default function EditFormationPage() {
     navigate({ to: '/crud/formations' })
   }
 
-  /* ------------------ styles ------------------ */
+  
   const inputClass =
     'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
   const cardClass =
@@ -136,7 +137,6 @@ export default function EditFormationPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
-          {/* ---------- informations principales ---------- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               { name: 'title', placeholder: 'Titre', type: 'text' },
@@ -189,7 +189,6 @@ export default function EditFormationPage() {
             )}
           </div>
 
-          {/* ---------- champs longs ---------- */}
           {[
             { name: 'description', placeholder: 'Description' },
             { name: 'objectives', placeholder: 'Objectifs' },
@@ -200,7 +199,6 @@ export default function EditFormationPage() {
             <textarea key={field.name} name={field.name} placeholder={field.placeholder} value={(formData as any)[field.name] || ''} onChange={handleChange} rows={4} className={inputClass} />
           ))}
 
-          {/* ---------- tags (boutons cliquables) ---------- */}
           <div className={cardClass}>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tags</h3>
             <div className="flex flex-wrap gap-2">
@@ -224,7 +222,6 @@ export default function EditFormationPage() {
             </div>
           </div>
 
-          {/* ---------- modules (boutons cliquables) ---------- */}
           <div className={cardClass}>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Modules</h3>
             <div className="flex flex-wrap gap-2">
@@ -248,7 +245,7 @@ export default function EditFormationPage() {
             </div>
           </div>
 
-          {/* ---------- sessions dynamiques ---------- */}
+
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Sessions</h3>
             {formData.sessions?.map((session, idx) => (
