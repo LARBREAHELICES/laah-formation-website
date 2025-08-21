@@ -15,7 +15,7 @@ export interface Formation {
   evaluation_methods: string;
   qualiopi_certificate_number: string;
   qualiopi_certificate_date: string;
-  rate: string;
+  rate: number;
   sessions: any[];
   modules: any[];
   trainers: any[];
@@ -29,6 +29,9 @@ interface FormationState {
   error: string | null;
   fetchFormations: () => Promise<void>;
   fetchFormation: (id: string) => Promise<void>;
+  createFormation: (formation: Formation) => Promise<void>;
+  deleteFormation: (id: string) => Promise<void>;
+  updateFormation: (formation: Formation) => Promise<void>;
   
 }
 

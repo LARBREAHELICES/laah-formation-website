@@ -2,6 +2,7 @@ import { create } from "zustand"
 
 const apiUrl = import.meta.env.VITE_API_URL
 
+
 export interface User {
   id: string;
   fullname: string;

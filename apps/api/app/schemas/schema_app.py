@@ -6,6 +6,7 @@ from decimal import Decimal
 from typing import List, Optional
 from datetime import date, datetime
 
+
 class TagRead(BaseModel):
     id: str
     name: str
@@ -30,6 +31,7 @@ class UserRead(BaseModel):
     fullname: str
     status : str
     email: str
+
     
 
 class AttachmentRead(BaseModel):

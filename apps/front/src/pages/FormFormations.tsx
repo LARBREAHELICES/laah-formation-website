@@ -44,7 +44,7 @@ export default function NewFormationPage() {
       price: string
     }[],
     attachments: [] as string[],
-    users: [] as string[],
+    trainers: [] as string[],
   })
 
   useEffect(() => {
@@ -124,12 +124,10 @@ export default function NewFormationPage() {
   ...formData,
   duration_hours: formData.duration_hours ? Number(formData.duration_hours) : 0,
   classroom_student_counts: formData.classroom_student_counts ? Number(formData.classroom_student_counts) : 0,
-  total_amount: formData.total_amount ? parseFloat(formData.total_amount) : null,
+  total_amount: formData.total_amount ? parseFloat(formData.total_amount) : 0,
   
- 
-  rate: formData.rate || null,
+  rate: formData.rate ? parseFloat(formData.rate) : 0,
 
-  
   qualiopi_certificate_date: formData.qualiopi_certificate_date 
     ? new Date(formData.qualiopi_certificate_date).toISOString()
     : null,
@@ -143,6 +141,8 @@ export default function NewFormationPage() {
     max_seats: s.max_seats ? Number(s.max_seats) : 0,
     price: s.price ? parseFloat(s.price) : 0,
   })),
+  trainers: [],
+  attachments: formData.attachments || [],
 }
 
     createFormation(payload)

@@ -307,7 +307,7 @@ class FormationService:
             trainers=[
                 UserRead(
                     id = u.id,
-                    fullname=u.fullname, status=u.status)
+                    fullname=u.fullname, status=u.status, email=u.email)
                 for u in formation.users
             ],
             attachments=[
