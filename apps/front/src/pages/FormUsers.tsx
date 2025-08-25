@@ -7,7 +7,7 @@ import { useNavigate } from '@tanstack/react-router'
 export default function NewUserPage() {
   const navigate = useNavigate()
 
-  const { addUser } = useUserStore()
+  const { createUser } = useUserStore()
   const { roles: allRoles, fetchRoles, loading } = useRoleStore()
 
   const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ export default function NewUserPage() {
     fullname: '',
     password: '',
     status: 'active' as 'active' | 'inactive',
-    roles: [] as string[], // on stocke les IDs de rôles
+    roles: [] as string[], 
   })
 
   useEffect(() => {
@@ -45,8 +45,7 @@ export default function NewUserPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // on envoie formData avec roles = [liste d'IDs]
-    addUser(formData)
+    createUser(formData)
     navigate({ to: '/crud/users' })
   }
 

@@ -145,7 +145,48 @@ export default function NewFormationPage() {
   attachments: formData.attachments || [],
 }
 
-    createFormation(payload)
+    
+const formationTest= 
+{
+  "title": "test",
+  "slug": "test",
+  "description": "test",
+  "objectives": "test",
+  "prerequisites": "test",
+  "duration_hours": 30,
+  "pedagogy_methods": "test",
+  "evaluation_methods": "test",
+  "qualiopi_certificate_number": "123",
+  "qualiopi_certificate_date": "2025-08-25T00:00:00.000Z",
+  "prefecture_registration_number": "123",
+  "qualiopi_scope": "actions de formation",
+  "status": "draft",
+  "order_number": "1233",
+  "order_date": "2025-08-25T00:00:00.000Z",
+  "total_amount": 300,
+  "classroom_student_counts": 10,
+  "rate": 0,
+  "tags": [
+    "6162bbbc-5c15-4f63-be70-2a4f2d18375c"
+  ],
+  "modules": [
+    "04506c0f-53c1-4dd6-84b1-c5c46376bf6e"
+  ],
+  "sessions": [
+    {
+      "start_date": "2025-08-25",
+      "end_date": "2025-08-29",
+      "location": "Paris",
+      "max_seats": 10,
+      "price": 300
+    }
+  ],
+  "attachments": [],
+  "trainers": []
+}
+
+
+    createFormation(formationTest)
     navigate({ to: '/crud/formations' })
   }
 

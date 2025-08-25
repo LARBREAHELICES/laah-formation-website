@@ -8,7 +8,7 @@ from app.models.UserRole import UserRole
 
 class User(SQLModel, table=True):  # type: ignore[misc]
     id: str | None = Field(default=None, primary_key=True)
-    email: str
+    email: Optional [str] = None
     username: str
     fullname: str
     password: Optional[str] = None

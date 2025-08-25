@@ -9,6 +9,7 @@ from app.models.Module import Module
 from app.models.Tag import Tag
 from app.models.Session import Session as SessionModel
 from app.models.User import User
+from app.services.SlugService import SlugService
 import uuid
 
 from app.schemas.schema_app import (
@@ -62,12 +63,14 @@ class FormationService:
         return  self._to_read_model(formation)
 
 
+
     def create(self, data: FormationCreate) -> Optional[FormationRead]:
+
         # 1. Créer la formation
         formation = Formation(
             id=str(uuid.uuid4()),
             title=data.title,
-            slug=data.slug,
+            slug=SlugService ().slugify(data.slug if data.slug else data.title)  ,
             description=data.description,
             objectives=data.objectives,
             prerequisites=data.prerequisites,
@@ -143,10 +146,12 @@ class FormationService:
                 self.session.add(attachment_obj)
 
         # 7. Commit transaction
+        print ("formation", formation)
         self.session.commit()
         self.session.refresh(formation)
 
         return self._to_read_model(formation)
+
     
     def delete(self, formation_id: str) -> bool:
         """

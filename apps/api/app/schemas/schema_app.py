@@ -131,6 +131,14 @@ class FormationCreate(FormationUpdate):
     title: str
     slug: str
 
+class UserCreate(BaseModel):
+    fullname: str
+    email: str
+    username: str
+    password: str
+    status: str
+    
+
 class TagBase(BaseModel):
     name: str
 
@@ -155,3 +163,10 @@ class ModuleUpdate(BaseModel):
     description: Optional[str] = None
     order_index: Optional[int] = None
 
+
+class UserUpdate(BaseModel):
+    fullname: Optional[str] = None
+    email: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    status: Optional[str] = None
