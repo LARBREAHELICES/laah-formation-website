@@ -70,7 +70,7 @@ class FormationService:
         formation = Formation(
             id=str(uuid.uuid4()),
             title=data.title,
-            slug=SlugService ().slugify(data.slug if data.slug else data.title)  ,
+            slug=SlugService().slugify(data.slug if data.slug else data.title),
             description=data.description,
             objectives=data.objectives,
             prerequisites=data.prerequisites,
@@ -89,15 +89,13 @@ class FormationService:
             rate=data.rate
         )
         self.session.add(formation)
-
+        
         # 2. Associer les tags
         if data.tags:
             for tag_data in data.tags:
                 tag = self.session.get(Tag, tag_data.id)
-                if not tag:
-                    tag = Tag(id=tag_data.id or str(uuid.uuid4()), name=tag_data.name)
-                    self.session.add(tag)
-                formation.tags.append(tag)
+                if tag:
+                    formation.tags.append(tag)
 
         # 3. Ajouter les sessions
         if data.sessions:
@@ -115,38 +113,30 @@ class FormationService:
 
         # 4. Ajouter les modules
         if data.modules:
-            for m in data.modules:
-                module_obj = Module(
-                    id=str(uuid.uuid4()),
-                    formation_id=formation.id,
-                    title=m.title,
-                    duration_hours=m.duration_hours,
-                    description=m.description,
-                    order_index=m.order_index or 0
-                )
-                self.session.add(module_obj)
+            for module in data.modules:
+                module = self.session.get(Module, module.id)
+                if module:
+                    formation.tags.append(module)
 
         # 5. Associer les users
         if data.trainers:
             for u in data.trainers:
-                user = self.session.get(User, u.id)
+                user = self.session.get(User, u.id) # { id: str }
                 if user:
                     formation.users.append(user)
 
         # 6. Ajouter les attachments
         if data.attachments:
-            for a in data.attachments:
-                attachment_obj = Attachment(
+            for attachment in data.attachments:
+                attachment = Attachment(
                     id=str(uuid.uuid4()),
                     formation_id=formation.id,
-                    label=a.label,
-                    file_url=a.file_url,
-                    file_type=a.file_type or "application/pdf"
+                    label=attachment.label or "Github",
+                    file_url=attachment.file_url
                 )
-                self.session.add(attachment_obj)
+                self.session.add(attachment)
 
         # 7. Commit transaction
-        print ("formation", formation)
         self.session.commit()
         self.session.refresh(formation)
 

@@ -16,7 +16,7 @@ class RoleRead(BaseModel):
     name: str
 
 class SessionRead(BaseModel):
-    id: str
+    id: Optional[str] = None
     start_date: datetime
     end_date: datetime
     location: str
@@ -25,25 +25,23 @@ class SessionRead(BaseModel):
 
 class ModuleRead(BaseModel):
     id: str
-    title: str
-    duration_hours: int
-    description: str
-    order_index: int
+    title: Optional[str] = None
+    duration_hours: Optional[int] = None
+    description: Optional[str] = None
+    order_index: Optional[int] = None
 
 class UserRead(BaseModel):
     id: str
     fullname: str
-    status : str
-    email: str
+    status : Optional[str] = None
+    email: Optional[str] = None
     roles:List[RoleRead]=  []
 
-    
-
 class AttachmentRead(BaseModel):
-    id: str
-    label: str
+    id: Optional[str] = None
+    label: Optional[str] = None
     file_url: str
-    file_type: str = "application/pdf"
+    file_type: Optional[str] = None
 
 # Schéma principal
 class FormationRead(BaseModel):
