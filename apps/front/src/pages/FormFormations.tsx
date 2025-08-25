@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useFormationStore } from '@/stores/useFormation'
 import { useTagStore } from '@/stores/useTag'
+import { useUserStore } from '@/stores/useUser'
 import { useModuleStore } from '@/stores/useModule'
 import { useNavigate } from '@tanstack/react-router'
 
@@ -13,6 +14,8 @@ export default function NewFormationPage() {
   const { createFormation } = useFormationStore()
   const { tags: allTags, fetchTags } = useTagStore()
   const { modules: allModules, fetchModules } = useModuleStore()
+  const { users: allUsers, fetchUsers } = useUserStore()
+  const [attachmentInput, setAttachmentInput] = useState('')
 
   const [formData, setFormData] = useState({
     title: '',
@@ -50,6 +53,12 @@ export default function NewFormationPage() {
     fetchTags()
     fetchModules()
   }, [fetchTags, fetchModules])
+
+  useEffect(() => {
+    fetchTags()
+    fetchModules()
+    fetchUsers() 
+  }, [fetchTags, fetchModules, fetchUsers])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -117,6 +126,25 @@ export default function NewFormationPage() {
       sessions: prev.sessions.filter((_, i) => i !== index),
     }))
 
+
+    const addAttachment = () => {
+  const url = attachmentInput.trim()
+  if (!url) return
+  setFormData(prev => ({
+    ...prev,
+    attachments: [...prev.attachments, url],
+  }))
+  setAttachmentInput('')
+}
+
+const removeAttachment = (index: number) => {
+  setFormData(prev => ({
+    ...prev,
+    attachments: prev.attachments.filter((_, i) => i !== index),
+  }))
+}
+
+    
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const payload = {
@@ -140,12 +168,36 @@ export default function NewFormationPage() {
     max_seats: s.max_seats ? Number(s.max_seats) : 0,
     price: s.price ? parseFloat(s.price) : 0,
   })),
-  trainers: [],
-  attachments: formData.attachments || [],
+
+
+   tags: formData.tags.map(tagId => {
+      const tag = allTags.find(t => t.id === tagId)
+      return { id: tagId, name: tag?.name || '' }
+    }),
+    
+    modules: formData.modules.map(moduleId => {
+      const module = allModules.find(m => m.id === moduleId)
+      return { 
+        id: moduleId, 
+        name: module?.title || '', 
+        description: module?.description || '' 
+      }
+    }),
+    
+    trainers: formData.trainers.map(trainerId => {
+      const trainer = allUsers.find(u => u.id === trainerId)
+      return { 
+        id: trainerId, 
+        fullname: trainer?.fullname || '', 
+        role: trainer?.roles || '' 
+      }
+    }),
+
+  attachments: formData.attachments.map(url => ({ file_url: url })),
 }
   console.log(payload)
-    //createFormation(payload)
-    //navigate({ to: '/crud/formations' })
+    createFormation(payload)
+    navigate({ to: '/crud/formations' })
   }
 
   const inputClass =
@@ -374,6 +426,7 @@ export default function NewFormationPage() {
                 </button>
               </div>
             ))}
+            
             <button
               type="button"
               onClick={addSession}
@@ -382,6 +435,77 @@ export default function NewFormationPage() {
               + Ajouter une session
             </button>
           </div>
+          <div className={cardClass}>
+  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Formateurs</h3>
+    <div className="flex flex-wrap gap-2">
+      {allUsers.map(user => {
+        const isSelected = formData.trainers.includes(user.id)
+        return (
+          <button
+            key={user.id}
+            type="button"
+            onClick={() => handleArrayChange('trainers', user.id)}
+            className={`px-3 py-1 rounded-full text-sm border 
+              ${isSelected 
+                ? 'bg-purple-600 text-white border-purple-600' 
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+              }`}
+          >
+            {user.fullname}
+          </button>
+        )
+      })}
+    </div>
+  </div>
+  <div className={cardClass}>
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      Pièces jointes
+    </h3>
+
+    {/* Ajout */}
+    <div className="flex gap-2">
+      <input
+        type="url"
+        placeholder="https://exemple.com/fichier.pdf"
+        value={attachmentInput}
+        onChange={e => setAttachmentInput(e.target.value)}
+        className={inputClass}
+      />
+      <button
+        type="button"
+        onClick={addAttachment}
+        className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700"
+      >
+        Ajouter
+      </button>
+    </div>
+
+    {/* Liste */}
+    <div className="mt-3 space-y-2">
+      {formData.attachments.map((url, idx) => (
+        <div
+          key={idx}
+          className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-lg p-2"
+        >
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-indigo-600 dark:text-indigo-400 underline truncate max-w-[75%]"
+          >
+            {url}
+          </a>
+          <button
+            type="button"
+            onClick={() => removeAttachment(idx)}
+            className="text-red-600 hover:text-red-800 text-xs font-semibold"
+          >
+            Retirer
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
 
           {/* --- bouton final --- */}
           <div className="text-center">

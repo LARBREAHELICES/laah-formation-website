@@ -116,7 +116,7 @@ class FormationService:
             for module in data.modules:
                 module = self.session.get(Module, module.id)
                 if module:
-                    formation.tags.append(module)
+                    formation.modules.append(module)
 
         # 5. Associer les users
         if data.trainers:
