@@ -24,6 +24,7 @@ import { Route as FormationsIdIndexRouteImport } from './routes/formations/$id/i
 import { Route as FormationsIdSessionsIndexRouteImport } from './routes/formations/$id/sessions/index'
 import { Route as AuthenticatedCrudUsersIndexRouteImport } from './routes/_authenticated/crud/users/index'
 import { Route as AuthenticatedCrudFormationsIndexRouteImport } from './routes/_authenticated/crud/formations/index'
+import { Route as AuthenticatedCrudBackofficeIndexRouteImport } from './routes/_authenticated/crud/backoffice/index'
 import { Route as AuthenticatedCrudUsersNewRouteImport } from './routes/_authenticated/crud/users/new'
 import { Route as AuthenticatedCrudFormationsNewRouteImport } from './routes/_authenticated/crud/formations/new'
 import { Route as FormationsIdSessionsSessionIdRegisterRouteImport } from './routes/formations/$id/sessions/$sessionId/register'
@@ -107,6 +108,12 @@ const AuthenticatedCrudFormationsIndexRoute =
     path: '/crud/formations/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCrudBackofficeIndexRoute =
+  AuthenticatedCrudBackofficeIndexRouteImport.update({
+    id: '/crud/backoffice/',
+    path: '/crud/backoffice/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedCrudUsersNewRoute =
   AuthenticatedCrudUsersNewRouteImport.update({
     id: '/crud/users/new',
@@ -152,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/formations/$id': typeof FormationsIdIndexRoute
   '/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
   '/crud/users/new': typeof AuthenticatedCrudUsersNewRoute
+  '/crud/backoffice': typeof AuthenticatedCrudBackofficeIndexRoute
   '/crud/formations': typeof AuthenticatedCrudFormationsIndexRoute
   '/crud/users': typeof AuthenticatedCrudUsersIndexRoute
   '/formations/$id/sessions': typeof FormationsIdSessionsIndexRoute
@@ -173,6 +181,7 @@ export interface FileRoutesByTo {
   '/formations/$id': typeof FormationsIdIndexRoute
   '/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
   '/crud/users/new': typeof AuthenticatedCrudUsersNewRoute
+  '/crud/backoffice': typeof AuthenticatedCrudBackofficeIndexRoute
   '/crud/formations': typeof AuthenticatedCrudFormationsIndexRoute
   '/crud/users': typeof AuthenticatedCrudUsersIndexRoute
   '/formations/$id/sessions': typeof FormationsIdSessionsIndexRoute
@@ -196,6 +205,7 @@ export interface FileRoutesById {
   '/formations/$id/': typeof FormationsIdIndexRoute
   '/_authenticated/crud/formations/new': typeof AuthenticatedCrudFormationsNewRoute
   '/_authenticated/crud/users/new': typeof AuthenticatedCrudUsersNewRoute
+  '/_authenticated/crud/backoffice/': typeof AuthenticatedCrudBackofficeIndexRoute
   '/_authenticated/crud/formations/': typeof AuthenticatedCrudFormationsIndexRoute
   '/_authenticated/crud/users/': typeof AuthenticatedCrudUsersIndexRoute
   '/formations/$id/sessions/': typeof FormationsIdSessionsIndexRoute
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/formations/$id'
     | '/crud/formations/new'
     | '/crud/users/new'
+    | '/crud/backoffice'
     | '/crud/formations'
     | '/crud/users'
     | '/formations/$id/sessions'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/formations/$id'
     | '/crud/formations/new'
     | '/crud/users/new'
+    | '/crud/backoffice'
     | '/crud/formations'
     | '/crud/users'
     | '/formations/$id/sessions'
@@ -262,6 +274,7 @@ export interface FileRouteTypes {
     | '/formations/$id/'
     | '/_authenticated/crud/formations/new'
     | '/_authenticated/crud/users/new'
+    | '/_authenticated/crud/backoffice/'
     | '/_authenticated/crud/formations/'
     | '/_authenticated/crud/users/'
     | '/formations/$id/sessions/'
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrudFormationsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/crud/backoffice/': {
+      id: '/_authenticated/crud/backoffice/'
+      path: '/crud/backoffice'
+      fullPath: '/crud/backoffice'
+      preLoaderRoute: typeof AuthenticatedCrudBackofficeIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/crud/users/new': {
       id: '/_authenticated/crud/users/new'
       path: '/crud/users/new'
@@ -435,6 +455,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedCrudFormationsNewRoute: typeof AuthenticatedCrudFormationsNewRoute
   AuthenticatedCrudUsersNewRoute: typeof AuthenticatedCrudUsersNewRoute
+  AuthenticatedCrudBackofficeIndexRoute: typeof AuthenticatedCrudBackofficeIndexRoute
   AuthenticatedCrudFormationsIndexRoute: typeof AuthenticatedCrudFormationsIndexRoute
   AuthenticatedCrudUsersIndexRoute: typeof AuthenticatedCrudUsersIndexRoute
   AuthenticatedCrudFormationsIdEditRoute: typeof AuthenticatedCrudFormationsIdEditRoute
@@ -446,6 +467,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedCrudFormationsNewRoute: AuthenticatedCrudFormationsNewRoute,
   AuthenticatedCrudUsersNewRoute: AuthenticatedCrudUsersNewRoute,
+  AuthenticatedCrudBackofficeIndexRoute: AuthenticatedCrudBackofficeIndexRoute,
   AuthenticatedCrudFormationsIndexRoute: AuthenticatedCrudFormationsIndexRoute,
   AuthenticatedCrudUsersIndexRoute: AuthenticatedCrudUsersIndexRoute,
   AuthenticatedCrudFormationsIdEditRoute:
