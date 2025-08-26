@@ -1,6 +1,7 @@
 'use client'
 import { useEffect } from 'react'
 import { useFormationStore } from '@/stores/useFormation'
+import { Link } from '@tanstack/react-router'
 
 export default function FeaturedFormations() {
   const { formations, loading, error, fetchFormations } = useFormationStore()
@@ -59,19 +60,19 @@ export default function FeaturedFormations() {
                 </div>
               </div>
 
-              <a
-                href={`/formations/${f.id}`}
+              <Link
+                to={`/formations/${f.id}`}
                 className="mt-6 block w-full rounded-lg bg-indigo-600 dark:bg-indigo-500 py-2.5 text-center text-sm font-semibold text-white hover:bg-indigo-500 dark:hover:bg-indigo-400"
               >
                 Learn more
-              </a>
+              </Link>
             </article>
           ))}
         </div>
       </div>
 <div className="mt-10 text-center">
-  <a
-    href="/formations"
+  <Link
+    to="/formations"
     className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400"
   >
     Voir toutes nos formations
@@ -85,7 +86,7 @@ export default function FeaturedFormations() {
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
     </svg>
-  </a>
+  </Link>
 </div>
       {/* Bottom gradient blurred shape */}
       <div

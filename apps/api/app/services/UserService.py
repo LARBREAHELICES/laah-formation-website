@@ -5,7 +5,7 @@ from datetime import datetime
 import uuid
 
 from app.models.User import User
-from app.models.Role import Role  # Ajoutez cet import
+from app.models.Role import Role
 from app.schemas.schema_app import UserRead, UserCreate, UserUpdate
 from app.schemas.schema_app import RoleRead  
 
@@ -26,23 +26,17 @@ class UserService:
             updated_at=datetime.utcnow()
         )
         
+            # Ajouter les rôles
+        if user_data.roles:
+            role_ids = [r.id for r in user_data.roles]
+            roles = self.session.query(Role).filter(Role.id.in_(role_ids)).all()
+            user.roles = roles
         
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
         
         return self._convert_to_user_read(user)
-
-    def get(self, user_id: str) -> Optional[UserRead]:
-        user = self.session.get(User, user_id)
-        if not user:
-            return None
-            
-        return self._convert_to_user_read(user)
-
-    def all(self) -> List[UserRead]:
-        users = self.session.query(User).all()
-        return [self._convert_to_user_read(user) for user in users]
 
     def update(self, user_id: str, user_data: UserUpdate) -> Optional[UserRead]:
         user = self.session.get(User, user_id)
@@ -61,11 +55,27 @@ class UserService:
         if user_data.status is not None:
             user.status = user_data.status
             
+                # Mettre à jour les rôles
+        if user_data.roles is not None:
+            role_ids = [r.id for r in user_data.roles]
+            roles = self.session.query(Role).filter(Role.id.in_(role_ids)).all()
+            user.roles = roles
+                    
         user.updated_at = datetime.utcnow()
         self.session.commit()
         self.session.refresh(user)
         
         return self._convert_to_user_read(user)
+
+    def get(self, user_id: str) -> Optional[UserRead]:
+        user = self.session.get(User, user_id)
+        if not user:
+            return None
+        return self._convert_to_user_read(user)
+
+    def all(self) -> List[UserRead]:
+        users = self.session.query(User).all()
+        return [self._convert_to_user_read(user) for user in users]
 
     def delete(self, user_id: str) -> bool:
         user = self.session.get(User, user_id)

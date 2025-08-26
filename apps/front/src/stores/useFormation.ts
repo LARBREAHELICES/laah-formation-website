@@ -111,6 +111,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     }
   },
   updateFormation: async (formation: Formation) => {
+    
     set({ loading: true });
     try {
       const res = await fetch(`${apiUrl}/formation/${formation.id}`, {

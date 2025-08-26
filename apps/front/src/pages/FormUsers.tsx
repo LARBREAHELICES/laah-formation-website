@@ -17,7 +17,7 @@ export default function NewUserPage() {
     fullname: '',
     password: '',
     status: 'active' as 'active' | 'inactive',
-    roles: [] as string[], 
+    roles: [] as { id: string; name: string }[],
   })
 
   useEffect(() => {
@@ -34,14 +34,17 @@ export default function NewUserPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const toggleRole = (roleId: string) => {
-    setFormData(prev => ({
+  const toggleRole = (role: { id: string; name: string }) => {
+  setFormData(prev => {
+    const exists = prev.roles.some(r => r.id === role.id)
+    return {
       ...prev,
-      roles: prev.roles.includes(roleId)
-        ? prev.roles.filter(r => r !== roleId)
-        : [...prev.roles, roleId],
-    }))
-  }
+      roles: exists
+        ? prev.roles.filter(r => r.id !== role.id)
+        : [...prev.roles, role],
+    }
+  })
+}
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,7 +76,6 @@ export default function NewUserPage() {
           {/* --- Infos principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
-              { name: 'id', placeholder: 'ID', type: 'text' },
               { name: 'email', placeholder: 'Email', type: 'email' },
               { name: 'username', placeholder: "Nom d'utilisateur", type: 'text' },
               { name: 'fullname', placeholder: 'Nom complet', type: 'text' },
@@ -119,20 +121,20 @@ export default function NewUserPage() {
   ) : (
     <div className="flex flex-wrap gap-3">
       {allRoles.map(role => (
-        <button
+                <button
           type="button"
           key={role.id}
-          onClick={() => toggleRole(role.id)}
+          onClick={() => toggleRole(role)}
           className={`px-3 py-1 rounded-full text-sm border transition-colors
             ${
-              formData.roles.includes(role.id)
+              formData.roles.some(r => r.id === role.id)
                 ? 'bg-indigo-600 text-white border-indigo-600'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
         >
           {role.name}
         </button>
-      ))}
+              ))}
     </div>
   )}
 </div>

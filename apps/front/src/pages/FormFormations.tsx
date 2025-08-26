@@ -438,7 +438,7 @@ const removeAttachment = (index: number) => {
           <div className={cardClass}>
   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Formateurs</h3>
     <div className="flex flex-wrap gap-2">
-      {allUsers.map(user => {
+      {allUsers.filter(user => user.roles?.some(role => role.name === 'teacher')).map(user => {
         const isSelected = formData.trainers.includes(user.id)
         return (
           <button

@@ -1,10 +1,13 @@
+import { Link } from '@tanstack/react-router'
+
 export default function HeroSection() {
   return (
     <section className="relative isolate bg-white dark:bg-gray-900">
 
+      {/* Décoration supérieure */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+        className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 pointer-events-none"
       >
         <div
           className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 dark:opacity-10 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
@@ -15,6 +18,7 @@ export default function HeroSection() {
         />
       </div>
 
+      {/* Contenu principal */}
       <div className="mx-auto max-w-3xl px-6 py-32 text-center sm:py-40 lg:px-8">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl lg:text-7xl">
           Advance Your Career with Expert-Led Training
@@ -25,24 +29,25 @@ export default function HeroSection() {
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <a
-            href="/formations"
+          <Link
+            to="/formations"
             className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-6 py-3 text-base font-semibold text-white shadow-md hover:bg-indigo-500 dark:hover:bg-indigo-400"
           >
             Explore Courses
-          </a>
-          <a
-            href="/contact"
+          </Link>
+          <Link
+            to="/contact"
             className="text-base font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400"
           >
             Contact <span aria-hidden="true">→</span>
-          </a>
+          </Link>
         </div>
       </div>
 
+      {/* Décoration inférieure */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+        className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)] pointer-events-none"
       >
         <div
           className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 dark:opacity-10 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"

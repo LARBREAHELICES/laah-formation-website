@@ -4,63 +4,124 @@ import { useState, useEffect } from 'react'
 import { useFormationStore } from '@/stores/useFormation'
 import { useTagStore } from '@/stores/useTag'
 import { useModuleStore } from '@/stores/useModule'
+import { useUserStore } from '@/stores/useUser'
 import { useNavigate, useParams } from '@tanstack/react-router'
 
 export default function EditFormationPage() {
   const navigate = useNavigate()
-  const { id } = useParams({ from: '/_authenticated/crud/formations/$id/edit' })
+  const { id } = useParams({ strict: false })
 
- 
-  const { formations, updateFormation } = useFormationStore()
+  const { formation, fetchFormation, updateFormation } = useFormationStore()
   const { tags: allTags, fetchTags } = useTagStore()
   const { modules: allModules, fetchModules } = useModuleStore()
+  const { users: allUsers, fetchUsers } = useUserStore()
+  const [attachmentInput, setAttachmentInput] = useState('')
 
-  const existingFormation = formations.find(f => f.id === id)
-  const [formData, setFormData] = useState(() => existingFormation || null)
+  const [formData, setFormData] = useState({
+    title: '',
+    slug: '',
+    description: '',
+    objectives: '',
+    prerequisites: '',
+    duration_hours: '',
+    pedagogy_methods: '',
+    evaluation_methods: '',
+    qualiopi_certificate_number: '',
+    qualiopi_certificate_date: '',
+    prefecture_registration_number: '',
+    qualiopi_scope: 'actions de formation',
+    status: 'draft' as 'draft' | 'published' | 'archived',
+    order_number: '',
+    order_date: '',
+    total_amount: '',
+    classroom_student_counts: '',
+    rate: '',
+    tags: [] as string[],
+    modules: [] as string[],
+    sessions: [] as {
+      id?: string
+      start_date: string
+      end_date: string
+      location: string
+      max_seats: string
+      price: string
+    }[],
+    attachments: [] as string[],
+    trainers: [] as string[],
+  })
 
+  const inputClass =
+    'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
+  const cardClass =
+    'p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4'
 
+  /* ------------------ chargement données ------------------ */
   useEffect(() => {
-    fetchTags()
-    fetchModules()
-  }, [fetchTags, fetchModules])
-
-useEffect(() => {
-  if (existingFormation && allTags.length > 0 && allModules.length > 0) {
-    setFormData({
-      ...existingFormation,
-      tags: existingFormation.tags?.map((t: any) => t.id) || [],
-      modules: existingFormation.modules?.map((m: any) => m.id) || [],
-    })
-  }
-}, [existingFormation, allTags, allModules])
-
-
-  useEffect(() => {
-    if (!existingFormation && allTags.length > 0 && allModules.length > 0) {
-      navigate({ to: '/crud/formations' })
+    if (id) {
+      fetchFormation(id)
+      fetchTags()
+      fetchModules()
+      fetchUsers()
     }
-  }, [existingFormation, navigate, allTags, allModules])
+  }, [id, fetchFormation, fetchTags, fetchModules, fetchUsers])
 
-  if (!formData || allTags.length === 0 || allModules.length === 0) {
-    return (
-      <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        </div>
-      </section>
-    )
-  }
+  /* ------------------ remplissage des champs ------------------ */
+  useEffect(() => {
+    if (formation) {
+      setFormData({
+        title: formation.title || '',
+        slug: formation.slug || '',
+        description: formation.description || '',
+        objectives: formation.objectives || '',
+        prerequisites: formation.prerequisites || '',
+        pedagogy_methods: formation.pedagogy_methods || '',
+        evaluation_methods: formation.evaluation_methods || '',
+        duration_hours: String(formation.duration_hours || ''),
+        classroom_student_counts: String(formation.classroom_student_counts || ''),
+        total_amount: String(formation.total_amount || ''),
+        rate: String(formation.rate || ''),
+        status: formation.status || 'draft',
+        qualiopi_scope: formation.qualiopi_scope || 'actions de formation',
+        qualiopi_certificate_number: formation.qualiopi_certificate_number || '',
+        qualiopi_certificate_date: formation.qualiopi_certificate_date?.split('T')[0] || '',
+        prefecture_registration_number: formation.prefecture_registration_number || '',
+        order_number: formation.order_number || '',
+        order_date: formation.order_date?.split('T')[0] || '',
+        tags: formation.tags?.map((t: any) => t.id) || [],
+        modules: formation.modules?.map((m: any) => m.id) || [],
+        trainers: formation.trainers?.map((t: any) => t.id) || [],
+        sessions: formation.sessions?.map((s: any) => ({
+          id: s.id,
+          start_date: s.start_date?.split('T')[0] || '',
+          end_date: s.end_date?.split('T')[0] || '',
+          location: s.location || '',
+          max_seats: String(s.max_seats || ''),
+          price: String(s.price || ''),
+        })) || [],
+        attachments: formation.attachments?.map((a: any) => a.file_url) || [],
+      })
+    }
+  }, [formation])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
-    setFormData(prev => (prev ? { ...prev, [name]: value } : null))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleArrayChange = (field: 'tags' | 'modules', value: string) => {
+  const handleNumericChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof typeof formData
+  ) => {
+    const value = e.target.value
+    if (/^\d*\.?\d*$/.test(value)) {
+      setFormData(prev => ({ ...prev, [field]: value }))
+    }
+  }
+
+  const handleArrayChange = (field: 'tags' | 'modules' | 'trainers', value: string) => {
     setFormData(prev => {
-      if (!prev) return null
       const arr = prev[field] as string[]
       return {
         ...prev,
@@ -74,76 +135,150 @@ useEffect(() => {
   const handleNestedChange = (
     index: number,
     key: keyof (typeof formData)['sessions'][0],
-    value: string | number
+    value: string
   ) => {
     setFormData(prev => {
-      if (!prev) return null
       const updated = [...prev.sessions]
       updated[index] = { ...updated[index], [key]: value }
       return { ...prev, sessions: updated }
     })
   }
 
+  const handleNestedNumericChange = (
+    index: number,
+    key: 'max_seats' | 'price',
+    value: string
+  ) => {
+    if (/^\d*\.?\d*$/.test(value)) {
+      handleNestedChange(index, key, value)
+    }
+  }
+
   const addSession = () =>
-    setFormData(prev =>
-      prev
-        ? {
-            ...prev,
-            sessions: [
-              ...prev.sessions,
-              { start_date: '', end_date: '', location: '', max_seats: 0, price: '' },
-            ],
-          }
-        : null
-    )
+    setFormData(prev => ({
+      ...prev,
+      sessions: [
+        ...prev.sessions,
+        { start_date: '', end_date: '', location: '', max_seats: '', price: '' },
+      ],
+    }))
 
   const removeSession = (index: number) =>
-    setFormData(prev =>
-      prev ? { ...prev, sessions: prev.sessions.filter((_, i) => i !== index) } : null
-    )
+    setFormData(prev => ({
+      ...prev,
+      sessions: prev.sessions.filter((_, i) => i !== index),
+    }))
 
-  const handleSubmit = (e: React.FormFormEvent) => {
+  const addAttachment = () => {
+    const url = attachmentInput.trim()
+    if (!url) return
+    setFormData(prev => ({ ...prev, attachments: [...prev.attachments, url] }))
+    setAttachmentInput('')
+  }
+
+  const removeAttachment = (index: number) =>
+    setFormData(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index),
+    }))
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData) return
-    updateFormation(formData)
+
+    const payload = {
+      title: formData.title || undefined,
+      slug: formData.slug || undefined,
+      description: formData.description || undefined,
+      objectives: formData.objectives || undefined,
+      prerequisites: formData.prerequisites || undefined,
+      pedagogy_methods: formData.pedagogy_methods || undefined,
+      evaluation_methods: formData.evaluation_methods || undefined,
+      duration_hours: formData.duration_hours ? Number(formData.duration_hours) : 0,
+      classroom_student_counts: formData.classroom_student_counts ? Number(formData.classroom_student_counts) : 0,
+      total_amount: formData.total_amount ? parseFloat(formData.total_amount) : 0,
+      rate: formData.rate ? parseFloat(formData.rate) : 0,
+      status: formData.status || undefined,
+      qualiopi_scope: formData.qualiopi_scope || undefined,
+      qualiopi_certificate_number: formData.qualiopi_certificate_number || undefined,
+      qualiopi_certificate_date: formData.qualiopi_certificate_date || null,
+      prefecture_registration_number: formData.prefecture_registration_number || undefined,
+      order_number: formData.order_number || undefined,
+      order_date: formData.order_date || null,
+
+      tags: formData.tags.map(tagId => {
+        const tag = allTags.find(t => t.id === tagId)
+        return { id: tagId, name: tag?.name || '' }
+      }),
+      
+      modules: formData.modules.map(moduleId => {
+        const module = allModules.find(m => m.id === moduleId)
+        return { 
+          id: moduleId, 
+          title: module?.title || '', 
+          description: module?.description || '',
+          duration_hours: module?.duration_hours || 0,
+          order_index: module?.order_index || 0
+        }
+      }),
+      
+      trainers: formData.trainers.map(trainerId => {
+        const trainer = allUsers.find(u => u.id === trainerId)
+        return { 
+          id: trainerId, 
+          fullname: trainer?.fullname || '', 
+          email: trainer?.email || '',
+          status: trainer?.status || '',
+          roles: trainer?.roles || []
+        }
+      }),
+      
+      sessions: formData.sessions.map(s => ({
+        id: s.id || null,
+        start_date: s.start_date ? new Date(s.start_date).toISOString() : '',
+        end_date: s.end_date ? new Date(s.end_date).toISOString() : '',
+        location: s.location || '',
+        max_seats: Number(s.max_seats) || 0,
+        price: parseFloat(s.price) || 0,
+      })),
+      
+      attachments: formData.attachments.map(url => ({
+        file_url: url,
+        label: 'Document',
+        file_type: url.split('.').pop() || 'unknown'
+      })),
+    }
+
+    updateFormation({ id, ...payload })
     navigate({ to: '/crud/formations' })
   }
 
-  
-  const inputClass =
-    'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
-  const cardClass =
-    'p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4'
+  if (!formation || !allTags.length || !allModules.length || !allUsers.length) {
+    return (
+      <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-      {/* top blurred blob */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
-      >
-        <div
-          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 dark:opacity-10 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
-      </div>
-
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white text-center">
           Modifier la Formation
         </h1>
 
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
+          {/* --- informations principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               { name: 'title', placeholder: 'Titre', type: 'text' },
               { name: 'slug', placeholder: 'Slug', type: 'text' },
-              { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'number' },
-              { name: 'classroom_student_counts', placeholder: 'Nombre d\'étudiants', type: 'number' },
-              { name: 'total_amount', placeholder: 'Tarif (€)', type: 'number', step: 0.01 },
+              { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'text', numeric: true },
+              { name: 'classroom_student_counts', placeholder: 'Nombre d\'étudiants', type: 'text', numeric: true },
+              { name: 'total_amount', placeholder: 'Tarif (€)', type: 'text', numeric: true, step: 0.01 },
+              { name: 'rate', placeholder: 'Avis', type: 'text', numeric: true, step: 0.01 },
               {
                 name: 'status',
                 placeholder: 'Statut',
@@ -167,28 +302,52 @@ useEffect(() => {
               { name: 'order_date', placeholder: 'Date commande', type: 'date' },
             ].map(field =>
               field.type === 'select' ? (
-                <select key={field.name} name={field.name} value={(formData as any)[field.name]} onChange={handleChange} className={inputClass}>
+                <select
+                  key={field.name}
+                  name={field.name}
+                  value={(formData as any)[field.name]}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
                   {field.options?.map(opt => (
                     <option key={opt} value={opt}>
                       {opt}
                     </option>
                   ))}
                 </select>
+              ) : field.type === 'date' ? (
+                <input
+                  key={field.name}
+                  name={field.name}
+                  type={(formData as any)[field.name] ? 'date' : 'text'}
+                  placeholder={field.placeholder}
+                  value={(formData as any)[field.name] || ''}
+                  onFocus={e => (e.target.type = 'date')}
+                  onBlur={e => {
+                    if (!(formData as any)[field.name]) e.target.type = 'text'
+                  }}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
               ) : (
                 <input
                   key={field.name}
                   name={field.name}
                   type={field.type}
                   placeholder={field.placeholder}
-                  value={(formData as any)[field.name] || ''}
-                  onChange={handleChange}
-                  step={field.step}
+                  value={(formData as any)[field.name]}
+                  onChange={
+                    field.numeric
+                      ? (e) => handleNumericChange(e, field.name as keyof typeof formData)
+                      : handleChange
+                  }
                   className={inputClass}
                 />
               )
             )}
           </div>
 
+          {/* --- champs texte longs --- */}
           {[
             { name: 'description', placeholder: 'Description' },
             { name: 'objectives', placeholder: 'Objectifs' },
@@ -196,22 +355,31 @@ useEffect(() => {
             { name: 'pedagogy_methods', placeholder: 'Méthodes pédagogiques' },
             { name: 'evaluation_methods', placeholder: "Méthodes d'évaluation" },
           ].map(field => (
-            <textarea key={field.name} name={field.name} placeholder={field.placeholder} value={(formData as any)[field.name] || ''} onChange={handleChange} rows={4} className={inputClass} />
+            <textarea
+              key={field.name}
+              name={field.name}
+              placeholder={field.placeholder}
+              value={(formData as any)[field.name]}
+              onChange={handleChange}
+              rows={4}
+              className={inputClass}
+            />
           ))}
 
+          {/* --- tags --- */}
           <div className={cardClass}>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tags</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tags</h3>
             <div className="flex flex-wrap gap-2">
               {allTags.map(tag => {
-                const isSelected = formData.tags?.includes(tag.id)
+                const isSelected = formData.tags.includes(tag.id)
                 return (
                   <button
-                    type="button"
                     key={tag.id}
+                    type="button"
                     onClick={() => handleArrayChange('tags', tag.id)}
-                    className={`px-3 py-1 rounded-full text-sm border transition-colors
-                      ${isSelected
-                        ? 'bg-indigo-600 text-white border-indigo-600'
+                    className={`px-3 py-1 rounded-full text-sm border 
+                      ${isSelected 
+                        ? 'bg-indigo-600 text-white border-indigo-600' 
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
                       }`}
                   >
@@ -222,19 +390,20 @@ useEffect(() => {
             </div>
           </div>
 
+          {/* --- modules --- */}
           <div className={cardClass}>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Modules</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Modules</h3>
             <div className="flex flex-wrap gap-2">
               {allModules.map(mod => {
-                const isSelected = formData.modules?.includes(mod.id)
+                const isSelected = formData.modules.includes(mod.id)
                 return (
                   <button
-                    type="button"
                     key={mod.id}
+                    type="button"
                     onClick={() => handleArrayChange('modules', mod.id)}
-                    className={`px-3 py-1 rounded-full text-sm border transition-colors
-                      ${isSelected
-                        ? 'bg-emerald-600 text-white border-emerald-600'
+                    className={`px-3 py-1 rounded-full text-sm border 
+                      ${isSelected 
+                        ? 'bg-emerald-600 text-white border-emerald-600' 
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
                       }`}
                   >
@@ -245,46 +414,52 @@ useEffect(() => {
             </div>
           </div>
 
-
+          {/* --- sessions dynamiques --- */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Sessions</h3>
-            {formData.sessions?.map((session, idx) => (
+            {formData.sessions.map((session, idx) => (
               <div key={idx} className={cardClass}>
                 <input
-                  name="start_date"
-                  type="datetime-local"
-                  value={session.start_date}
+                  type={session.start_date ? 'date' : 'text'}
+                  placeholder="Date de début"
+                  value={session.start_date || ''}
+                  onFocus={e => (e.target.type = 'date')}
+                  onBlur={e => {
+                    if (!session.start_date) e.target.type = 'text'
+                  }}
                   onChange={e => handleNestedChange(idx, 'start_date', e.target.value)}
                   className={inputClass}
                 />
                 <input
-                  name="end_date"
-                  type="datetime-local"
-                  value={session.end_date}
+                  type={session.end_date ? 'date' : 'text'}
+                  placeholder="Date de fin"
+                  value={session.end_date || ''}
+                  onFocus={e => (e.target.type = 'date')}
+                  onBlur={e => {
+                    if (!session.end_date) e.target.type = 'text'
+                  }}
                   onChange={e => handleNestedChange(idx, 'end_date', e.target.value)}
                   className={inputClass}
                 />
                 <input
-                  name="location"
+                  type="text"
                   placeholder="Lieu"
                   value={session.location}
                   onChange={e => handleNestedChange(idx, 'location', e.target.value)}
                   className={inputClass}
                 />
                 <input
-                  name="max_seats"
-                  type="number"
+                  type="text"
                   placeholder="Places max"
-                  value={session.max_seats}
-                  onChange={e => handleNestedChange(idx, 'max_seats', Number(e.target.value))}
+                  value={session.max_seats || ''}
+                  onChange={e => handleNestedNumericChange(idx, 'max_seats', e.target.value)}
                   className={inputClass}
                 />
                 <input
-                  name="price"
-                  type="number"
+                  type="text"
                   placeholder="Prix (€)"
-                  value={session.price}
-                  onChange={e => handleNestedChange(idx, 'price', e.target.value)}
+                  value={session.price || ''}
+                  onChange={e => handleNestedNumericChange(idx, 'price', e.target.value)}
                   className={inputClass}
                 />
                 <button
@@ -296,6 +471,7 @@ useEffect(() => {
                 </button>
               </div>
             ))}
+            
             <button
               type="button"
               onClick={addSession}
@@ -305,7 +481,82 @@ useEffect(() => {
             </button>
           </div>
 
-          {/* ---------- bouton final ---------- */}
+          {/* --- formateurs --- */}
+          <div className={cardClass}>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Formateurs</h3>
+            <div className="flex flex-wrap gap-2">
+              {allUsers.filter(user => user.roles?.some(role => role.name === 'teacher')).map(user => {
+                const isSelected = formData.trainers.includes(user.id)
+                return (
+                  <button
+                    key={user.id}
+                    type="button"
+                    onClick={() => handleArrayChange('trainers', user.id)}
+                    className={`px-3 py-1 rounded-full text-sm border 
+                      ${isSelected 
+                        ? 'bg-purple-600 text-white border-purple-600' 
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                      }`}
+                  >
+                    {user.fullname}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* --- pièces jointes --- */}
+          <div className={cardClass}>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Pièces jointes
+            </h3>
+
+            {/* Ajout */}
+            <div className="flex gap-2">
+              <input
+                type="url"
+                placeholder="https://exemple.com/fichier.pdf "
+                value={attachmentInput}
+                onChange={e => setAttachmentInput(e.target.value)}
+                className={inputClass}
+              />
+              <button
+                type="button"
+                onClick={addAttachment}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700"
+              >
+                Ajouter
+              </button>
+            </div>
+
+            {/* Liste */}
+            <div className="mt-3 space-y-2">
+              {formData.attachments.map((url, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-lg p-2"
+                >
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-indigo-600 dark:text-indigo-400 underline truncate max-w-[75%]"
+                  >
+                    {url}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => removeAttachment(idx)}
+                    className="text-red-600 hover:text-red-800 text-xs font-semibold"
+                  >
+                    Retirer
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* --- bouton final --- */}
           <div className="text-center">
             <button
               type="submit"
@@ -315,20 +566,6 @@ useEffect(() => {
             </button>
           </div>
         </form>
-      </div>
-
-      {/* bottom blurred blob */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
-      >
-        <div
-          className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 dark:opacity-10 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
       </div>
     </section>
   )

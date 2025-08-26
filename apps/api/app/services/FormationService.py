@@ -172,8 +172,23 @@ class FormationService:
         self.session.commit()
         return True
     
+    # Dans FormationService.py, méthode update()
+
     def update(self, formation_id: str, data: FormationUpdate) -> Optional[FormationRead]:
-        formation = self.session.get(Formation, formation_id)
+        # Charger la formation avec toutes ses relations
+        stmt = (
+            select(Formation)
+            .where(Formation.id == formation_id)
+            .options(
+                selectinload(Formation.tags),
+                selectinload(Formation.sessions),
+                selectinload(Formation.modules),
+                selectinload(Formation.users),
+                selectinload(Formation.attachments),
+            )
+        )
+        formation = self.session.exec(stmt).first()
+        
         if not formation:
             return None
 
@@ -215,17 +230,11 @@ class FormationService:
         if data.modules is not None:
             formation.modules.clear()
             for m in data.modules:
-                module_obj = Module(
-                    id=m.id or str(uuid.uuid4()),
-                    formation_id=formation.id,
-                    title=m.title,
-                    duration_hours=m.duration_hours,
-                    description=m.description,
-                    order_index=m.order_index or 0
-                )
-                self.session.add(module_obj)
+                module_obj = self.session.get(Module, m.id)
+                if module_obj:
+                    formation.modules.append(module_obj)
 
-        # --- Trainers / Users ---
+        # --- Users/Trainers ---
         if data.trainers is not None:
             formation.users.clear()
             for u in data.trainers:
@@ -242,9 +251,9 @@ class FormationService:
                 attachment_obj = Attachment(
                     id=str(uuid.uuid4()),
                     formation_id=formation.id,
-                    label=a.label,
+                    label=a.label or "Document",
                     file_url=a.file_url,
-                    file_type=a.file_type or "application/pdf"
+                    file_type=getattr(a, 'file_type', None) or "application/pdf"
                 )
                 self.session.add(attachment_obj)
 

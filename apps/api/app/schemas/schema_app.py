@@ -135,6 +135,7 @@ class UserCreate(BaseModel):
     username: str
     password: str
     status: str
+    roles: List[RoleRead]= []
     
 
 class TagBase(BaseModel):
@@ -168,3 +169,4 @@ class UserUpdate(BaseModel):
     username: Optional[str] = None
     password: Optional[str] = None
     status: Optional[str] = None
+    roles: Optional[List[RoleRead]] = None 
