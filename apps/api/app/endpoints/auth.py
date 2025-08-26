@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse
 
 from app.models.User import User
 from app.models.RefreshToken import RefreshToken
-from app.schemas.schema_app import UserInDB
-from app.schemas.schema_app import UserRequest
+from app.schemas.User import UserInDB, UserRequest
+
 from app.services.AuthService import AuthService
 from app.dependency import get_auth_service, get_current_active_user, get_refresh_token_from_cookie
 from app.Settings import settings

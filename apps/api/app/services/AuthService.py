@@ -8,7 +8,8 @@ from passlib.context import CryptContext
 from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload, joinedload
 
-from app.schemas.schema_app import TokenData, UserInDB
+from app.schemas.Token import TokenData
+from app.schemas.User import UserInDB
 from app.models.User import User
 from app.models.RefreshToken import RefreshToken
 from app.Settings import settings

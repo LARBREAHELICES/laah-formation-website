@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from app.database import get_db
 from app.services.ModuleService import ModuleService
-from app.schemas.schema_app import ModuleRead
+from app.schemas.Module import ModuleRead
 
 router = APIRouter(
     prefix="/api",

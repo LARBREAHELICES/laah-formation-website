@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from app.database import get_db
 from app.services.UserService import UserService
-from app.schemas.schema_app import UserRead, UserCreate, UserUpdate
+from app.schemas.User import UserRead, UserCreate, UserUpdate
 
 router = APIRouter(
     prefix="/api",

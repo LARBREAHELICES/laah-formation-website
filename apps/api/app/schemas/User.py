@@ -1,0 +1,36 @@
+
+# app/api/schemas/user_schema.py
+from pydantic import BaseModel
+from typing import List, Optional
+from app.schemas.Role import RoleRead
+
+class UserRead(BaseModel):
+    id: str
+    fullname: str
+    status : Optional[str] = None
+    email: Optional[str] = None
+    roles:List[RoleRead]=  []
+
+class UserInDB(BaseModel):
+    id : str
+    username: str
+    roles : List[str] | None = None
+    scopes : List[str] | None = None
+    
+class UserRequest(BaseModel):
+    username: str
+    password: str
+    
+class UserCreate(BaseModel):
+    fullname: str
+    email: str
+    username: str
+    password: str
+    status: str
+
+class UserUpdate(BaseModel):
+    fullname: Optional[str] = None
+    email: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    status: Optional[str] = None

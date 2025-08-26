@@ -3,7 +3,7 @@ from typing import Optional
 
 from app.services.AuthService import AuthService
 from app.database import get_db
-from app.schemas.schema_app import UserInDB
+from app.schemas.User import UserInDB
 from datetime import datetime
 from fastapi.security import SecurityScopes
 from app.models.User import User

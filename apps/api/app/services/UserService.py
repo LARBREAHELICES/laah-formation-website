@@ -5,9 +5,9 @@ from datetime import datetime
 import uuid
 
 from app.models.User import User
-from app.models.Role import Role  # Ajoutez cet import
-from app.schemas.schema_app import UserRead, UserCreate, UserUpdate
-from app.schemas.schema_app import RoleRead  
+from app.models.Role import Role  
+from app.schemas.User import UserRead, UserCreate, UserUpdate
+from app.schemas.Role import RoleRead  
 
 class UserService:
     def __init__(self, session: Session):
