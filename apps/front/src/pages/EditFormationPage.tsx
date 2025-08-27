@@ -50,6 +50,29 @@ export default function EditFormationPage() {
     trainers: [] as string[],
   })
 
+  const requiredFields: (keyof typeof formData)[] = [
+  'title',
+  'slug',
+  'description',
+  'objectives',
+  'duration_hours',
+  'total_amount',
+  'tags',
+  'modules',
+  'sessions',
+  'trainers',
+]
+
+const [triedToSubmit, setTriedToSubmit] = useState(false)
+
+const isFormValid = () => {
+  return requiredFields.every(field => {
+    const value = formData[field]
+    if (Array.isArray(value)) return value.length > 0
+    return value !== '' && value != null
+  })
+}
+
   const inputClass =
     'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
   const cardClass =
@@ -184,6 +207,8 @@ export default function EditFormationPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    setTriedToSubmit(true)
+  if (!isFormValid()) return
 
     const payload = {
       title: formData.title || undefined,
@@ -272,99 +297,118 @@ export default function EditFormationPage() {
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
           {/* --- informations principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              { name: 'title', placeholder: 'Titre', type: 'text' },
-              { name: 'slug', placeholder: 'Slug', type: 'text' },
-              { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'text', numeric: true },
-              { name: 'classroom_student_counts', placeholder: 'Nombre d\'étudiants', type: 'text', numeric: true },
-              { name: 'total_amount', placeholder: 'Tarif (€)', type: 'text', numeric: true, step: 0.01 },
-              { name: 'rate', placeholder: 'Avis', type: 'text', numeric: true, step: 0.01 },
-              {
-                name: 'status',
-                placeholder: 'Statut',
-                type: 'select',
-                options: ['draft', 'published', 'archived'],
-              },
-              {
-                name: 'qualiopi_scope',
-                placeholder: 'Portée Qualiopi',
-                type: 'select',
-                options: [
-                  'actions de formation',
-                  'bilans de compétences',
-                  'actions de formation par apprentissage',
-                ],
-              },
-              { name: 'qualiopi_certificate_number', placeholder: 'N° Certificat Qualiopi', type: 'text' },
-              { name: 'qualiopi_certificate_date', placeholder: 'Date Certificat', type: 'date' },
-              { name: 'prefecture_registration_number', placeholder: 'N° Enregistrement Préfecture', type: 'text' },
-              { name: 'order_number', placeholder: 'N° de commande', type: 'text' },
-              { name: 'order_date', placeholder: 'Date commande', type: 'date' },
-            ].map(field =>
-              field.type === 'select' ? (
-                <select
-                  key={field.name}
-                  name={field.name}
-                  value={(formData as any)[field.name]}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  {field.options?.map(opt => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              ) : field.type === 'date' ? (
-                <input
-                  key={field.name}
-                  name={field.name}
-                  type={(formData as any)[field.name] ? 'date' : 'text'}
-                  placeholder={field.placeholder}
-                  value={(formData as any)[field.name] || ''}
-                  onFocus={e => (e.target.type = 'date')}
-                  onBlur={e => {
-                    if (!(formData as any)[field.name]) e.target.type = 'text'
-                  }}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              ) : (
-                <input
-                  key={field.name}
-                  name={field.name}
-                  type={field.type}
-                  placeholder={field.placeholder}
-                  value={(formData as any)[field.name]}
-                  onChange={
-                    field.numeric
-                      ? (e) => handleNumericChange(e, field.name as keyof typeof formData)
-                      : handleChange
-                  }
-                  className={inputClass}
-                />
-              )
-            )}
-          </div>
+  {[
+    { name: 'title', placeholder: 'Titre', type: 'text' },
+    { name: 'slug', placeholder: 'Slug', type: 'text' },
+    { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'text', numeric: true },
+    { name: 'classroom_student_counts', placeholder: "Nombre d'étudiants", type: 'text', numeric: true },
+    { name: 'total_amount', placeholder: 'Tarif (€)', type: 'text', numeric: true, step: 0.01 },
+    { name: 'rate', placeholder: 'Avis', type: 'text', numeric: true, step: 0.01 },
+    {
+      name: 'status',
+      placeholder: 'Statut',
+      type: 'select',
+      options: ['draft', 'published', 'archived'],
+    },
+    {
+      name: 'qualiopi_scope',
+      placeholder: 'Portée Qualiopi',
+      type: 'select',
+      options: [
+        'actions de formation',
+        'bilans de compétences',
+        'actions de formation par apprentissage',
+      ],
+    },
+    { name: 'qualiopi_certificate_number', placeholder: 'N° Certificat Qualiopi', type: 'text' },
+    { name: 'qualiopi_certificate_date', placeholder: 'Date Certificat', type: 'date' },
+    { name: 'prefecture_registration_number', placeholder: 'N° Enregistrement Préfecture', type: 'text' },
+    { name: 'order_number', placeholder: 'N° de commande', type: 'text' },
+    { name: 'order_date', placeholder: 'Date commande', type: 'date' },
+  ].map(field => (
+    <div key={field.name}>
+      <label
+        htmlFor={field.name}
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      >
+        {field.placeholder}
+      </label>
+
+      {field.type === 'select' ? (
+        <select
+          id={field.name}
+          name={field.name}
+          value={(formData as any)[field.name]}
+          onChange={handleChange}
+          className={inputClass}
+        >
+          {field.options?.map(opt => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      ) : field.type === 'date' ? (
+        <input
+          id={field.name}
+          name={field.name}
+          type={(formData as any)[field.name] ? 'date' : 'text'}
+          placeholder={field.placeholder}
+          value={(formData as any)[field.name] || ''}
+          onFocus={e => (e.target.type = 'date')}
+          onBlur={e => {
+            if (!(formData as any)[field.name]) e.target.type = 'text'
+          }}
+          onChange={handleChange}
+          className={inputClass}
+        />
+      ) : (
+        <input
+          id={field.name}
+          name={field.name}
+          type={field.type}
+          placeholder={field.placeholder}
+          value={(formData as any)[field.name]}
+          onChange={
+            field.numeric
+              ? (e) => handleNumericChange(e, field.name as keyof typeof formData)
+              : handleChange
+          }
+          className={inputClass}
+        />
+      )}
+    </div>
+  ))}
+</div>
 
           {/* --- champs texte longs --- */}
-          {[
-            { name: 'description', placeholder: 'Description' },
-            { name: 'objectives', placeholder: 'Objectifs' },
-            { name: 'prerequisites', placeholder: 'Prérequis' },
-            { name: 'pedagogy_methods', placeholder: 'Méthodes pédagogiques' },
-            { name: 'evaluation_methods', placeholder: "Méthodes d'évaluation" },
-          ].map(field => (
-            <textarea
-              key={field.name}
-              name={field.name}
-              placeholder={field.placeholder}
-              value={(formData as any)[field.name]}
-              onChange={handleChange}
-              rows={4}
-              className={inputClass}
-            />
-          ))}
+<div className="space-y-6">
+  {[
+    { name: 'description', placeholder: 'Description' },
+    { name: 'objectives', placeholder: 'Objectifs' },
+    { name: 'prerequisites', placeholder: 'Prérequis' },
+    { name: 'pedagogy_methods', placeholder: 'Méthodes pédagogiques' },
+    { name: 'evaluation_methods', placeholder: "Méthodes d'évaluation" },
+  ].map(field => (
+    <div key={field.name}>
+      <label
+        htmlFor={field.name}
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      >
+        {field.placeholder}
+      </label>
+      <textarea
+        id={field.name}
+        name={field.name}
+        placeholder={field.placeholder}
+        value={(formData as any)[field.name]}
+        onChange={handleChange}
+        rows={4}
+        className={inputClass}
+      />
+    </div>
+  ))}
+</div>
 
           {/* --- tags --- */}
           <div className={cardClass}>
@@ -557,14 +601,25 @@ export default function EditFormationPage() {
           </div>
 
           {/* --- bouton final --- */}
-          <div className="text-center">
-            <button
-              type="submit"
-              className="w-full md:w-auto rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 py-3 px-6 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
-            >
-              Enregistrer les modifications
-            </button>
-          </div>
+          {triedToSubmit && !isFormValid() && (
+  <p className="text-sm text-red-600 text-center">
+    Veuillez remplir tous les champs obligatoires avant d’enregistrer.
+  </p>
+)}
+
+<div className="text-center">
+  <button
+    type="submit"
+    disabled={!isFormValid()}
+    className={`w-full md:w-auto rounded-lg py-3 px-6 text-sm font-semibold shadow-md transition-opacity
+      ${isFormValid()
+        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:opacity-90'
+        : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+      }`}
+  >
+    Enregistrer les modifications
+  </button>
+</div>
         </form>
       </div>
     </section>

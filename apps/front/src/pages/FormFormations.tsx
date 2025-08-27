@@ -16,6 +16,7 @@ export default function NewFormationPage() {
   const { modules: allModules, fetchModules } = useModuleStore()
   const { users: allUsers, fetchUsers } = useUserStore()
   const [attachmentInput, setAttachmentInput] = useState('')
+  const [triedToSubmit, setTriedToSubmit] = useState(false)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -49,6 +50,19 @@ export default function NewFormationPage() {
     trainers: [] as string[],
   })
 
+  const requiredFields: (keyof typeof formData)[] = [
+  'title',
+  'slug',
+  'description',
+  'objectives',
+  'duration_hours',
+  'total_amount',
+  'sessions',
+  'tags',
+  'modules',
+  'trainers',
+]
+
   useEffect(() => {
     fetchTags()
     fetchModules()
@@ -77,17 +91,20 @@ export default function NewFormationPage() {
     }
   }
 
-  const handleArrayChange = (field: 'tags' | 'modules', value: string) => {
-    setFormData(prev => {
-      const arr = prev[field] as string[]
-      return {
-        ...prev,
-        [field]: arr.includes(value)
-          ? arr.filter(v => v !== value)
-          : [...arr, value],
-      }
-    })
-  }
+  const handleArrayChange = (
+  field: 'tags' | 'modules' | 'trainers',
+  value: string
+) => {
+  setFormData(prev => {
+    const arr = prev[field] as string[]
+    return {
+      ...prev,
+      [field]: arr.includes(value)
+        ? arr.filter(v => v !== value)
+        : [...arr, value],
+    }
+  })
+}
 
   const handleNestedChange = (
     index: number,
@@ -144,9 +161,23 @@ const removeAttachment = (index: number) => {
   }))
 }
 
+const isFormValid = () => {
+  return requiredFields.every(field => {
+    const value = formData[field]
+
+    if (Array.isArray(value)) {
+      return value.length > 0
+    }
+
+    return value !== '' && value !== null && value !== undefined
+  })
+}
+
     
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    setTriedToSubmit(true)
+  if (!isFormValid()) return
     const payload = {
   ...formData,
   duration_hours: formData.duration_hours ? Number(formData.duration_hours) : 0,
@@ -228,99 +259,115 @@ const removeAttachment = (index: number) => {
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
           {/* --- informations principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              { name: 'title', placeholder: 'Titre', type: 'text' },
-              { name: 'slug', placeholder: 'Slug', type: 'text' },
-              { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'text', numeric: true },
-              { name: 'classroom_student_counts', placeholder: 'Nombre d’étudiants', type: 'text', numeric: true },
-              { name: 'total_amount', placeholder: 'Tarif (€)', type: 'text', numeric: true, step: 0.01 },
-              {
-                name: 'status',
-                placeholder: 'Statut',
-                type: 'select',
-                options: ['draft', 'published', 'archived'],
-              },
-              {
-                name: 'qualiopi_scope',
-                placeholder: 'Portée Qualiopi',
-                type: 'select',
-                options: [
-                  'actions de formation',
-                  'bilans de compétences',
-                  'actions de formation par apprentissage',
-                ],
-              },
-              { name: 'qualiopi_certificate_number', placeholder: 'N° Certificat Qualiopi', type: 'text' },
-              { name: 'qualiopi_certificate_date', placeholder: 'Date Certificat', type: 'date' },
-              { name: 'prefecture_registration_number', placeholder: 'N° Enregistrement Préfecture', type: 'text' },
-              { name: 'order_number', placeholder: 'N° de commande', type: 'text' },
-              { name: 'order_date', placeholder: 'Date commande', type: 'date' },
-            ].map(field =>
-              field.type === 'select' ? (
-                <select
-                  key={field.name}
-                  name={field.name}
-                  value={(formData as any)[field.name]}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  {field.options?.map(opt => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              ) : field.type === 'date' ? (
-                <input
-                  key={field.name}
-                  name={field.name}
-                  type={(formData as any)[field.name] ? 'date' : 'text'}
-                  placeholder={field.placeholder}
-                  value={(formData as any)[field.name] || ''}
-                  onFocus={e => (e.target.type = 'date')}
-                  onBlur={e => {
-                    if (!(formData as any)[field.name]) e.target.type = 'text'
-                  }}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              ) : (
-                <input
-                  key={field.name}
-                  name={field.name}
-                  type={field.type}
-                  placeholder={field.placeholder}
-                  value={(formData as any)[field.name]}
-                  onChange={
-                    field.numeric
-                      ? (e) => handleNumericChange(e, field.name as keyof typeof formData)
-                      : handleChange
-                  }
-                  className={inputClass}
-                />
-              )
-            )}
-          </div>
+  {[
+    { name: 'title', placeholder: 'Titre', type: 'text' },
+    { name: 'slug', placeholder: 'Slug', type: 'text' },
+    { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'text', numeric: true },
+    { name: 'classroom_student_counts', placeholder: 'Nombre d’étudiants', type: 'text', numeric: true },
+    { name: 'total_amount', placeholder: 'Tarif (€)', type: 'text', numeric: true, step: 0.01 },
+    {
+      name: 'status',
+      placeholder: 'Statut',
+      type: 'select',
+      options: ['draft', 'published', 'archived'],
+    },
+    {
+      name: 'qualiopi_scope',
+      placeholder: 'Portée Qualiopi',
+      type: 'select',
+      options: [
+        'actions de formation',
+        'bilans de compétences',
+        'actions de formation par apprentissage',
+      ],
+    },
+    { name: 'qualiopi_certificate_number', placeholder: 'N° Certificat Qualiopi', type: 'text' },
+    { name: 'qualiopi_certificate_date', placeholder: 'Date Certificat', type: 'date' },
+    { name: 'prefecture_registration_number', placeholder: 'N° Enregistrement Préfecture', type: 'text' },
+    { name: 'order_number', placeholder: 'N° de commande', type: 'text' },
+    { name: 'order_date', placeholder: 'Date commande', type: 'date' },
+  ].map(field => (
+    <div key={field.name} className="flex flex-col gap-1">
+      <label
+        htmlFor={field.name}
+        className="text-sm font-medium text-gray-700 dark:text-gray-300"
+      >
+        {field.placeholder}
+      </label>
 
-          {/* --- champs texte longs --- */}
-          {[
-            { name: 'description', placeholder: 'Description' },
-            { name: 'objectives', placeholder: 'Objectifs' },
-            { name: 'prerequisites', placeholder: 'Prérequis' },
-            { name: 'pedagogy_methods', placeholder: 'Méthodes pédagogiques' },
-            { name: 'evaluation_methods', placeholder: "Méthodes d'évaluation" },
-          ].map(field => (
-            <textarea
-              key={field.name}
-              name={field.name}
-              placeholder={field.placeholder}
-              value={(formData as any)[field.name]}
-              onChange={handleChange}
-              rows={4}
-              className={inputClass}
-            />
+      {field.type === 'select' ? (
+        <select
+          id={field.name}
+          name={field.name}
+          value={(formData as any)[field.name]}
+          onChange={handleChange}
+          className={inputClass}
+        >
+          {field.options?.map(opt => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
           ))}
+        </select>
+      ) : field.type === 'date' ? (
+        <input
+          id={field.name}
+          name={field.name}
+          type={(formData as any)[field.name] ? 'date' : 'text'}
+          placeholder={field.placeholder}
+          value={(formData as any)[field.name] || ''}
+          onFocus={e => (e.target.type = 'date')}
+          onBlur={e => {
+            if (!(formData as any)[field.name]) e.target.type = 'text'
+          }}
+          onChange={handleChange}
+          className={inputClass}
+        />
+      ) : (
+        <input
+          id={field.name}
+          name={field.name}
+          type={field.type}
+          placeholder={field.placeholder}
+          value={(formData as any)[field.name]}
+          onChange={
+            field.numeric
+              ? (e) => handleNumericChange(e, field.name as keyof typeof formData)
+              : handleChange
+          }
+          className={inputClass}
+        />
+      )}
+    </div>
+  ))}
+</div>
 
+
+          {[
+  { name: 'description', placeholder: 'Description' },
+  { name: 'objectives', placeholder: 'Objectifs' },
+  { name: 'prerequisites', placeholder: 'Prérequis' },
+  { name: 'pedagogy_methods', placeholder: 'Méthodes pédagogiques' },
+  { name: 'evaluation_methods', placeholder: "Méthodes d'évaluation" },
+].map(field => (
+  <div key={field.name} className="flex flex-col gap-1">
+    <label
+      htmlFor={field.name}
+      className="text-sm font-medium text-gray-700 dark:text-gray-300"
+    >
+      {field.placeholder}
+    </label>
+    <textarea
+      id={field.name}
+      name={field.name}
+      placeholder={field.placeholder}
+      value={(formData as any)[field.name]}
+      onChange={handleChange}
+      rows={4}
+      className={inputClass}
+    />
+  </div>
+))}
           {/* --- tags --- */}
           <div className={cardClass}>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tags</h3>
@@ -506,12 +553,22 @@ const removeAttachment = (index: number) => {
       ))}
     </div>
   </div>
+  {triedToSubmit && !isFormValid() && (
+  <p className="text-sm text-red-600 text-center">
+    Veuillez remplir tous les champs obligatoires avant d’enregistrer.
+  </p>
+)}
 
           {/* --- bouton final --- */}
           <div className="text-center">
             <button
               type="submit"
-              className="w-full md:w-auto rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 py-3 px-6 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
+              disabled={!isFormValid()}
+              className={`w-full md:w-auto rounded-lg py-3 px-6 text-sm font-semibold shadow-md transition-opacity
+                ${isFormValid()
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:opacity-90'
+                  : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                }`}
             >
               Enregistrer la formation
             </button>
