@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from app.database import get_db
 from app.services.TagService import TagService
-from app.schemas.schema_app import TagRead
+from app.schemas.Tag import TagRead
 
 router = APIRouter(
     prefix="/api",

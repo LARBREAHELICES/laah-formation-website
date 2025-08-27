@@ -5,11 +5,9 @@ from datetime import datetime
 import uuid
 
 from app.models.User import User
-from app.models.Role import Role
-from app.models.Formation import Formation
-from app.schemas.schema_app import UserRead, UserCreate, UserUpdate
-from app.schemas.schema_app import RoleRead  
-from app.schemas.schema_app import FormationReadShort
+from app.models.Role import Role  
+from app.schemas.User import UserRead, UserCreate, UserUpdate
+from app.schemas.Role import RoleRead  
 
 class UserService:
     def __init__(self, session: Session):
@@ -24,8 +22,8 @@ class UserService:
             fullname=user_data.fullname,
             password=user_data.password,  # À hasher en production
             status=user_data.status,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(),
+            updated_at=datetime.now()
         )
         
             # Ajouter les rôles

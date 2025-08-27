@@ -12,16 +12,13 @@ from app.models.User import User
 from app.services.SlugService import SlugService
 import uuid
 
-from app.schemas.schema_app import (
-    FormationRead,
-    TagRead,
-    SessionRead,
-    ModuleRead,
-    UserRead,
-    AttachmentRead,
-    FormationCreate,
-    FormationUpdate
-)
+from app.schemas.Tag import TagRead
+from app.schemas.Session import SessionRead
+from app.schemas.Module import ModuleRead
+from app.schemas.User import UserRead
+from app.schemas.Attachment import AttachmentRead
+from app.schemas.Formation import FormationRead, FormationCreate, FormationUpdate
+
 from app.models.Formation import Formation
 
 class FormationService:

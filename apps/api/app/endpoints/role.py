@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from app.database import get_db
 from app.services.RoleService import RoleService
-from app.schemas.schema_app import RoleRead
+from app.schemas.Role import RoleRead
 
 router = APIRouter(
     prefix="/api",

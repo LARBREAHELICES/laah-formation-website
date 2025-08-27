@@ -3,7 +3,8 @@ from typing import List
 from uuid import uuid4
 from sqlmodel import Session, select
 from app.models.Module import Module
-from app.schemas.schema_app import ModuleCreate, ModuleRead
+
+from app.schemas.Module import ModuleCreate, ModuleRead
 
 class ModuleService:
     def __init__(self, session: Session):

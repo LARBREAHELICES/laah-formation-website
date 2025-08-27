@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.endpoints.formation import router as routerFormation
 from app.endpoints.auth import router as routerAuth
 from app.endpoints.module import router as routerModule
-from app.endpoints.tags import router as routeTag
+from app.endpoints.tag import router as routeTag
 from app.endpoints.user import router as routeUser
 from app.endpoints.role import router as routeRole
 

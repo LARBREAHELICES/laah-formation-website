@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Security
 from fastapi.responses import JSONResponse
 
-from typing import  List, Annotated
+from typing import  List
 from app.database import get_db
 from app.services.FormationService import FormationService
-from app.schemas.schema_app import FormationRead, FormationCreate, FormationUpdate
+from app.schemas.Formation import FormationRead, FormationCreate, FormationUpdate
 
 from app.dependency import get_current_active_user, check_scopes
 

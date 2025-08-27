@@ -3,7 +3,7 @@ from typing import List, Optional
 from uuid import uuid4
 from sqlmodel import Session, select
 from app.models.Tag import Tag
-from app.schemas.schema_app import TagCreate, TagRead
+from app.schemas.Tag import TagCreate, TagRead
 
 class TagService:
     def __init__(self, session: Session):

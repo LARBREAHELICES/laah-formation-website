@@ -3,8 +3,9 @@ from typing import List, Optional
 from uuid import uuid4
 from sqlmodel import Session, select
 from app.models.Role import Role
-from app.schemas.schema_app import  RoleRead
 from app.models.UserRole import UserRole
+
+from app.schemas.Role import  RoleRead
 
 class RoleService:
     def __init__(self, session: Session):
