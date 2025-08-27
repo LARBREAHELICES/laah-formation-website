@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useUserStore } from '@/stores/useUser'
 import { useRoleStore } from '@/stores/useRole'
+import { useFormationStore } from '@/stores/useFormation'
 import { useNavigate } from '@tanstack/react-router'
 
 export default function NewUserPage() {
@@ -9,6 +10,7 @@ export default function NewUserPage() {
 
   const { createUser } = useUserStore()
   const { roles: allRoles, fetchRoles, loading } = useRoleStore()
+  const { formations, fetchFormations } = useFormationStore()
 
   const [formData, setFormData] = useState({
     id: '',
@@ -18,11 +20,17 @@ export default function NewUserPage() {
     password: '',
     status: 'active' as 'active' | 'inactive',
     roles: [] as { id: string; name: string }[],
+    formations: [] as { id: string; title: string }[],
   })
 
-  useEffect(() => {
-    fetchRoles()
-  }, [fetchRoles])
+useEffect(() => {
+  fetchRoles()
+}, [fetchRoles])
+
+useEffect(() => {
+  fetchRoles()
+  fetchFormations()
+}, [])
 
   const inputClass =
     'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
@@ -36,15 +44,27 @@ export default function NewUserPage() {
 
   const toggleRole = (role: { id: string; name: string }) => {
   setFormData(prev => {
-    const exists = prev.roles.some(r => r.id === role.id)
+    const exists = prev.roles.some(r => r.id === role.id);
     return {
       ...prev,
       roles: exists
         ? prev.roles.filter(r => r.id !== role.id)
         : [...prev.roles, role],
-    }
-  })
-}
+    };
+  });
+};
+
+const toggleFormation = (formation: { id: string; title: string }) => {
+  setFormData(prev => {
+    const exists = prev.formations.some(f => f.id === formation.id);
+    return {
+      ...prev,
+      formations: exists
+        ? prev.formations.filter(f => f.id !== formation.id)
+        : [...prev.formations, formation],
+    };
+  });
+};
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -137,6 +157,26 @@ export default function NewUserPage() {
               ))}
     </div>
   )}
+</div>
+<div className="p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4">
+  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Formations</h3>
+  <div className="flex flex-wrap gap-3">
+    {formations.map(formation => (
+      <button
+        type="button"
+        key={formation.id}
+        onClick={() => toggleFormation(formation)}
+        className={`px-3 py-1 rounded-full text-sm border transition-colors
+          ${
+            formData.formations.some(f => f.id === formation.id)
+              ? 'bg-indigo-600 text-white border-indigo-600'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
+          }`}
+      >
+        {formation.title}
+      </button>
+    ))}
+  </div>
 </div>
 
           {/* --- Bouton final --- */}

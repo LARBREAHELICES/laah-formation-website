@@ -9,6 +9,7 @@ export interface User {
   email: string;
   status: string; 
   roles: { id: string; name: string }[];
+  formations: { id: string; title: string }[];
 }
 
 interface UserState {

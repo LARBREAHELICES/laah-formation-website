@@ -30,12 +30,17 @@ class ModuleRead(BaseModel):
     description: Optional[str] = None
     order_index: Optional[int] = None
 
+class FormationReadShort(BaseModel):
+    id: str
+    title: str
+
 class UserRead(BaseModel):
     id: str
     fullname: str
     status : Optional[str] = None
     email: Optional[str] = None
     roles:List[RoleRead]=  []
+    formations: List[FormationReadShort]= []
 
 class AttachmentRead(BaseModel):
     id: Optional[str] = None
@@ -136,6 +141,7 @@ class UserCreate(BaseModel):
     password: str
     status: str
     roles: List[RoleRead]= []
+    formations: List[FormationReadShort] = [] 
     
 
 class TagBase(BaseModel):
@@ -169,4 +175,5 @@ class UserUpdate(BaseModel):
     username: Optional[str] = None
     password: Optional[str] = None
     status: Optional[str] = None
-    roles: Optional[List[RoleRead]] = None 
+    roles: Optional[List[RoleRead]] = None
+    formations: Optional[List[FormationReadShort]] = None 

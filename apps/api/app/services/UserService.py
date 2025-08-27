@@ -6,8 +6,10 @@ import uuid
 
 from app.models.User import User
 from app.models.Role import Role
+from app.models.Formation import Formation
 from app.schemas.schema_app import UserRead, UserCreate, UserUpdate
 from app.schemas.schema_app import RoleRead  
+from app.schemas.schema_app import FormationReadShort
 
 class UserService:
     def __init__(self, session: Session):
@@ -31,6 +33,11 @@ class UserService:
             role_ids = [r.id for r in user_data.roles]
             roles = self.session.query(Role).filter(Role.id.in_(role_ids)).all()
             user.roles = roles
+
+        if user_data.formations:
+            formation_ids = [f.id for f in user_data.formations]
+            formations = self.session.query(Formation).filter(Formation.id.in_(formation_ids)).all()
+            user.formations = formations
         
         self.session.add(user)
         self.session.commit()
@@ -60,6 +67,11 @@ class UserService:
             role_ids = [r.id for r in user_data.roles]
             roles = self.session.query(Role).filter(Role.id.in_(role_ids)).all()
             user.roles = roles
+
+        if user_data.formations is not None:
+            formation_ids = [f.id for f in user_data.formations]
+            formations = self.session.query(Formation).filter(Formation.id.in_(formation_ids)).all()
+            user.formations = formations
                     
         user.updated_at = datetime.utcnow()
         self.session.commit()
@@ -91,5 +103,6 @@ class UserService:
             fullname=user.fullname,
             email=user.email,
             status=user.status,
-            roles=[RoleRead(id=r.id, name=r.name) for r in user.roles]
+            roles=[RoleRead(id=r.id, name=r.name) for r in user.roles],
+            formations=[FormationReadShort(id=f.id, title=f.title) for f in user.formations]
         )

@@ -19,7 +19,8 @@ export default function EditUserPage() {
     username: '',
     fullname: '',
     status: 'active' as 'active' | 'inactive',
-    roles: [] as { id: string; name: string }[],     
+    roles: [] as { id: string; name: string }[],
+    formations: [] as { id: string; title: string }[],
   })
 
   const inputClass =
@@ -34,7 +35,7 @@ export default function EditUserPage() {
       fetchFormations()
       fetchRoles()
     }
-  }, [id, fetchUser, fetchFormations, fetchRoles])
+  }, [id])
 
   /* ------------------ remplissage des champs ------------------ */
   useEffect(() => {
@@ -44,7 +45,8 @@ export default function EditUserPage() {
         email: user.email || '',
         fullname: user.fullname || '',
         status: user.status || 'active',
-        roles: user.roles || [],   
+        roles: user.roles || [],
+        formations: user.formations || [],
       })
     }
   }, [user])
@@ -56,25 +58,28 @@ export default function EditUserPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  /* toggle formation */
-  const toggleFormation = (formationId: string) =>
-    setFormData(prev => ({
-      ...prev,
-      formations: prev.formations.includes(formationId)
-        ? prev.formations.filter(f => f !== formationId)
-        : [...prev.formations, formationId],
-    }))
+  /* ------------------ toggles ------------------ */
+  const toggleRole = (role: { id: string; name: string }) =>
+    setFormData(prev => {
+      const exists = prev.roles.some(r => r.id === role.id)
+      return {
+        ...prev,
+        roles: exists
+          ? prev.roles.filter(r => r.id !== role.id)
+          : [...prev.roles, role],
+      }
+    })
 
-const toggleRole = (role: { id: string; name: string }) =>
-  setFormData(prev => {
-    const exists = prev.roles.some(r => r.id === role.id)
-    return {
-      ...prev,
-      roles: exists
-        ? prev.roles.filter(r => r.id !== role.id)
-        : [...prev.roles, role],
-    }
-  })
+  const toggleFormation = (formation: { id: string; title: string }) =>
+    setFormData(prev => {
+      const exists = prev.formations.some(f => f.id === formation.id)
+      return {
+        ...prev,
+        formations: exists
+          ? prev.formations.filter(f => f.id !== formation.id)
+          : [...prev.formations, formation],
+      }
+    })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -92,19 +97,7 @@ const toggleRole = (role: { id: string; name: string }) =>
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-       {/* top blurred blob */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
-      >
-        <div
-          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 dark:opacity-10 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
-      </div>
+      {/* top blurred blob */}
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white text-center">
           Modifier l’utilisateur
@@ -151,7 +144,7 @@ const toggleRole = (role: { id: string; name: string }) =>
             )}
           </div>
 
-          {/* --- Rôles (boutons comme dans NewUserPage) --- */}
+          {/* --- Rôles --- */}
           <div className={cardClass}>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rôles</h3>
             {loadingRoles ? (
@@ -177,6 +170,27 @@ const toggleRole = (role: { id: string; name: string }) =>
             )}
           </div>
 
+          {/* --- Formations --- */}
+          <div className={cardClass}>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Formations</h3>
+            <div className="flex flex-wrap gap-3">
+              {allFormations.map(formation => (
+                <button
+                  type="button"
+                  key={formation.id}
+                  onClick={() => toggleFormation(formation)}
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors
+                    ${
+                      formData.formations.some(f => f.id === formation.id)
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                >
+                  {formation.title}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* --- Bouton final --- */}
           <div className="text-center">
@@ -188,19 +202,6 @@ const toggleRole = (role: { id: string; name: string }) =>
             </button>
           </div>
         </form>
-      </div>
-       {/* bottom blurred blob */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
-      >
-        <div
-          className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 dark:opacity-10 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
       </div>
     </section>
   )
