@@ -5,6 +5,7 @@ const apiUrl = import.meta.env.VITE_API_URL
 
 export interface User {
   id: string;
+  username: string;
   fullname: string;
   email: string;
   status: string; 

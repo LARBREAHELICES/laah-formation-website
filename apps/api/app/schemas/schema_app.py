@@ -37,6 +37,7 @@ class FormationReadShort(BaseModel):
 class UserRead(BaseModel):
     id: str
     fullname: str
+    username : str
     status : Optional[str] = None
     email: Optional[str] = None
     roles:List[RoleRead]=  []

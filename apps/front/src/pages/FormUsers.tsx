@@ -11,6 +11,7 @@ export default function NewUserPage() {
   const { createUser } = useUserStore()
   const { roles: allRoles, fetchRoles, loading } = useRoleStore()
   const { formations, fetchFormations } = useFormationStore()
+  const [triedToSubmit, setTriedToSubmit] = useState(false)
 
   const [formData, setFormData] = useState({
     id: '',
@@ -22,6 +23,13 @@ export default function NewUserPage() {
     roles: [] as { id: string; name: string }[],
     formations: [] as { id: string; title: string }[],
   })
+
+  const requiredFields: (keyof typeof formData)[] = [
+  'username',
+  'fullname', 
+  'email',
+  'roles'
+]
 
 useEffect(() => {
   fetchRoles()
@@ -65,11 +73,27 @@ const toggleFormation = (formation: { id: string; title: string }) => {
     };
   });
 };
+const isFormValid = () => {
+  return requiredFields.every(field => {
+    const value = formData[field]
+    
+    if (Array.isArray(value)) {
+      return value.length > 0
+    }
+    
+    return value !== '' && value !== null && value !== undefined
+  })
+}
+  
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    createUser(formData)
-    navigate({ to: '/crud/users' })
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault()
+  setTriedToSubmit(true)
+  
+  if (!isFormValid()) return
+  
+  createUser(formData)
+  navigate({ to: '/crud/users' })
   }
 
   return (
@@ -96,44 +120,52 @@ const toggleFormation = (formation: { id: string; title: string }) => {
           {/* --- Infos principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
-              { name: 'email', placeholder: 'Email', type: 'email' },
-              { name: 'username', placeholder: "Nom d'utilisateur", type: 'text' },
-              { name: 'fullname', placeholder: 'Nom complet', type: 'text' },
-              { name: 'password', placeholder: 'Mot de passe', type: 'password' },
+              { name: 'email', label: 'Email', type: 'email' },
+              { name: 'username', label: "Nom d'utilisateur", type: 'text' },
+              { name: 'fullname', label: 'Nom complet', type: 'text' },
+              { name: 'password', label: 'Mot de passe', type: 'password' },
               {
                 name: 'status',
-                placeholder: 'Statut',
+                label: 'Statut',
                 type: 'select',
                 options: ['active', 'inactive'],
               },
-            ].map(field =>
-              field.type === 'select' ? (
-                <select
-                  key={field.name}
-                  name={field.name}
-                  value={formData[field.name as keyof typeof formData]}
-                  onChange={handleChange}
-                  className={inputClass}
+            ].map(field => (
+              <div key={field.name} className="flex flex-col space-y-2">
+                <label
+                  htmlFor={field.name}
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
-                  {field.options?.map(opt => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  key={field.name}
-                  name={field.name}
-                  type={field.type}
-                  placeholder={field.placeholder}
-                  value={formData[field.name as keyof typeof formData]}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              )
-            )}
+                  {field.label}
+                </label>
+                {field.type === 'select' ? (
+                  <select
+                    id={field.name}
+                    name={field.name}
+                    value={formData[field.name as keyof typeof formData]}
+                    onChange={handleChange}
+                    className={inputClass}
+                  >
+                    {field.options?.map(opt => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={field.type}
+                    value={formData[field.name as keyof typeof formData]}
+                    onChange={handleChange}
+                    className={inputClass}
+                  />
+                )}
+              </div>
+            ))}
           </div>
+
 <div className="p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm space-y-4">
   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rôles</h3>
   {loading ? (
@@ -179,14 +211,25 @@ const toggleFormation = (formation: { id: string; title: string }) => {
   </div>
 </div>
 
+{triedToSubmit && !isFormValid() && (
+  <p className="text-sm text-red-600 text-center">
+    Veuillez remplir tous les champs obligatoires avant d'enregistrer.
+  </p>
+)}
+
           {/* --- Bouton final --- */}
           <div className="text-center">
-            <button
-              type="submit"
-              className="w-full md:w-auto rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 py-3 px-6 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
-            >
-              Enregistrer l’utilisateur
-            </button>
+           <button
+  type="submit"
+  disabled={!isFormValid()}
+  className={`w-full md:w-auto rounded-lg py-3 px-6 text-sm font-semibold shadow-md transition-opacity
+    ${isFormValid()
+      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:opacity-90'
+      : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+    }`}
+>
+  Enregistrer l'utilisateur
+</button>
           </div>
         </form>
       </div>

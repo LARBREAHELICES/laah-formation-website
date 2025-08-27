@@ -100,6 +100,7 @@ class UserService:
     def _convert_to_user_read(self, user: User) -> UserRead:
         return UserRead(
             id=user.id,
+            username= user.username,
             fullname=user.fullname,
             email=user.email,
             status=user.status,

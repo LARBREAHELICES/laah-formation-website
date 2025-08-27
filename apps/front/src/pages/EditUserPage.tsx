@@ -12,6 +12,7 @@ export default function EditUserPage() {
   const { user, fetchUser, updateUser } = useUserStore()
   const { roles: allRoles, fetchRoles, loading: loadingRoles } = useRoleStore()
   const { formations: allFormations, fetchFormations } = useFormationStore()
+  const [triedToSubmit, setTriedToSubmit] = useState(false)
 
   const [formData, setFormData] = useState({
     id: '',
@@ -22,6 +23,13 @@ export default function EditUserPage() {
     roles: [] as { id: string; name: string }[],
     formations: [] as { id: string; title: string }[],
   })
+
+  const requiredFields: (keyof typeof formData)[] = [
+  'username',
+  'fullname', 
+  'email',
+  'roles'
+]
 
   const inputClass =
     'border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500'
@@ -43,6 +51,7 @@ export default function EditUserPage() {
       setFormData({
         id: user.id || '',
         email: user.email || '',
+        username: user.username || '',  
         fullname: user.fullname || '',
         status: user.status || 'active',
         roles: user.roles || [],
@@ -80,12 +89,27 @@ export default function EditUserPage() {
           : [...prev.formations, formation],
       }
     })
+    const isFormValid = () => {
+  return requiredFields.every(field => {
+    const value = formData[field]
+    
+    if (Array.isArray(value)) {
+      return value.length > 0
+    }
+    
+    return value !== '' && value !== null && value !== undefined
+  })
+}
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    updateUser(id!, formData)
-    navigate({ to: '/crud/users' })
-  }
+  e.preventDefault()
+  setTriedToSubmit(true)
+  
+  if (!isFormValid()) return
+  
+  updateUser(id!, formData)
+  navigate({ to: '/crud/users' })
+}
 
   if (!user) {
     return (
@@ -106,43 +130,53 @@ export default function EditUserPage() {
         <form onSubmit={handleSubmit} className="mt-12 space-y-10">
           {/* --- Infos principales --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              { name: 'email', placeholder: 'Email', type: 'email' },
-              { name: 'fullname', placeholder: 'Nom complet', type: 'text' },
-              {
-                name: 'status',
-                placeholder: 'Statut',
-                type: 'select',
-                options: ['active', 'inactive', 'banned'],
-              },
-            ].map(field =>
-              field.type === 'select' ? (
-                <select
-                  key={field.name}
-                  name={field.name}
-                  value={formData[field.name as keyof typeof formData]}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  {field.options?.map(opt => (
-                    <option key={opt} value={opt}>
-                      {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  key={field.name}
-                  name={field.name}
-                  type={field.type}
-                  placeholder={field.placeholder}
-                  value={formData[field.name as keyof typeof formData]}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              )
-            )}
-          </div>
+  {[
+    { name: 'email', label: 'Email', type: 'email' },
+    { name: 'username', label: "Nom d'utilisateur", type: 'text' },
+    { name: 'fullname', label: 'Nom complet', type: 'text' },
+    {
+      name: 'status',
+      label: 'Statut',
+      type: 'select',
+      options: ['active', 'inactive', 'banned'],
+    },
+  ].map(field => (
+    <div key={field.name} className="flex flex-col gap-2">
+      <label
+        htmlFor={field.name}
+        className="text-sm font-medium text-gray-700 dark:text-gray-300"
+      >
+        {field.label}
+      </label>
+
+      {field.type === 'select' ? (
+        <select
+          id={field.name}
+          name={field.name}
+          value={formData[field.name as keyof typeof formData]}
+          onChange={handleChange}
+          className={inputClass}
+        >
+          {field.options?.map(opt => (
+            <option key={opt} value={opt}>
+              {opt.charAt(0).toUpperCase() + opt.slice(1)}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          id={field.name}
+          name={field.name}
+          type={field.type}
+          value={formData[field.name as keyof typeof formData]}
+          onChange={handleChange}
+          className={inputClass}
+        />
+      )}
+    </div>
+  ))}
+</div>
+
 
           {/* --- Rôles --- */}
           <div className={cardClass}>
@@ -191,15 +225,24 @@ export default function EditUserPage() {
               ))}
             </div>
           </div>
-
+{triedToSubmit && !isFormValid() && (
+  <p className="text-sm text-red-600 text-center">
+    Veuillez remplir tous les champs obligatoires avant d'enregistrer.
+  </p>
+)}
           {/* --- Bouton final --- */}
           <div className="text-center">
             <button
-              type="submit"
-              className="w-full md:w-auto rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 py-3 px-6 text-sm font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
-            >
-              Enregistrer les modifications
-            </button>
+  type="submit"
+  disabled={!isFormValid()}
+  className={`w-full md:w-auto rounded-lg py-3 px-6 text-sm font-semibold shadow-md transition-opacity
+    ${isFormValid()
+      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:opacity-90'
+      : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+    }`}
+>
+  Enregistrer les modifications
+</button>
           </div>
         </form>
       </div>
