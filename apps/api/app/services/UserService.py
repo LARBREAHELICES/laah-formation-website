@@ -8,6 +8,7 @@ from app.models.User import User
 from app.models.Role import Role  
 from app.schemas.User import UserRead, UserCreate, UserUpdate
 from app.schemas.Role import RoleRead  
+from app.schemas.Formation import FormationReadShort
 
 class UserService:
     def __init__(self, session: Session):

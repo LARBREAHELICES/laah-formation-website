@@ -11,6 +11,10 @@ from app.schemas.Module import ModuleRead
 from app.schemas.User import UserRead
 from app.schemas.Attachment import AttachmentRead
 
+class FormationReadShort(BaseModel):
+    id: str
+    title: str
+    
 # Schéma principal
 class FormationRead(BaseModel):
     id: Optional[str] = None
