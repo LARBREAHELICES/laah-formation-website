@@ -12,13 +12,11 @@ def get_auth_service(session=Depends(get_db)) -> AuthService:
     return AuthService(session=session)
 
 
-async def get_token_from_cookie(
-    access_token: Optional[str] = Cookie(None),
-):
+async def get_token_from_cookie(access_token: str = Cookie(None)):
     if not access_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No access token cookie found",
+            detail="Missing access token"
         )
     return access_token
 
@@ -41,20 +39,25 @@ async def get_current_user(
         raise credentials_exception
 
     return UserInDB(
-            id=user.id,
-            username=user.username,
-            roles=[role for role in user.roles ] if user.roles else [],
-            scopes = [ scope for scope in user.scopes ] if user.scopes else [] # TODO recupérer les roles.scopes à voir si on change le modèle 
-        )
+        id=user.id,
+        username=user.username,
+        roles=[role for role in user.roles] if user.roles else [],
+        scopes=[scope for scope in user.scopes] if user.scopes else []
+    )
 
 
 async def get_current_active_user(
     current_user: UserInDB = Depends(get_current_user),
 ):
+    if current_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     if getattr(current_user, "disabled", False):
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
     return current_user
-
 
 async def get_refresh_token_from_cookie(
     refresh_token: Optional[str] = Cookie(None),

@@ -22,8 +22,8 @@ class UserService:
             fullname=user_data.fullname,
             password=user_data.password,  # À hasher en production
             status=user_data.status,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(),
+            updated_at=datetime.now()
         )
         
         
