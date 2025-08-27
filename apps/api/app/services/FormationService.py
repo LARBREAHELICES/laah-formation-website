@@ -311,7 +311,7 @@ class FormationService:
             trainers=[
                 UserRead(
                     id = u.id,
-                    fullname=u.fullname, status=u.status, email=u.email)
+                    fullname=u.fullname, status=u.status, email=u.email, username=u.username)
                 for u in formation.users
             ],
             attachments=[
