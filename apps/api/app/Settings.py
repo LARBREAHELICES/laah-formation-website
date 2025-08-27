@@ -12,6 +12,7 @@ ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ENV = os.getenv("ENV", "development")
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+RECAPTCHA_SECRET_KEY  = os.getenv("RECAPTCHA_SECRET_KEY")
 
 class Settings:
     def __init__(self):
@@ -22,5 +23,7 @@ class Settings:
         self.env = ENV
         self.debug = DEBUG
         self.refresh_token_expire_days = REFRESH_TOKEN_EXPIRE_DAYS
+        self.recaptcha_secret_key = RECAPTCHA_SECRET_KEY
+        self.url_captcha = "https://www.google.com/recaptcha/api/siteverify"
 
 settings = Settings()
