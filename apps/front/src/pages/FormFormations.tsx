@@ -220,7 +220,8 @@ const isFormValid = () => {
       return { 
         id: trainerId, 
         fullname: trainer?.fullname || '', 
-        role: trainer?.roles || '' 
+        role: trainer?.roles || '' , 
+        username :trainer?.username || '',
       }
     }),
 

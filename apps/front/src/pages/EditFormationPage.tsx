@@ -251,6 +251,7 @@ const isFormValid = () => {
         return { 
           id: trainerId, 
           fullname: trainer?.fullname || '', 
+          username :trainer?.username || '',
           email: trainer?.email || '',
           status: trainer?.status || '',
           roles: trainer?.roles || []
