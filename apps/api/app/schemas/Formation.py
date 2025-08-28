@@ -8,12 +8,10 @@ from datetime import datetime, date
 from app.schemas.Tag import TagRead
 from app.schemas.Session import SessionRead
 from app.schemas.Module import ModuleRead
-from app.schemas.User import UserRead
 from app.schemas.Attachment import AttachmentRead
+from app.schemas.User import UserRead
 
-class FormationReadShort(BaseModel):
-    id: str
-    title: str
+
     
 # Schéma principal
 class FormationRead(BaseModel):

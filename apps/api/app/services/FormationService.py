@@ -306,7 +306,7 @@ class FormationService:
                 for m in formation.modules
             ],
             trainers=[
-                UserRead(
+                 UserRead(
                     id = u.id,
                     fullname=u.fullname, status=u.status, email=u.email, username=u.username)
                 for u in formation.users

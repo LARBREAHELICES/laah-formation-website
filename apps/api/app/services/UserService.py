@@ -8,7 +8,7 @@ from app.models.User import User
 from app.models.Role import Role  
 from app.schemas.User import UserRead, UserCreate, UserUpdate
 from app.schemas.Role import RoleRead  
-from app.schemas.Formation import FormationReadShort
+
 
 class UserService:
     def __init__(self, session: Session):
@@ -104,5 +104,4 @@ class UserService:
             email=user.email,
             status=user.status,
             roles=[RoleRead(id=r.id, name=r.name) for r in user.roles],
-            formations=[FormationReadShort(id=f.id, title=f.title) for f in user.formations]
         )
