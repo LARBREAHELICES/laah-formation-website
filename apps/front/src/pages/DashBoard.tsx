@@ -16,6 +16,13 @@ export default function AdminDashboardHome() {
       description: 'Gérez les comptes utilisateurs, leurs inscriptions et leurs permissions.',
       link: '/crud/users',
       color: 'from-pink-500 to-rose-500'
+    },
+     {
+      id: 'backoffice',
+      title: 'BackOffice',
+      description: 'Gérez les demandes d\'inscription aux formations.',
+      link: '/crud/backoffice/',
+      color: 'from-indigo-500 to-blue-500'
     }
   ]
 
@@ -42,7 +49,7 @@ export default function AdminDashboardHome() {
           Dashboard
         </h4>
 
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-2">
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map((s) => (
             <article
               key={s.id}

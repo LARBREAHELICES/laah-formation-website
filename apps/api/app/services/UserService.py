@@ -8,6 +8,8 @@ from app.models.User import User
 from app.models.Role import Role  
 from app.schemas.User import UserRead, UserCreate, UserUpdate
 from app.schemas.Role import RoleRead  
+from app.schemas.shared import FormationShortRead
+from app.models.Formation import Formation
 
 class UserService:
     def __init__(self, session: Session):
@@ -26,6 +28,18 @@ class UserService:
             updated_at=datetime.now()
         )
         
+        if user_data.roles is not None:
+            for r in user_data.roles:
+                role_obj = self.session.get(Role, r.id)
+                if role_obj:
+                    user.roles.append(role_obj)
+
+        if user_data.formations is not None:
+            for f in user_data.formations:
+                formation_obj = self.session.get(Formation, f.id)
+                if formation_obj:
+                    user.formations.append(formation_obj)
+        
         self.session.add(user)
         
         
@@ -33,17 +47,6 @@ class UserService:
         self.session.refresh(user)
         
         return self._convert_to_user_read(user)
-
-    def get(self, user_id: str) -> Optional[UserRead]:
-        user = self.session.get(User, user_id)
-        if not user:
-            return None
-            
-        return self._convert_to_user_read(user)
-
-    def all(self) -> List[UserRead]:
-        users = self.session.query(User).all()
-        return [self._convert_to_user_read(user) for user in users]
 
     def update(self, user_id: str, user_data: UserUpdate) -> Optional[UserRead]:
         user = self.session.get(User, user_id)
@@ -62,11 +65,46 @@ class UserService:
         if user_data.status is not None:
             user.status = user_data.status
             
+                # Mettre à jour les rôles
+        #if user_data.roles is not None:
+            #role_ids = [r.id for r in user_data.roles]
+            #roles = self.session.query(Role).filter(Role.id.in_(role_ids)).all()
+            #user.roles = roles
+        
+        if user_data.roles is not None:
+            for r in user_data.roles:
+                role_obj = self.session.get(Role, r.id)
+                if role_obj:
+                    user.roles.append(role_obj)
+
+        if user_data.formations is not None:
+            for f in user_data.formations:
+                formation_obj = self.session.get(Formation, f.id)
+                if formation_obj:
+                    user.formations.append(formation_obj)
+
+                    
+
+        # if user_data.formations is not None:
+        #     formation_ids = [f.id for f in user_data.formations]
+        #     formations = self.session.query(Formation).filter(Formation.id.in_(formation_ids)).all()
+        #     user.formations = formations
+                    
         user.updated_at = datetime.utcnow()
         self.session.commit()
         self.session.refresh(user)
         
         return self._convert_to_user_read(user)
+
+    def get(self, user_id: str) -> Optional[UserRead]:
+        user = self.session.get(User, user_id)
+        if not user:
+            return None
+        return self._convert_to_user_read(user)
+
+    def all(self) -> List[UserRead]:
+        users = self.session.query(User).all()
+        return [self._convert_to_user_read(user) for user in users]
 
     def delete(self, user_id: str) -> bool:
         user = self.session.get(User, user_id)
@@ -79,8 +117,9 @@ class UserService:
     def _convert_to_user_read(self, user: User) -> UserRead:
         return UserRead(
             id=user.id,
+            username= user.username,
             fullname=user.fullname,
             email=user.email,
             status=user.status,
-            roles=[RoleRead(id=r.id, name=r.name) for r in user.roles]
+            roles=[RoleRead(id=r.id, name=r.name) for r in user.roles],
         )

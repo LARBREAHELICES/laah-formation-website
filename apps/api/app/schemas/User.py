@@ -3,13 +3,16 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from app.schemas.Role import RoleRead
+from app.schemas.shared import FormationShortRead
 
 class UserRead(BaseModel):
     id: str
     fullname: str
+    username: str
     status : Optional[str] = None
     email: Optional[str] = None
-    roles:List[RoleRead]=  []
+    roles: Optional [List[RoleRead]] = []
+    formations: List[FormationShortRead] = []
 
 class UserInDB(BaseModel):
     id : str
@@ -27,10 +30,17 @@ class UserCreate(BaseModel):
     username: str
     password: str
     status: str
-
+    roles: Optional [List[RoleRead]] = []
+    formations: List[FormationShortRead] = []
+   
 class UserUpdate(BaseModel):
     fullname: Optional[str] = None
     email: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
     status: Optional[str] = None
+    roles: Optional [List[RoleRead]] = []
+    formations: List[FormationShortRead] = []
+    
+  
+    

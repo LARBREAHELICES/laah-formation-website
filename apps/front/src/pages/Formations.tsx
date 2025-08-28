@@ -1,6 +1,8 @@
 'use client'
 import { useEffect } from 'react'
 import { useFormationStore } from '@/stores/useFormation'
+import { Link } from '@tanstack/react-router'
+
 
 export default function AllFormations() {
   const { formations, loading, error, fetchFormations } = useFormationStore()
@@ -58,12 +60,12 @@ export default function AllFormations() {
                 </div>
               </div>
 
-              <a
-                href={`/formations/${f.id}`}
+              <Link
+                to={`/formations/${f.id}`}
                 className="mt-6 block w-full rounded-lg bg-indigo-600 dark:bg-indigo-500 py-2.5 text-center text-sm font-semibold text-white hover:bg-indigo-500 dark:hover:bg-indigo-400"
               >
                 Learn more
-              </a>
+              </Link>
             </article>
           ))}
         </div>

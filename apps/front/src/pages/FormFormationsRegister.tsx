@@ -1,18 +1,21 @@
+// src/pages/FormationSessionRegisterPage.tsx
 'use client'
 
 import { useParams } from '@tanstack/react-router'
 import { useFormationStore } from '@/stores/useFormation'
+import { useInscriptionStore } from '@/stores/useInscription'
 import { useEffect, useState } from 'react'
 
 export default function FormationSessionRegisterPage() {
   const { id, sessionId } = useParams({ from: '/formations/$id/sessions/$sessionId/register' })
   const { formation, fetchFormation } = useFormationStore()
+  const { submitInscription, isSubmitting, error, response } = useInscriptionStore()
 
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
     email: '',
-    countryCode: '+33', // indicatif par défaut
+    countryCode: '+33',
     phoneNumber: '',
     message: '',
   })
@@ -26,11 +29,17 @@ export default function FormationSessionRegisterPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const fullPhone = `${formData.countryCode} ${formData.phoneNumber}`
-    console.log('Inscription envoyée:', { sessionId, ...formData, phone: fullPhone })
-    alert(`Votre inscription a été enregistrée avec le numéro : ${fullPhone}`)
+
+    const payload = { formationId: id, sessionId, ...formData }
+  console.log('📦 Payload envoyé :', payload)
+
+  await submitInscription(payload)
+  
+    if (!error) {
+      alert('Inscription envoyée !')
+    }
   }
 
   const session = formation?.sessions?.find(s => s.id === sessionId)
@@ -39,7 +48,6 @@ export default function FormationSessionRegisterPage() {
 
   return (
     <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
-      {/* Background top */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
@@ -58,14 +66,16 @@ export default function FormationSessionRegisterPage() {
           Inscription – {formation?.title}
         </h1>
 
-        {/* Infos session */}
         <div className="mb-8 text-center text-gray-700 dark:text-gray-300 space-y-1">
           <p><strong>📍 Lieu :</strong> {session.location}</p>
-          <p><strong>🗓️ Dates :</strong> {new Date(session.start_date).toLocaleDateString()} → {new Date(session.end_date).toLocaleDateString()}</p>
+          <p>
+            <strong>🗓️ Dates :</strong>{' '}
+            {new Date(session.start_date).toLocaleDateString()} →{' '}
+            {new Date(session.end_date).toLocaleDateString()}
+          </p>
           <p><strong>💰 Prix :</strong> {session.price} €</p>
         </div>
 
-        {/* Formulaire */}
         <form
           onSubmit={handleSubmit}
           className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-2xl p-8 space-y-6"
@@ -99,7 +109,6 @@ export default function FormationSessionRegisterPage() {
               className="border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
             />
 
-            {/* Champ téléphone avec indicatif */}
             <div className="flex border rounded-lg dark:border-gray-700 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
               <select
                 name="countryCode"
@@ -133,18 +142,21 @@ export default function FormationSessionRegisterPage() {
             className="border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
           ></textarea>
 
-          <div className="text-center">
+          <div className="text-center space-y-2">
             <button
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-lg text-sm transition-colors"
+              disabled={isSubmitting}
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-lg text-sm transition-colors disabled:opacity-50"
             >
-              Envoyer l’inscription
+              {isSubmitting ? 'Envoi…' : 'Envoyer l’inscription'}
             </button>
+
+            {error && <p className="text-red-600 text-sm">{error}</p>}
+            {response && <p className="text-green-600 text-sm">Inscription réussie !</p>}
           </div>
         </form>
       </div>
 
-      {/* Background bottom */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
