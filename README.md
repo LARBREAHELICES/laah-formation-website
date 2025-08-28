@@ -188,6 +188,8 @@ Stores:
   useUsers: fonction d'ajout, suppression, modification et lecture des utilisateurs
 
 ```bash
+pip install pyjwt
+pip install "passlib[bcrypt]"
 pip install pytest 
 pip install httpx
 # dans le dossier tests écrire les tests puis lancer les tests
