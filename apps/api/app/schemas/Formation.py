@@ -35,7 +35,7 @@ class FormationRead(BaseModel):
     order_date: Optional[datetime] = None
     total_amount: Optional[Decimal] = None
     classroom_student_counts: int
-    rate: Optional[str] = None
+    rate: Optional[str] = ""
 
     # Relations
     tags: List[TagRead] = []
@@ -45,8 +45,8 @@ class FormationRead(BaseModel):
     attachments: List[AttachmentRead] = []
 
     # Audit
-    created_at: datetime
-    updated_at: datetime
+    created_at:  Optional[datetime] = None
+    updated_at:  Optional[datetime] = None
     
     
 class FormationUpdate(FormationRead):

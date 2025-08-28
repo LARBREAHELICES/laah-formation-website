@@ -41,6 +41,8 @@ class UserService:
                     user.formations.append(formation_obj)
         
         self.session.add(user)
+        
+        
         self.session.commit()
         self.session.refresh(user)
         

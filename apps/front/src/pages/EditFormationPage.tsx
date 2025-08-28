@@ -221,7 +221,7 @@ const isFormValid = () => {
       duration_hours: formData.duration_hours ? Number(formData.duration_hours) : 0,
       classroom_student_counts: formData.classroom_student_counts ? Number(formData.classroom_student_counts) : 0,
       total_amount: formData.total_amount ? parseFloat(formData.total_amount) : 0,
-      rate: formData.rate ? parseFloat(formData.rate) : 0,
+      rate: formData.rate ? formData.rate : "",
       status: formData.status || undefined,
       qualiopi_scope: formData.qualiopi_scope || undefined,
       qualiopi_certificate_number: formData.qualiopi_certificate_number || undefined,
@@ -274,6 +274,8 @@ const isFormValid = () => {
       })),
     }
 
+    console.log('Submitting payload:', payload)
+
     updateFormation({ id, ...payload })
     navigate({ to: '/crud/formations' })
   }
@@ -304,7 +306,7 @@ const isFormValid = () => {
     { name: 'duration_hours', placeholder: 'Durée (heures)', type: 'text', numeric: true },
     { name: 'classroom_student_counts', placeholder: "Nombre d'étudiants", type: 'text', numeric: true },
     { name: 'total_amount', placeholder: 'Tarif (€)', type: 'text', numeric: true, step: 0.01 },
-    { name: 'rate', placeholder: 'Avis', type: 'text', numeric: true, step: 0.01 },
+    { name: 'rate', placeholder: 'Avis', type: 'text' },
     {
       name: 'status',
       placeholder: 'Statut',
