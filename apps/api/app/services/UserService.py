@@ -26,8 +26,9 @@ class UserService:
             updated_at=datetime.now()
         )
         
-        
         self.session.add(user)
+        
+        
         self.session.commit()
         self.session.refresh(user)
         
