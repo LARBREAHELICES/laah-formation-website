@@ -70,16 +70,19 @@ class UserService:
             #user.roles = roles
         
         if user_data.roles is not None:
-            for r in user_data.roles:
-                role_obj = self.session.get(Role, r.id)
-                if role_obj:
-                    user.roles.append(role_obj)
+            user.roles.clear()
+            for role_data in user_data.roles:
+                role = self.session.get(Role, role_data.id)
+                if role:
+                    user.roles.append(role)
 
+# --- Mise à jour des formations ---
         if user_data.formations is not None:
-            for f in user_data.formations:
-                formation_obj = self.session.get(Formation, f.id)
-                if formation_obj:
-                    user.formations.append(formation_obj)
+            user.formations.clear()
+            for formation_data in user_data.formations:
+                formation = self.session.get(Formation, formation_data.id)
+                if formation:
+                    user.formations.append(formation)
 
                     
 
@@ -120,4 +123,5 @@ class UserService:
             email=user.email,
             status=user.status,
             roles=[RoleRead(id=r.id, name=r.name) for r in user.roles],
+            formations=[FormationShortRead(id= f.id, title=f.title) for f in user.formations],
         )

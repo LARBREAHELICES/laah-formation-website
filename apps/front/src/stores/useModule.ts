@@ -18,6 +18,7 @@ interface ModuleState {
   error: string | null;
   fetchModules: () => Promise<void>;
   fetchModule: (id: string) => Promise<void>;
+  fetchFormationModules: (id: string) => Promise<void>;
 }
 
 export const useModuleStore = create<ModuleState>((set) => ({
@@ -57,7 +58,7 @@ export const useModuleStore = create<ModuleState>((set) => ({
       const res = await fetch(`${apiUrl}/formation/${id}/modules`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
-      set({ tags: data, loading: false });
+      set({ modules: data, loading: false });
     } catch (err: any) {
 
       set({ error: err.message || "Erreur", loading: false });

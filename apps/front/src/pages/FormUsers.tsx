@@ -19,6 +19,7 @@ export default function NewUserPage() {
     username: '',
     fullname: '',
     password: '',
+    confirmPassword: '',
     status: 'active' as 'active' | 'inactive',
     roles: [] as { id: string; name: string }[],
     formations: [] as { id: string; title: string }[],
@@ -28,7 +29,9 @@ export default function NewUserPage() {
   'username',
   'fullname', 
   'email',
-  'roles'
+  'roles', 
+  'password',
+  'confirmPassword',
 ]
 
 useEffect(() => {
@@ -74,16 +77,13 @@ const toggleFormation = (formation: { id: string; title: string }) => {
   });
 };
 const isFormValid = () => {
-  return requiredFields.every(field => {
+  const baseValid = requiredFields.every(field => {
     const value = formData[field]
-
-    
-    if (Array.isArray(value)) {
-      return value.length > 0
-    }
-    
-    return value !== '' && value !== null && value !== undefined
+    if (Array.isArray(value)) return value.length > 0
+    return value !== '' && value != null
   })
+
+  return baseValid && formData.password === formData.confirmPassword
 }
   
 
@@ -125,6 +125,7 @@ const handleSubmit = (e: React.FormEvent) => {
               { name: 'username', label: "Nom d'utilisateur", type: 'text' },
               { name: 'fullname', label: 'Nom complet', type: 'text' },
               { name: 'password', label: 'Mot de passe', type: 'password' },
+              { name: 'confirmPassword', label: 'Confirmer le mot de passe', type: 'password' },
               {
                 name: 'status',
                 label: 'Statut',
@@ -212,11 +213,13 @@ const handleSubmit = (e: React.FormEvent) => {
   </div>
 </div>
 
+
 {triedToSubmit && !isFormValid() && (
   <p className="text-sm text-red-600 text-center">
-    Veuillez remplir tous les champs obligatoires avant d'enregistrer.
+    Veuillez remplir tous les champs obligatoires et vous assurer que les deux mots de passe correspondent.
   </p>
 )}
+
 
           {/* --- Bouton final --- */}
           <div className="text-center">
