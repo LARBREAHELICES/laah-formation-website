@@ -2,6 +2,10 @@ import { create } from "zustand"
 
 const apiUrl = import.meta.env.VITE_API_URL
 
+export interface FormationsShort {
+  id: string; 
+  title: string;
+}
 
 export interface Formation {
   id: string;
@@ -24,11 +28,13 @@ export interface Formation {
 
 interface FormationState {
   formations: Formation[];
+  formationsShort: FormationsShort [];
   formation: Formation | null;
   loading: boolean;
   error: string | null;
   fetchFormations: () => Promise<void>;
   fetchFormation: (id: string) => Promise<void>;
+  fetchFormationsShort: () => Promise<void>;
   createFormation: (formation: Formation) => Promise<void>;
   deleteFormation: (id: string) => Promise<void>;
   updateFormation: (formation: Formation) => Promise<void>;
@@ -37,6 +43,7 @@ interface FormationState {
 
 export const useFormationStore = create<FormationState>((set, get) => ({
   formations: [],
+  formationsShort: [],
   formation: null,
   loading: false,
   error: null,
@@ -66,6 +73,19 @@ export const useFormationStore = create<FormationState>((set, get) => ({
       set({ error: err.message || "Erreur", loading: false });
     }
   },
+
+    fetchFormationsShort: async () => {
+    set({ loading: true, error: null });
+    try {
+      const res = await fetch(`${apiUrl}/formations/short`, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      set({ formationsShort: data, loading: false });
+    } catch (err: any) {
+      set({ error: err.message || "Erreur", loading: false });
+    }
+  },
+  
   createFormation: async (formation: Formation) => {  
     set({ loading: true });
     try {

@@ -11,7 +11,7 @@ export default function EditUserPage() {
 
   const { user, fetchUser, updateUser } = useUserStore()
   const { roles: allRoles, fetchRoles, loading: loadingRoles } = useRoleStore()
-  const { formations: allFormations, fetchFormations } = useFormationStore()
+  const { formationsShort: allFormations, fetchFormationsShort } = useFormationStore()
   const [triedToSubmit, setTriedToSubmit] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -21,7 +21,7 @@ export default function EditUserPage() {
     fullname: '',
     status: 'active' as 'active' | 'inactive',
     roles: [] as { id: string; name: string }[],
-    formations: [] as { id: string; title: string }[],
+    formationsShort: [] as { id: string; title: string }[],
   })
 
   const requiredFields: (keyof typeof formData)[] = [
@@ -40,7 +40,7 @@ export default function EditUserPage() {
   useEffect(() => {
     if (id) {
       fetchUser(id)
-      fetchFormations()
+      fetchFormationsShort()
       fetchRoles()
     }
   }, [id])
@@ -55,7 +55,7 @@ export default function EditUserPage() {
         fullname: user.fullname || '',
         status: user.status || 'active',
         roles: user.roles || [],
-        formations: user.formations || [],
+        formationsShort: user.formations || [],
       })
     }
   }, [user])
@@ -81,12 +81,12 @@ export default function EditUserPage() {
 
   const toggleFormation = (formation: { id: string; title: string }) =>
     setFormData(prev => {
-      const exists = prev.formations.some(f => f.id === formation.id)
+      const exists = prev.formationsShort.some(f => f.id === formation.id)
       return {
         ...prev,
         formations: exists
-          ? prev.formations.filter(f => f.id !== formation.id)
-          : [...prev.formations, formation],
+          ? prev.formationsShort.filter(f => f.id !== formation.id)
+          : [...prev.formationsShort, formation],
       }
     })
     const isFormValid = () => {
@@ -215,7 +215,7 @@ export default function EditUserPage() {
                   onClick={() => toggleFormation(formation)}
                   className={`px-3 py-1 rounded-full text-sm border transition-colors
                     ${
-                      formData.formations.some(f => f.id === formation.id)
+                      formData.formationsShort.some(f => f.id === formation.id)
                         ? 'bg-indigo-600 text-white border-indigo-600'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
