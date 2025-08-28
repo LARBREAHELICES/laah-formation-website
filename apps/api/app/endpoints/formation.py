@@ -4,7 +4,12 @@ from fastapi.responses import JSONResponse
 from typing import  List
 from app.database import get_db
 from app.services.FormationService import FormationService
-from app.schemas.Formation import FormationRead, FormationCreate, FormationUpdate
+from app.schemas.Formation import (
+    FormationRead, 
+    FormationCreate, 
+    FormationUpdate,
+    FormationShortRead
+)
 
 from app.dependency import get_current_active_user, check_scopes
 
@@ -21,6 +26,18 @@ def all(
     ):
     
     formations = FormationService(session).all()
+    
+    if not formations:
+        return JSONResponse(status_code=404, content={"message": "No formations found"})
+    
+    return formations
+
+@router.get("/formations/short", response_model=List[FormationShortRead])
+def all(
+    session: Session = Depends(get_db),
+    ):
+    
+    formations = FormationService(session).allShortFormations()
     
     if not formations:
         return JSONResponse(status_code=404, content={"message": "No formations found"})

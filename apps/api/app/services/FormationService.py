@@ -17,7 +17,12 @@ from app.schemas.Session import SessionRead
 from app.schemas.Module import ModuleRead
 from app.schemas.User import UserRead
 from app.schemas.Attachment import AttachmentRead
-from app.schemas.Formation import FormationRead, FormationCreate, FormationUpdate
+from app.schemas.Formation import (
+    FormationRead, 
+    FormationCreate, 
+    FormationUpdate, 
+    FormationShortRead
+)
 
 from app.models.Formation import Formation
 
@@ -59,7 +64,11 @@ class FormationService:
         
         return  self._to_read_model(formation)
 
-
+    def allShortFormations(self) -> List[FormationShortRead]:
+        stmt = select(Formation.id, Formation.title)
+        formations = self.session.exec(stmt).all()
+        
+        return [FormationShortRead(id=f.id, title=f.title) for f in formations]
 
     def create(self, data: FormationCreate) -> Optional[FormationRead]:
 

@@ -55,3 +55,6 @@ class FormationUpdate(FormationRead):
 class FormationCreate(FormationRead):
     pass
 
+class FormationShortRead(BaseModel):
+    id: Optional[str] = None
+    title: str
