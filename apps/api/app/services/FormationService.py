@@ -76,6 +76,8 @@ class FormationService:
 
     def create(self, data: FormationCreate) -> Optional[FormationRead]:
 
+        print("FORMATION", data)
+        
         # 1. Créer la formation
         formation = Formation(
             id=str(uuid.uuid4()),
@@ -336,10 +338,10 @@ class FormationService:
             created_at=formation.created_at,
             updated_at=formation.updated_at,
         )
-        
-        
-"""
-{
+      
+      
+        """
+        {
   "title": "Formation Go Avancé",
   "slug": "formation-go-avance",
   "description": "Formation complète sur Go avec approfondissement.",
@@ -357,9 +359,10 @@ class FormationService:
   "order_date": "2025-08-13",
   "total_amount": 3800,
   "classroom_student_counts": 12,
-  "rate": 100,
+  "rate": "100",
+  "created_at": "2025-08-28T12:00:00",
+"updated_at": "2025-08-28T12:00:00",
   "tags": [
-   
     {
       "id": "b1bda123-a6c5-4a54-bf66-023cdd002890",
       "name": "Go"
@@ -402,6 +405,7 @@ class FormationService:
     {
       "id": "b8c06e9b-7497-48f4-b8ef-5f5a8dc14999",
       "fullname": "Alice Martin",
+      "username": "alice.martin",
       "status": "active"
     }
   ],
@@ -415,4 +419,6 @@ class FormationService:
   ]
 }
 
-"""
+        
+        
+        """

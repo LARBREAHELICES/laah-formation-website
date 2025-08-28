@@ -3,7 +3,7 @@ import { create } from "zustand"
 const apiUrl = import.meta.env.VITE_API_URL
 
 export interface FormationsShort {
-  id: string; 
+  id: string;
   title: string;
 }
 
@@ -28,7 +28,7 @@ export interface Formation {
 
 interface FormationState {
   formations: Formation[];
-  formationsShort: FormationsShort [];
+  formationsShort: FormationsShort[];
   formation: Formation | null;
   loading: boolean;
   error: string | null;
@@ -38,7 +38,7 @@ interface FormationState {
   createFormation: (formation: Formation) => Promise<void>;
   deleteFormation: (id: string) => Promise<void>;
   updateFormation: (formation: Formation) => Promise<void>;
-  
+
 }
 
 export const useFormationStore = create<FormationState>((set, get) => ({
@@ -74,7 +74,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     }
   },
 
-    fetchFormationsShort: async () => {
+  fetchFormationsShort: async () => {
     set({ loading: true, error: null });
     try {
       const res = await fetch(`${apiUrl}/formations/short`, { credentials: "include" });
@@ -85,8 +85,8 @@ export const useFormationStore = create<FormationState>((set, get) => ({
       set({ error: err.message || "Erreur", loading: false });
     }
   },
-  
-  createFormation: async (formation: Formation) => {  
+
+  createFormation: async (formation: Formation) => {
     set({ loading: true });
     try {
       const res = await fetch(`${apiUrl}/formation`, {
@@ -131,7 +131,9 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     }
   },
   updateFormation: async (formation: Formation) => {
-    
+
+    console.log(`${apiUrl}/formation/${formation.id}`)
+
     set({ loading: true });
     try {
       const res = await fetch(`${apiUrl}/formation/${formation.id}`, {
