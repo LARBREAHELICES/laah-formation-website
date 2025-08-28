@@ -141,6 +141,7 @@ export default function FormationSessionRegisterPage() {
             rows={4}
             className="border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
           ></textarea>
+          
 
           <div className="text-center space-y-2">
             <button
