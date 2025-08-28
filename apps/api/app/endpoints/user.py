@@ -29,6 +29,7 @@ def get_tag(id: str, session: Session = Depends(get_db)):
 
 @router.post("/user", response_model=UserRead)
 def create_user(data: UserCreate, session: Session = Depends(get_db)):
+    
     return UserService(session).create(data)
 
 @router.put("/user/{id}", response_model=UserRead)

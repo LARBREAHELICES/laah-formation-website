@@ -3,8 +3,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from app.schemas.Role import RoleRead
-from app.schemas.Formation import FormationShortRead
-
+from app.schemas.shared import FormationShortRead
 
 class UserRead(BaseModel):
     id: str
@@ -13,7 +12,7 @@ class UserRead(BaseModel):
     status : Optional[str] = None
     email: Optional[str] = None
     roles: Optional [List[RoleRead]] = []
-    formations: Optional [List[FormationShortRead]]= []
+    formations: List[FormationShortRead] = []
 
 class UserInDB(BaseModel):
     id : str
@@ -32,10 +31,8 @@ class UserCreate(BaseModel):
     password: str
     status: str
     roles: Optional [List[RoleRead]] = []
-
+    formations: List[FormationShortRead] = []
    
-    
-
 class UserUpdate(BaseModel):
     fullname: Optional[str] = None
     email: Optional[str] = None
@@ -43,6 +40,7 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
     status: Optional[str] = None
     roles: Optional [List[RoleRead]] = []
-  
+    formations: List[FormationShortRead] = []
     
+  
     

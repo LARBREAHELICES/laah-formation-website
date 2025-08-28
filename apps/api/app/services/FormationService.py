@@ -20,9 +20,13 @@ from app.schemas.Attachment import AttachmentRead
 from app.schemas.Formation import (
     FormationRead, 
     FormationCreate, 
-    FormationUpdate, 
-    FormationShortRead
+    FormationUpdate
 )
+
+from app.schemas.shared import (
+   FormationShortRead
+)
+
 
 from app.models.Formation import Formation
 

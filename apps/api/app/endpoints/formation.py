@@ -7,9 +7,10 @@ from app.services.FormationService import FormationService
 from app.schemas.Formation import (
     FormationRead, 
     FormationCreate, 
-    FormationUpdate,
-    FormationShortRead
+    FormationUpdate
 )
+
+from app.schemas.shared import FormationShortRead
 
 from app.dependency import get_current_active_user, check_scopes
 

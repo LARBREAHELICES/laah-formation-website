@@ -11,8 +11,6 @@ from app.schemas.Module import ModuleRead
 from app.schemas.Attachment import AttachmentRead
 from app.schemas.User import UserRead
 
-
-    
 # Schéma principal
 class FormationRead(BaseModel):
     id: Optional[str] = None
@@ -57,6 +55,3 @@ class FormationUpdate(FormationRead):
 class FormationCreate(FormationRead):
     pass
 
-class FormationShortRead(BaseModel):
-    id: Optional[str] = None
-    title: str

@@ -8,8 +8,8 @@ from app.models.User import User
 from app.models.Role import Role  
 from app.schemas.User import UserRead, UserCreate, UserUpdate
 from app.schemas.Role import RoleRead  
-from app.schemas.Formation import FormationShortRead
-
+from app.schemas.shared import FormationShortRead
+from app.models.Formation import Formation
 
 class UserService:
     def __init__(self, session: Session):
@@ -28,40 +28,17 @@ class UserService:
             updated_at=datetime.now()
         )
         
-            # Ajouter les rôles
-        #if user_data.roles:
-            #role_ids = [r.id for r in user_data.roles]
-           # roles = self.session.query(Role).filter(Role.id.in_(role_ids)).all()
-           # user.roles = roles
-            
-        
-        # if user_data.roles:
-        #     for role in user_data.roles:
-        #         role = self.session.get(Role, role.id)
-        #         if role:
-        #             user.roles.append(role)
-
         if user_data.roles is not None:
-            user.roles.clear()
             for r in user_data.roles:
                 role_obj = self.session.get(Role, r.id)
                 if role_obj:
                     user.roles.append(role_obj)
 
-
         if user_data.formations is not None:
-            user.formations.clear()
             for f in user_data.formations:
                 formation_obj = self.session.get(Formation, f.id)
                 if formation_obj:
                     user.formations.append(formation_obj)
-
-
-
-        # if user_data.formations:
-        #     formation_ids = [f.id for f in user_data.formations]
-        #     formations = self.session.query(Formation).filter(Formation.id.in_(formation_ids)).all()
-        #     user.formations = formations
         
         self.session.add(user)
         self.session.commit()
