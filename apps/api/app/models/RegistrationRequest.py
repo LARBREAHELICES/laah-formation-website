@@ -8,6 +8,7 @@ class RegistrationRequest(SQLModel, table=True): # type: ignore[misc] :
     name: str
     email: str
     motivation: str
+    verification_token: str
     status: str = Field(default="pending")  # pending | email_verified | approved | rejected
     created_at: datetime = Field(default_factory=datetime.now())
     updated_at: Optional[datetime] = None

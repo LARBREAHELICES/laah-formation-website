@@ -3,51 +3,83 @@
 
 import { useParams } from '@tanstack/react-router'
 import { useFormationStore } from '@/stores/useFormation'
-import { useInscriptionStore } from '@/stores/useInscription'
+import { useInscriptionStore } from '@/stores/useRegistration'
 import { useEffect, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 
 export default function FormationSessionRegisterPage() {
   const { id, sessionId } = useParams({ from: '/formations/$id/sessions/$sessionId/register' })
   const { formation, fetchFormation } = useFormationStore()
   const { submitInscription, isSubmitting, error, response } = useInscriptionStore()
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
-    firstname: '',
-    lastname: '',
+    name: '',
     email: '',
-    countryCode: '+33',
-    phoneNumber: '',
-    message: '',
+    motivation: '',
+  })
+
+  // État pour gérer les erreurs de validation
+  const [fieldErrors, setFieldErrors] = useState({
+    name: '',
+    email: '',
+    motivation: '',
   })
 
   useEffect(() => {
     fetchFormation(id)
   }, [id, fetchFormation])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    setFieldErrors(prev => ({ ...prev, [name]: '' }))
+  }
+
+  const validate = () => {
+    const errors = { name: '', email: '', message: '' }
+    let ok = true
+
+    if (!formData.name.trim()) {
+      errors.name = 'Le nom est requis.'
+      ok = false
+    }
+    if (!formData.email.trim()) {
+      errors.email = 'L’email est requis.'
+      ok = false
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Email invalide.'
+      ok = false
+    }
+    if (!formData.motivation.trim()) {
+      errors.message = 'Un message est requis.'
+      ok = false
+    }
+
+    setFieldErrors(errors)
+    return ok
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  e.preventDefault()
+  if (!validate()) return
 
-    const payload = { formationId: id, sessionId, ...formData }
+  const payload = { formationId: id, sessionId, ...formData }
   console.log('📦 Payload envoyé :', payload)
 
   await submitInscription(payload)
-  
-    if (!error) {
-      alert('Inscription envoyée !')
-    }
+
+  if (!error) {
+    alert('Inscription envoyée !')
+    navigate({ to: '/' }) 
   }
+}
 
   const session = formation?.sessions?.find(s => s.id === sessionId)
-
   if (!session) return <p className="text-center py-10">Session introuvable.</p>
 
   return (
-    <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
+    <section className="relative isolate bg-black dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl"
@@ -78,70 +110,58 @@ export default function FormationSessionRegisterPage() {
 
         <form
           onSubmit={handleSubmit}
+          noValidate
           className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-2xl p-8 space-y-6"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <input
-              name="firstname"
-              type="text"
-              placeholder="Prénom"
-              value={formData.firstname}
-              onChange={handleChange}
-              required
-              className="border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
-            />
-            <input
-              name="lastname"
-              type="text"
-              placeholder="Nom"
-              value={formData.lastname}
-              onChange={handleChange}
-              required
-              className="border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
-            />
-            <input
-              name="email"
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
-            />
-
-            <div className="flex border rounded-lg dark:border-gray-700 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
-              <select
-                name="countryCode"
-                value={formData.countryCode}
-                onChange={handleChange}
-                className="bg-gray-50 dark:bg-gray-900 text-sm px-3 py-2 border-r dark:border-gray-700 focus:outline-none dark:text-white"
-              >
-                <option value="+33">🇫🇷 +33</option>
-                <option value="+32">🇧🇪 +32</option>
-                <option value="+41">🇨🇭 +41</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +44</option>
-              </select>
+          <div className="flex flex-col space-y-6">
+            {/* Champ Nom */}
+            <div>
               <input
-                name="phoneNumber"
-                type="tel"
-                placeholder="Numéro de téléphone"
-                value={formData.phoneNumber}
+                name="name"
+                type="text"
+                placeholder="Prénom et nom *"
+                value={formData.name}
                 onChange={handleChange}
-                className="flex-1 p-3 text-sm dark:bg-gray-900 dark:text-white focus:outline-none"
+                required
+                className={`border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:text-white focus:ring-2 ${
+                  fieldErrors.name ? 'border-red-500 ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+                }`}
               />
+              {fieldErrors.name && <p className="text-red-500 text-xs mt-1">{fieldErrors.name}</p>}
+            </div>
+
+            {/* Champ Email */}
+            <div>
+              <input
+                name="email"
+                type="email"
+                placeholder="Email *"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className={`border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:text-white focus:ring-2 ${
+                  fieldErrors.email ? 'border-red-500 ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+                }`}
+              />
+              {fieldErrors.email && <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
+            </div>
+
+            {/* Champ Message */}
+            <div>
+              <textarea
+                name="motivation"
+                placeholder="Message ou commentaires *"
+                value={formData.motivation}
+                onChange={handleChange}
+                rows={4}
+                required
+                className={`border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:text-white focus:ring-2 ${
+                  fieldErrors.motivation ? 'border-red-500 ring-red-500' : 'border-gray-300 focus:ring-indigo-500'
+                }`}
+              ></textarea>
+              {fieldErrors.motivation && <p className="text-red-500 text-xs mt-1">{fieldErrors.motivation}</p>}
             </div>
           </div>
-
-          <textarea
-            name="message"
-            placeholder="Message ou commentaires"
-            value={formData.message}
-            onChange={handleChange}
-            rows={4}
-            className="border rounded-lg p-3 w-full text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500"
-          ></textarea>
-          
 
           <div className="text-center space-y-2">
             <button

@@ -18,7 +18,7 @@ export default function FormationDetailPage() {
   if (!formation) return <p className="text-center py-10">Formation introuvable.</p>
 
   return (
-    <section className="relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
+    <section className= "relative isolate bg-white dark:bg-gray-900 overflow-hidden py-16 sm:py-24">
       {/* Background top */}
       <div
         aria-hidden="true"
